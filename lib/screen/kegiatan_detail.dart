@@ -29,6 +29,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("RDT Checkin")),
       body: BlocProvider<CheckinBloc>(
         create: (BuildContext context) =>
             _checkinBloc = CheckinBloc(repository: _kegiatanDetailRepository),
