@@ -124,22 +124,31 @@ class _KegiatanPageState extends State<KegiatanPage> {
                   SizedBox(
                     height: 5,
                   ),
-                  FlatButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DaftarPesertaPage(
-                                      kodeKegiatanModel:
-                                          widget.kodeKegiatanModel,
-                                    )));
-                      },
-                      child: Text('Lihat Daftar Peserta')),
-                  FlatButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text('Logout')),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: MaterialButton(
+                        color: Theme.of(context).primaryColor,
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DaftarPesertaPage(
+                                    kodeKegiatanModel:
+                                    widget.kodeKegiatanModel,
+                                  )));
+                        },
+                        child: Text('Lihat Daftar Peserta', style: TextStyle(color: Colors.white))
+                    ),
+                  ),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    child: MaterialButton(
+                        color: Colors.red,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Logout', style: TextStyle(color: Colors.white)))
+                  ),
                   SizedBox(
                     height: 20,
                   ),
@@ -195,12 +204,11 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Theme.of(context).primaryColor,
-                                        width: 1)),
+                                  color: Colors.blue
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
-                                  child: Text('Scan QR Code'),
+                                  child: Text('Scan QR Code', style: TextStyle(color: Colors.white)),
                                 ),
                               ),
                             ),
@@ -224,12 +232,11 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               child: Container(
                                 width: MediaQuery.of(context).size.width,
                                 decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Theme.of(context).primaryColor,
-                                        width: 1)),
+                                    color: Colors.green
+                                ),
                                 child: Padding(
                                   padding: const EdgeInsets.all(20.0),
-                                  child: Text('Input Nomor Pendaftaran'),
+                                  child: Text('Input Nomor Pendaftaran', style: TextStyle(color: Colors.white)),
                                 ),
                               ),
                             )

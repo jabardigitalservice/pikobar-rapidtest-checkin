@@ -19,6 +19,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text("Daftar Peserta")),
       body: BlocProvider<KodeKegiatanBloc>(
         create: (BuildContext context) => _kodeKegiatanBloc =
             KodeKegiatanBloc(repository: _kegiatanDetailRepository)
@@ -75,10 +76,6 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text('Daftar Peserta'),
-                      SizedBox(
-                        height: 20,
-                      ),
                       Expanded(
                         child: ListView.builder(
                           itemCount: kodeKegiatanLoaded
@@ -87,6 +84,9 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                             return Container(margin: EdgeInsets.only(bottom: 10),
                               width: MediaQuery.of(context).size.width,
                               decoration: BoxDecoration(
+                                color: kodeKegiatanLoaded.kodeKegiatan.data
+                                    .applicants[i].attendedAt ==
+                                    null ? Colors.white : Colors.green[100],
                                   border: Border.all(
                                       color: Theme.of(context).primaryColor,
                                       width: 1)),

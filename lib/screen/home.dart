@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         buildTextField(
-                          title: 'Kode Kegiatan Test',
+                          title: 'Kode Kegiatan',
                           controller: _codeActivity,
                           hintText: 'Masukan kode kegiatan',
                           isEdit: true,

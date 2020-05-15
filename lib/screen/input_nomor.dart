@@ -26,7 +26,7 @@ class _InputNomorState extends State<InputNomor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("RDT Checkin")),
+        appBar: AppBar(title: Text("Input Nomor Pendaftaran")),
         body: BlocProvider<CheckinBloc>(
       create: (BuildContext context) =>
           _checkinBloc = CheckinBloc(repository: _kegiatanDetailRepository),
