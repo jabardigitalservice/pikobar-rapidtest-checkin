@@ -61,12 +61,13 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     duration: Duration(seconds: 5),
                   ),
                 );
-              }else if (state is CheckinLoaded) {
+              } else if (state is CheckinLoaded) {
                 CheckinLoaded checkinLoaded = state as CheckinLoaded;
                 showDialog(
                     context: context,
                     builder: (BuildContext context) => DialogTextOnly(
-                          description: checkinLoaded.checkinModel.data.name+' berhasil checkin',
+                          description: checkinLoaded.checkinModel.data.name +
+                              ' berhasil checkin',
                           buttonText: "OK",
                           onOkPressed: () {
                             Navigator.of(context).pop(); // To close the dialog
@@ -74,7 +75,6 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         ));
                 Scaffold.of(context).hideCurrentSnackBar();
               } else {
-                
                 Scaffold.of(context).hideCurrentSnackBar();
               }
             },
@@ -149,7 +149,8 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     ) {
                       if (state is InitialCheckinState ||
                           state is CheckinLoading ||
-                          state is CheckinFailure || state is CheckinLoaded)  {
+                          state is CheckinFailure ||
+                          state is CheckinLoaded) {
                         return Column(
                           children: <Widget>[
                             InkWell(
@@ -233,7 +234,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             )
                           ],
                         );
-                      } else  {
+                      } else {
                         return Container();
                       }
                     },
@@ -247,14 +248,16 @@ class _KegiatanPageState extends State<KegiatanPage> {
 
   barcodeScan() async {
     var barcode = await BarcodeScanner.scan();
-    print('print');
-    print(barcode.rawContent);
-    print(barcode.format);
-    print(barcode.formatNote);
-    print(barcode.type);
-    _checkinBloc.add(CheckinLoad(
-        nomorPendaftaran: barcode.rawContent,
-        eventCode: widget.kodeKegiatanModel.data.eventCode));
+    if (barcode.rawContent != '') {
+      print('print');
+      print(barcode.rawContent);
+      print(barcode.format);
+      print(barcode.formatNote);
+      print(barcode.type);
+      _checkinBloc.add(CheckinLoad(
+          nomorPendaftaran: barcode.rawContent,
+          eventCode: widget.kodeKegiatanModel.data.eventCode));
+    }
   }
 
   void _onStatusRequested(

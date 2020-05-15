@@ -11,7 +11,7 @@ class KegiatanDetailRepository {
     await Future.delayed(Duration(seconds: 1));
 
     final response = await http
-        .post('${EndPointPath.rdt}/check',
+        .post('${EndPointPath.rdt}/checkin',
             headers: await HttpHeaders.headers(),
             body: json
                 .encode({"registration_code": kode, "event_code": eventCode}))
@@ -27,7 +27,8 @@ class KegiatanDetailRepository {
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      throw Exception('Silahkan cek kembali nomer yang dimasukan');
+      final data = jsonDecode(response.body);
+      throw Exception(data['message']);
     } else {
       throw Exception('Terjadi Kesalahan');
     }
@@ -52,7 +53,8 @@ class KegiatanDetailRepository {
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      throw Exception('Silahkan cek kembali nomer yang dimasukan');
+      final data = jsonDecode(response.body);
+      throw Exception(data['message']);
     } else {
       throw Exception('Terjadi Kesalahan');
     }

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 String unixTimeStampToDateTime(String date) {
   var format = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id');
   var dateTimeString =
-      format.format(DateTime.parse(date));
+      format.format(DateTime.parse(date).toLocal());
 
   return dateTimeString;
 }
@@ -11,7 +11,7 @@ String unixTimeStampToDateTime(String date) {
 String unixTimeStampToHour(String date) {
   var format = DateFormat('HH:mm', 'id');
   var dateTimeString =
-      format.format(DateTime.parse(date));
+      format.format(DateTime.parse(date).toLocal());
 
   return dateTimeString;
 }
