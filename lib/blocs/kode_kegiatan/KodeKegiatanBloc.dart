@@ -17,14 +17,44 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
   Stream<KodeKegiatanState> mapEventToState(
     KodeKegiatanEvent event,
   ) async* {
+    if (event is AppStart) {
+      yield KodeKegiatanLoading();
+
+      try {
+        String isLogin = await repository.getActivityCode();
+        if (isLogin != null) {
+          
+          yield KodeKegiatanLoaded(kodeKegiatanPref: isLogin);
+        } else {
+          yield KodeKegiatanUnauthenticated();
+        }
+      } catch (e) {
+        yield KodeKegiatanFailure(error: e.toString());
+      }
+    }
+
+    if (event is Logout) {
+      yield KodeKegiatanLoading();
+
+      try {
+      await repository.clearActivityCode();
+          yield KodeKegiatanUnauthenticated();
+        
+      } catch (e) {
+        yield KodeKegiatanFailure(error: e.toString());
+      }
+    }
+
     if (event is KodeKegiatanLoad) {
       yield KodeKegiatanLoading();
 
       try {
         KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(event.kodeKegiatan);
-
-        yield KodeKegiatanLoaded(kodeKegiatan: kodeKegiatanModel);
+        await repository.setActivityCode(kodeKegiatanModel.data.eventCode);
+        String isLogin = await repository.getActivityCode();
+        yield KodeKegiatanLoaded(
+            kodeKegiatan: kodeKegiatanModel, kodeKegiatanPref: isLogin);
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());
       }

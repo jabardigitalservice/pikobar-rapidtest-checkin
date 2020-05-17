@@ -16,3 +16,27 @@ class KodeKegiatanLoad extends KodeKegiatanEvent {
   @override
   List<Object> get props => [];
 }
+
+class AppStart extends KodeKegiatanEvent {
+
+
+  @override
+  String toString() {
+    return 'Event KodeKegiatanLoad';
+  }
+
+  @override
+  List<Object> get props => [];
+}
+
+class Logout extends KodeKegiatanEvent {
+
+
+  @override
+  String toString() {
+    return 'Event Logout';
+  }
+
+  @override
+  List<Object> get props => [];
+}

@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text("RDT Checkin")),
       body: BlocProvider<KodeKegiatanBloc>(
         create: (BuildContext context) => _kodeKegiatanBloc =
-            KodeKegiatanBloc(repository: _kegiatanDetailRepository),
+            KodeKegiatanBloc(repository: _kegiatanDetailRepository)..add(AppStart()),
         child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
           listener: (context, state) {
             if (state is KodeKegiatanFailure) {
@@ -67,13 +67,13 @@ class _MyHomePageState extends State<MyHomePage> {
             } else if (state is KodeKegiatanLoaded) {
               KodeKegiatanLoaded kodeKegiatanLoaded =
                   state as KodeKegiatanLoaded;
-              Navigator.push(
+              Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => KegiatanPage(
                             kodeKegiatanModel: kodeKegiatanLoaded.kodeKegiatan,
                           )));
-            } else {
+            }  else {
               Scaffold.of(context).hideCurrentSnackBar();
             }
           },
@@ -85,7 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
               if (state is InitialKodeKegiatanState ||
                   state is KodeKegiatanLoading ||
                   state is KodeKegiatanFailure ||
-                  state is KodeKegiatanLoaded) {
+                  state is KodeKegiatanLoaded ||
+                  state is KodeKegiatanUnauthenticated) {
                 return Form(
                   key: _formKey,
                   child: Padding(
@@ -106,7 +107,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 40.0,                    
+                          height: 40.0,
                           child: RaisedButton(
                             splashColor: Colors.lightGreenAccent,
                             padding: EdgeInsets.all(0.0),
