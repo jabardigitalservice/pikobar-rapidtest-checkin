@@ -43,7 +43,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("RDT Checkin")),
+        appBar: AppBar(title: Text("Tes Masif Checkin")),
         body: DoubleBackToCloseApp(
           snackBar: SnackBar(
             backgroundColor: Theme.of(context).primaryColor,

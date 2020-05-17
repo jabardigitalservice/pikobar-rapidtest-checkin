@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("RDT Checkin")),
+      appBar: AppBar(title: Text("Tes Masif Checkin")),
       body: BlocProvider<KodeKegiatanBloc>(
         create: (BuildContext context) => _kodeKegiatanBloc =
             KodeKegiatanBloc(repository: _kegiatanDetailRepository)..add(AppStart()),

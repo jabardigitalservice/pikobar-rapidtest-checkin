@@ -20,7 +20,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'PIKOBAR RDT Checkin',
+      title: 'PIKOBAR Tes Masif Checkin',
       theme: ThemeData(
           primaryColor: ColorBase.green,
           primaryColorBrightness: Brightness.dark,
