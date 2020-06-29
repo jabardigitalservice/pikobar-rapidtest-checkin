@@ -169,10 +169,10 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         SizedBox(
                           height: 20,
                         ),
-                        Row(
+                        Row( crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text('Nama Kegiatan Test : '),
-                            Text(kodeKegiatanModel.kodeKegiatan.data.eventName, style: TextStyle(fontWeight: FontWeight.bold)),
+                            Expanded(child: Text(kodeKegiatanModel.kodeKegiatan.data.eventName, style: TextStyle(fontWeight: FontWeight.bold))),
                           ],
                         ),
                         SizedBox(

@@ -15,8 +15,8 @@ class HttpHeaders {
       'Accept': 'application/json',
       // 'X-Requested-With': packageName,
       // 'X-Requested-With-Version': version,
-      'Authorization':
-          'Bearer }',
+      // 'Authorization':
+      //     'Bearer }',
     };
   }
 }

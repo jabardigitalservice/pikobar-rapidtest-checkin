@@ -73,45 +73,61 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                 return SafeArea(
                     child: Padding(
                   padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: kodeKegiatanLoaded
-                              .kodeKegiatan.data.applicants.length,
-                          itemBuilder: (context, i) {
-                            return Container(margin: EdgeInsets.only(bottom: 10),
-                              width: MediaQuery.of(context).size.width,
-                              decoration: BoxDecoration(
-                                color: kodeKegiatanLoaded.kodeKegiatan.data
-                                    .applicants[i].attendedAt ==
-                                    null ? Colors.white : Colors.green[100],
-                                  border: Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                      width: 1)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(20.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text(kodeKegiatanLoaded
-                                        .kodeKegiatan.data.applicants[i].name),
-                                    Text(kodeKegiatanLoaded.kodeKegiatan.data
-                                                .applicants[i].attendedAt ==
-                                            null
-                                        ? 'Tidak Hadir'
-                                        : 'Hadir'),
-                                  ],
-                                ),
+                  child: kodeKegiatanLoaded
+                              .kodeKegiatan.data.applicants.length ==
+                          0
+                      ? Center(
+                          child: Text('Tidak ada data daftar peserta'),
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: kodeKegiatanLoaded
+                                    .kodeKegiatan.data.applicants.length,
+                                itemBuilder: (context, i) {
+                                  return Container(
+                                    margin: EdgeInsets.only(bottom: 10),
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration: BoxDecoration(
+                                        color: kodeKegiatanLoaded
+                                                    .kodeKegiatan
+                                                    .data
+                                                    .applicants[i]
+                                                    .attendedAt ==
+                                                null
+                                            ? Colors.white
+                                            : Colors.green[100],
+                                        border: Border.all(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            width: 1)),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text(kodeKegiatanLoaded.kodeKegiatan
+                                              .data.applicants[i].name),
+                                          Text(kodeKegiatanLoaded
+                                                      .kodeKegiatan
+                                                      .data
+                                                      .applicants[i]
+                                                      .attendedAt ==
+                                                  null
+                                              ? 'Tidak Hadir'
+                                              : 'Hadir'),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
-                            );
-                          },
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ));
               }
             },

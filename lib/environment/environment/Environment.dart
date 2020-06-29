@@ -7,7 +7,7 @@ class Environment {
   static Map<String, String> headerPost = {};
 
   // production
-  static String baseUrl = 'https://api.rapidtest.pikobar.jabarprov.go.id/api';
+  static String baseUrl = 'https://api.tesmasif.pikobar.jabarprov.go.id/api';
 
 
 }
