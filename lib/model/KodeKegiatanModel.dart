@@ -53,9 +53,9 @@ class Data {
     deletedAt = json['deleted_at'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
-    if (json['applicants'] != null) {
+    if (json['invitations'] != null) {
       applicants = new List<Applicants>();
-      json['applicants'].forEach((v) {
+      json['invitations'].forEach((v) {
         applicants.add(new Applicants.fromJson(v));
       });
     }
@@ -74,7 +74,7 @@ class Data {
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     if (this.applicants != null) {
-      data['applicants'] = this.applicants.map((v) => v.toJson()).toList();
+      data['invitations'] = this.applicants.map((v) => v.toJson()).toList();
     }
     return data;
   }

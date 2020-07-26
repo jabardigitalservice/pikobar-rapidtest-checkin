@@ -87,6 +87,10 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                 itemCount: kodeKegiatanLoaded
                                     .kodeKegiatan.data.applicants.length,
                                 itemBuilder: (context, i) {
+                                  kodeKegiatanLoaded
+                                                    .kodeKegiatan
+                                                    .data
+                                                    .applicants.sort((a, b) => a.name.compareTo(b.name));
                                   return Container(
                                     margin: EdgeInsets.only(bottom: 10),
                                     width: MediaQuery.of(context).size.width,
