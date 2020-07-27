@@ -100,7 +100,7 @@ class _InputNomorState extends State<InputNomor> {
                           hintText: 'Masukan nomor pendaftaran',
                           isEdit: true,
                           validation: Validations.kodeValidation,
-                          textInputType: TextInputType.number),
+                          textInputType: TextInputType.text),
                       SizedBox(
                         height: 20,
                       ),
@@ -179,7 +179,7 @@ class _InputNomorState extends State<InputNomor> {
                 : TextStyle(color: Color(0xffBDBDBD)),
             enabled: isEdit,
             validator: validation,
-            textCapitalization: TextCapitalization.words,
+            textCapitalization: TextCapitalization.characters,
             controller: controller,
             decoration: InputDecoration(
                 hintText: hintText,
