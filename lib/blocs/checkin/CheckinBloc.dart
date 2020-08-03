@@ -21,7 +21,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
       yield CheckinLoading();
       try {
         CheckinModel checkinModel = await repository.checkNomorPendaftaran(
-            event.nomorPendaftaran, event.eventCode);
+            event.nomorPendaftaran, event.eventCode,event.labCodeSample);
 
         yield CheckinLoaded(checkinModel: checkinModel);
       } catch (e) {

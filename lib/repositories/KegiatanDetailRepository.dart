@@ -8,13 +8,13 @@ import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KegiatanDetailRepository {
-  Future<CheckinModel> checkNomorPendaftaran(String kode, eventCode) async {
+  Future<CheckinModel> checkNomorPendaftaran(String kode, eventCode,labCodeSample) async {
     await Future.delayed(Duration(seconds: 1));
     final response = await http
         .post('${EndPointPath.rdt}/checkin',
             headers: await HttpHeaders.headers(),
             body: json
-                .encode({"registration_code": kode, "event_code": eventCode}))
+                .encode({"registration_code": kode, "event_code": eventCode,"lab_code_sample":labCodeSample}))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {

@@ -5,8 +5,8 @@ abstract class CheckinEvent extends Equatable {
 }
 
 class CheckinLoad extends CheckinEvent {
-  final String nomorPendaftaran,eventCode;
-  CheckinLoad({this.nomorPendaftaran,this.eventCode});
+  final String nomorPendaftaran,eventCode,labCodeSample;
+  CheckinLoad({this.nomorPendaftaran,this.eventCode,this.labCodeSample});
 
   @override
   String toString() {
