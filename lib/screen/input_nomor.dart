@@ -72,6 +72,7 @@ class _InputNomorState extends State<InputNomor> {
                           buttonText: "OK",
                           onOkPressed: () {
                             _codeActivity.text = '';
+                            _codeSampleController.text='';
                             Navigator.of(context).pop(); // To close the dialog
                           },
                         ));
@@ -258,6 +259,7 @@ class _InputNomorState extends State<InputNomor> {
   @override
   void dispose() {
     _codeActivity.dispose();
+    _codeSampleController.dispose();
     _checkinBloc.close();
     super.dispose();
   }
