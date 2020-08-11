@@ -379,67 +379,72 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     borderRadius: BorderRadius.circular(12)),
                 child: Padding(
                   padding: EdgeInsets.all(10.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text('No Registrasi anda : '),
-                          Expanded(
-                              child: Text(barcode.rawContent,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                          'Masukan kode sampel terlebih dahulu atau langsung tekan checkin'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      buildTextField(
-                          title: 'Kode Sampel',
-                          controller: _codeSampleController,
-                          hintText: 'Masukan atau scan kode sampel',
-                          isEdit: true,
-                          validation: Validations.kodeSampleValidation,
-                          qrIcon: true,
-                          textInputType: TextInputType.text),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: 40.0,
-                        child: RaisedButton(
-                          splashColor: Colors.lightGreenAccent,
-                          padding: EdgeInsets.all(0.0),
-                          color: ColorBase.green,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Text(
-                            'Checkin',
-                            style: TextStyle(
-                                fontFamily: FontsFamily.productSans,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12.0,
-                                color: Colors.white),
-                          ),
-                          onPressed: () {
-                            FocusScope.of(context).unfocus();
-                            _checkinBloc.add(CheckinLoad(
-                                nomorPendaftaran: barcode.rawContent,
-                                eventCode: kodeKegiatanModel
-                                    .kodeKegiatan.data.eventCode,
-                                labCodeSample: _codeSampleController.text));
-                          },
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text('No Registrasi anda : '),
+                            Expanded(
+                                child: Text(barcode.rawContent,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                          ],
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                            'Masukan kode sampel terlebih dahulu atau langsung tekan checkin'),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        buildTextField(
+                            title: 'Kode Sampel',
+                            controller: _codeSampleController,
+                            hintText: 'Masukan atau scan kode sampel',
+                            isEdit: true,
+                            validation: Validations.kodeSampleValidation,
+                            qrIcon: true,
+                            textInputType: TextInputType.text),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 40.0,
+                          child: RaisedButton(
+                            splashColor: Colors.lightGreenAccent,
+                            padding: EdgeInsets.all(0.0),
+                            color: ColorBase.green,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Text(
+                              'Checkin',
+                              style: TextStyle(
+                                  fontFamily: FontsFamily.productSans,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12.0,
+                                  color: Colors.white),
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                FocusScope.of(context).unfocus();
+                                _checkinBloc.add(CheckinLoad(
+                                    nomorPendaftaran: barcode.rawContent,
+                                    eventCode: kodeKegiatanModel
+                                        .kodeKegiatan.data.eventCode,
+                                    labCodeSample: _codeSampleController.text));
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ));

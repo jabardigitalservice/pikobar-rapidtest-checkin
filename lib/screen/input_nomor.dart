@@ -110,6 +110,7 @@ class _InputNomorState extends State<InputNomor> {
                           buildTextField(
                               title: 'Kode Sampel',
                               controller: _codeSampleController,
+                              validation: Validations.kodeSampleValidation,
                               hintText: 'Masukan atau scan kode sampel',
                               isEdit: true,
                               qrIcon: true,
