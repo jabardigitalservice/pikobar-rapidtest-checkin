@@ -141,6 +141,7 @@ class _InputNomorState extends State<InputNomor> {
                                   FocusScope.of(context).unfocus();
                                   _checkinBloc.add(CheckinLoad(
                                       nomorPendaftaran: _codeActivity.text,
+                                      labCodeSample: _codeSampleController.text,
                                       eventCode: widget
                                           .kodeKegiatanModel.data.eventCode));
                                 }
