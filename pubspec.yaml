@@ -36,6 +36,7 @@ dependencies:
   intl: ^0.16.1
   double_back_to_close_app: ^0.1.2
   font_awesome_flutter: ^8.7.0
+  liquid_pull_to_refresh: ^2.0.0
   
 
 dev_dependencies:

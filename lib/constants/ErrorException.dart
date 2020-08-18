@@ -7,4 +7,6 @@ class ErrorException {
   static String ioException = 'IOException';
   static String emptyList = 'EmptyList';
   static String notFound = 'NotFound';
+  static String notFoundUser='Peserta tidak terdaftar di Event';
+  static String notFoundEvent='Event tidak ditemukan';
 }

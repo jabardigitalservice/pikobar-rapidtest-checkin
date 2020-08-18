@@ -32,6 +32,9 @@ class KegiatanDetailRepository {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
       final data = jsonDecode(response.body);
+      throw Exception(ErrorException.notFoundUser);
+    } else if (response.statusCode == 422) {
+      final data = jsonDecode(response.body);
       throw Exception(data['message']);
     } else {
       throw Exception('Terjadi Kesalahan');
@@ -61,6 +64,9 @@ class KegiatanDetailRepository {
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
+      final data = jsonDecode(response.body);
+      throw Exception(ErrorException.notFoundEvent);
+    }else if (response.statusCode == 422) {
       final data = jsonDecode(response.body);
       throw Exception(data['message']);
     } else {

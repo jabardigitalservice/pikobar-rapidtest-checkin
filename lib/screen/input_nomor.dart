@@ -72,7 +72,8 @@ class _InputNomorState extends State<InputNomor> {
                           buttonText: "OK",
                           onOkPressed: () {
                             _codeActivity.text = '';
-                            _codeSampleController.text='';
+                            _codeSampleController.text = '';
+                            Navigator.of(context).pop();
                             Navigator.of(context).pop(); // To close the dialog
                           },
                         ));
@@ -140,11 +141,10 @@ class _InputNomorState extends State<InputNomor> {
                               onPressed: () {
                                 if (_formKey.currentState.validate()) {
                                   FocusScope.of(context).unfocus();
-                                  _checkinBloc.add(CheckinLoad(
-                                      nomorPendaftaran: _codeActivity.text,
-                                      labCodeSample: _codeSampleController.text,
-                                      eventCode: widget
-                                          .kodeKegiatanModel.data.eventCode));
+                                  _buildConfirmDialog(
+                                      _codeActivity.text,
+                                      _codeSampleController.text,
+                                      widget.kodeKegiatanModel.data.eventCode);
                                 }
                               },
                             ),
@@ -160,6 +160,108 @@ class _InputNomorState extends State<InputNomor> {
             ),
           ),
         ));
+  }
+
+  _buildConfirmDialog(String registrationCode, labCode, eventCode) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) => Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.28,
+                child: Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('No Registrasi Anda : '),
+                          Expanded(
+                              child: Text(registrationCode,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Kode Sample : '),
+                          Expanded(
+                              child: Text(labCode,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                          'Pastikan data sudah benar sebelum menekan tombol submit'),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Container(width: MediaQuery.of(context).size.width*0.3,
+                            child: RaisedButton(
+                              splashColor: Colors.lightGreenAccent,
+                              padding: EdgeInsets.all(0.0),
+                              color: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                    fontFamily: FontsFamily.productSans,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                    color: Colors.white),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          Container(width: MediaQuery.of(context).size.width*0.3,
+                            child: RaisedButton(
+                              splashColor: Colors.lightGreenAccent,
+                              padding: EdgeInsets.all(0.0),
+                              color: ColorBase.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                'Submit',
+                                style: TextStyle(
+                                    fontFamily: FontsFamily.productSans,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                    color: Colors.white),
+                              ),
+                              onPressed: () {
+                                _checkinBloc.add(CheckinLoad(
+                                    nomorPendaftaran: registrationCode,
+                                    eventCode: eventCode,
+                                    labCodeSample: labCode));
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ));
   }
 
   Widget buildTextField(

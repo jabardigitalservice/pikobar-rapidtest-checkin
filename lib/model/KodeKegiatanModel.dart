@@ -83,7 +83,7 @@ class Data {
 class Applicants {
   String registrationCode;
   String name;
-  String qrcode;
+  String labCodeSample;
   Event event;
   String approvedAt;
   String invitedAt;
@@ -95,7 +95,7 @@ class Applicants {
   Applicants(
       {this.registrationCode,
       this.name,
-      this.qrcode,
+      this.labCodeSample,
       this.event,
       this.approvedAt,
       this.invitedAt,
@@ -107,7 +107,7 @@ class Applicants {
   Applicants.fromJson(Map<String, dynamic> json) {
     registrationCode = json['registration_code'];
     name = json['name'];
-    qrcode = json['qrcode'];
+    labCodeSample = json['lab_code_sample'];
     event = json['event'] != null ? new Event.fromJson(json['event']) : null;
     approvedAt = json['approved_at'];
     invitedAt = json['invited_at'];
@@ -121,7 +121,7 @@ class Applicants {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['registration_code'] = this.registrationCode;
     data['name'] = this.name;
-    data['qrcode'] = this.qrcode;
+    data['qrcode'] = this.labCodeSample;
     if (this.event != null) {
       data['event'] = this.event.toJson();
     }
