@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class KegiatanDetailRepository {
   Future<CheckinModel> checkNomorPendaftaran(
-      String kode, eventCode, labCodeSample) async {
+      String kode, eventCode, labCodeSample,location) async {
     await Future.delayed(Duration(seconds: 1));
     final response = await http
         .post('${EndPointPath.rdt}/checkin',
@@ -17,7 +17,8 @@ class KegiatanDetailRepository {
             body: json.encode({
               "registration_code": kode,
               "event_code": eventCode,
-              "lab_code_sample": labCodeSample
+              "lab_code_sample": labCodeSample,
+              "location":location
             }))
         .timeout(const Duration(seconds: 10));
 
@@ -95,5 +96,28 @@ class KegiatanDetailRepository {
     final prefs = await SharedPreferences.getInstance();
     // set value
     prefs.remove('activityCode');
+  }
+
+   Future<void> setLocation(String location) async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+    await prefs.setString('location', location);
+    return;
+  }
+
+  Future<String> getLocation() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+
+    return prefs.getString('location');
+  }
+
+  Future<void> clearLocation() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+    prefs.remove('location');
   }
 }

@@ -44,8 +44,10 @@ class KodeKegiatanUnauthenticated extends KodeKegiatanState {
 class KodeKegiatanLoaded extends KodeKegiatanState {
   final KodeKegiatanModel kodeKegiatan;
   final String kodeKegiatanPref;
+  final String location;
 
-  KodeKegiatanLoaded({this.kodeKegiatan,this.kodeKegiatanPref}) : super([kodeKegiatan,kodeKegiatanPref]);
+  KodeKegiatanLoaded({this.kodeKegiatan, this.kodeKegiatanPref, this.location})
+      : super([kodeKegiatan, kodeKegiatanPref, location]);
 
   @override
   String toString() {
@@ -53,13 +55,13 @@ class KodeKegiatanLoaded extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [kodeKegiatan,kodeKegiatanPref];
+  List<Object> get props => [kodeKegiatan, kodeKegiatanPref, location];
 }
 
 class KodeKegiatanFailure extends KodeKegiatanState {
   final String error;
 
-   KodeKegiatanFailure({@required this.error}) : super([error]);
+  KodeKegiatanFailure({@required this.error}) : super([error]);
 
   @override
   String toString() => ' KodeKegiatan { error: $error }';

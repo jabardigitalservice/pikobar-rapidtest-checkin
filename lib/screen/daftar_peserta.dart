@@ -32,7 +32,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
           searchController: _searchController,
           title: 'Daftar Peserta',
           hintText: 'Cari Daftar Peserta',
-          onChanged: updateSearchQuery),
+          onChanged: updateSearchQuery,
+          context: context),
       body: BlocProvider<KodeKegiatanBloc>(
         create: (BuildContext context) => _kodeKegiatanBloc =
             KodeKegiatanBloc(repository: _kegiatanDetailRepository)

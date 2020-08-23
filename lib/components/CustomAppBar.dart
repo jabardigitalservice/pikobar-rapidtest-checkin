@@ -3,7 +3,10 @@ import 'package:rapid_test/constants/Colors.dart';
 
 class CustomAppBar {
   static AppBar defaultAppBar(
-      {Widget leading, @required String title, List<Widget> actions, PreferredSizeWidget bottom}) {
+      {Widget leading,
+      @required String title,
+      List<Widget> actions,
+      PreferredSizeWidget bottom}) {
     return AppBar(
       backgroundColor: ColorBase.green,
       leading: leading,
@@ -16,7 +19,7 @@ class CustomAppBar {
   static AppBar searchAppBar(
       BuildContext context, TextEditingController textController) {
     return AppBar(
-      backgroundColor: ColorBase.green,
+      backgroundColor: Theme.of(context).primaryColor,
       title: Container(
         decoration: BoxDecoration(
             color: Colors.white, borderRadius: BorderRadius.circular(5.0)),
@@ -51,9 +54,15 @@ class CustomAppBar {
     );
   }
 
-  static AppBar bottomSearchAppBar({@required TextEditingController searchController, @required String title, @required String hintText, ValueChanged<String> onChanged}) {
+  static AppBar bottomSearchAppBar(
+      {@required TextEditingController searchController,
+      @required String title,
+      @required String hintText,
+      ValueChanged<String> onChanged,
+      BuildContext context,
+      r}) {
     return AppBar(
-        backgroundColor: ColorBase.green,
+        backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(60.0),
           child: buildSearchField(searchController, hintText, onChanged),
@@ -64,14 +73,15 @@ class CustomAppBar {
   static Text setTitleAppBar(String title) {
     return Text(title,
         style: TextStyle(
-            fontSize: 16.0,
-            fontWeight: FontWeight.w600,
-            ),
+          fontSize: 16.0,
+          fontWeight: FontWeight.w600,
+        ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis);
   }
 
-  static Widget buildSearchField(TextEditingController searchController, String hintText, ValueChanged<String> onChanged) {
+  static Widget buildSearchField(TextEditingController searchController,
+      String hintText, ValueChanged<String> onChanged) {
     return Container(
       margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
       height: 40.0,
@@ -89,12 +99,10 @@ class CustomAppBar {
             ),
             hintText: hintText,
             border: InputBorder.none,
-            hintStyle: TextStyle(
-                color: Color(0xff828282),
-                fontSize: 12,
-                height: 2.2),
+            hintStyle:
+                TextStyle(color: Color(0xff828282), fontSize: 12, height: 2.2),
             contentPadding:
-            EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
+                EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
         style: TextStyle(color: Colors.black, fontSize: 16.0),
         onChanged: onChanged,
       ),

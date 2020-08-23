@@ -17,6 +17,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final _codeActivity = TextEditingController();
+  final _location = TextEditingController();
+
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
   KodeKegiatanBloc _kodeKegiatanBloc;
@@ -34,7 +36,8 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: Text("Tes Masif Checkin")),
       body: BlocProvider<KodeKegiatanBloc>(
         create: (BuildContext context) => _kodeKegiatanBloc =
-            KodeKegiatanBloc(repository: _kegiatanDetailRepository)..add(AppStart()),
+            KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+              ..add(AppStart()),
         child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
           listener: (context, state) {
             if (state is KodeKegiatanFailure) {
@@ -73,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => KegiatanPage(
                             kodeKegiatanModel: kodeKegiatanLoaded.kodeKegiatan,
                           )));
-            }  else {
+            } else {
               Scaffold.of(context).hideCurrentSnackBar();
             }
           },
@@ -103,6 +106,16 @@ class _MyHomePageState extends State<MyHomePage> {
                           validation: Validations.kodeValidation,
                         ),
                         SizedBox(
+                          height: 10,
+                        ),
+                        buildTextField(
+                          title: 'Lokasi',
+                          controller: _location,
+                          hintText: 'Masukan lokasi',
+                          isEdit: true,
+                          validation: Validations.locationValidation,
+                        ),
+                        SizedBox(
                           height: 20,
                         ),
                         Container(
@@ -127,7 +140,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               if (_formKey.currentState.validate()) {
                                 FocusScope.of(context).unfocus();
                                 _kodeKegiatanBloc.add(KodeKegiatanLoad(
-                                    kodeKegiatan: _codeActivity.text));
+                                    kodeKegiatan: _codeActivity.text,
+                                    location: _location.text));
                               }
                             },
                           ),
@@ -177,7 +191,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 : TextStyle(color: Color(0xffBDBDBD)),
             enabled: isEdit,
             validator: validation,
-            textCapitalization: TextCapitalization.none,
+            textCapitalization: TextCapitalization.characters,
             controller: controller,
             decoration: InputDecoration(
                 hintText: hintText,

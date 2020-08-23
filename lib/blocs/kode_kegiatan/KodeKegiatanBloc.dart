@@ -22,9 +22,10 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
 
       try {
         String isLogin = await repository.getActivityCode();
+        String location = await repository.getLocation();
         if (isLogin != null) {
-          
-          yield KodeKegiatanLoaded(kodeKegiatanPref: isLogin);
+          yield KodeKegiatanLoaded(
+              kodeKegiatanPref: isLogin, location: location);
         } else {
           yield KodeKegiatanUnauthenticated();
         }
@@ -37,9 +38,9 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
-      await repository.clearActivityCode();
-          yield KodeKegiatanUnauthenticated();
-        
+        await repository.clearActivityCode();
+        await repository.clearLocation();
+        yield KodeKegiatanUnauthenticated();
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());
       }
@@ -52,9 +53,15 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
         KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(event.kodeKegiatan);
         await repository.setActivityCode(kodeKegiatanModel.data.eventCode);
+        if (event.location!=null) {
+        await repository.setLocation(event.location);
+        }
+        String location = await repository.getLocation();
         String isLogin = await repository.getActivityCode();
         yield KodeKegiatanLoaded(
-            kodeKegiatan: kodeKegiatanModel, kodeKegiatanPref: isLogin);
+            kodeKegiatan: kodeKegiatanModel,
+            kodeKegiatanPref: isLogin,
+            location: location);
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());
       }

@@ -8,6 +8,7 @@ class Environment {
 
   // production
   static String baseUrl = 'https://api.tesmasif.pikobar.jabarprov.go.id/api';
+  static String stagingUrl='https://tesmasif-api.digitalservice.id/api';
 
 
 }

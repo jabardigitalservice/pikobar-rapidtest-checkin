@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/screen/home.dart';
 
@@ -8,10 +7,10 @@ import 'environment/environment/Environment.dart';
 
 void main() {
    FlavorConfig(
-      flavor: Flavor.PRODUCTION,
-      color: ColorBase.green,
+      flavor: Flavor.STAGING,
+      color: Colors.blue,
       values: FlavorValues(
-          baseUrl: Environment.baseUrl,));
+          baseUrl: Environment.stagingUrl,));
   runApp(MyApp());
 }
 
@@ -28,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'PIKOBAR Tes Masif Checkin',
       theme: ThemeData(
-          primaryColor: ColorBase.green,
+          primaryColor: Colors.blue,
           primaryColorBrightness: Brightness.dark,
           fontFamily: FontsFamily.sourceSansPro),
       debugShowCheckedModeBanner: false,

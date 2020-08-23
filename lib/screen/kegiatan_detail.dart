@@ -209,15 +209,28 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         SizedBox(
                           height: 5,
                         ),
+                        // Row(
+                        //   crossAxisAlignment: CrossAxisAlignment.start,
+                        //   children: <Widget>[
+                        //     Text('Tempat : '),
+                        //     Container(
+                        //         width: 300,
+                        //         child: Text(
+                        //             kodeKegiatanModel
+                        //                 .kodeKegiatan.data.eventLocation,
+                        //             style: TextStyle(
+                        //                 fontWeight: FontWeight.bold))),
+                        //   ],
+                        // ),
+                        // SizedBox(
+                        //   height: 5,
+                        // ),
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('Tempat : '),
-                            Container(
-                                width: 300,
-                                child: Text(
-                                    kodeKegiatanModel
-                                        .kodeKegiatan.data.eventLocation,
+                            Text('Tempat Checkin : '),
+                            Expanded(
+                                child: Text(kodeKegiatanModel.location,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],

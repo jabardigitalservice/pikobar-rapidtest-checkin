@@ -16,6 +16,20 @@ class Validations {
     return null;
   }
 
+   static String locationValidation(String val) {
+   
+
+    if (val.isEmpty) return 'Lokasi harus diisi';
+
+    // if (val.length < 4) return Dictionary.errorMinimumName;
+
+    // if (val.length > 255) return Dictionary.errorMaximumName;
+
+    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
+
+    return null;
+  }
+
   static String kodeSampleValidation(String val) {
    
 

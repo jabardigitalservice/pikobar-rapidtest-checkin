@@ -5,8 +5,8 @@ abstract class KodeKegiatanEvent extends Equatable {
 }
 
 class KodeKegiatanLoad extends KodeKegiatanEvent {
-  final String kodeKegiatan;
-  KodeKegiatanLoad({this.kodeKegiatan});
+  final String kodeKegiatan, location;
+  KodeKegiatanLoad({this.kodeKegiatan, this.location});
 
   @override
   String toString() {
@@ -18,8 +18,6 @@ class KodeKegiatanLoad extends KodeKegiatanEvent {
 }
 
 class AppStart extends KodeKegiatanEvent {
-
-
   @override
   String toString() {
     return 'Event KodeKegiatanLoad';
@@ -30,8 +28,6 @@ class AppStart extends KodeKegiatanEvent {
 }
 
 class Logout extends KodeKegiatanEvent {
-
-
   @override
   String toString() {
     return 'Event Logout';
