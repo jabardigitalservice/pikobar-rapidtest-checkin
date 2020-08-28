@@ -1,41 +1,39 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
 import 'package:rapid_test/constants/ErrorException.dart';
-import 'package:rapid_test/constants/HttpHeaders.dart';
 import 'package:rapid_test/model/CheckinModel.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
+import 'package:rapid_test/utilities/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KegiatanDetailRepository {
   Future<CheckinModel> checkNomorPendaftaran(
-      String kode, eventCode, labCodeSample,location) async {
+      String kode, eventCode, labCodeSample, location) async {
+    print('masuk');
     await Future.delayed(Duration(seconds: 1));
-    final response = await http
+    final response = await dio
         .post('${EndPointPath.rdt}/checkin',
-            headers: await HttpHeaders.headers(),
-            body: json.encode({
+            data: json.encode({
               "registration_code": kode,
               "event_code": eventCode,
               "lab_code_sample": labCodeSample,
-              "location":location
+              "location": location
             }))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = response.data;
       CheckinModel record = CheckinModel.fromJson(data);
-      print(data);
       return record;
     } else if (response.statusCode == 401) {
       throw Exception(ErrorException.unauthorizedException);
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      final data = jsonDecode(response.body);
       throw Exception(ErrorException.notFoundUser);
     } else if (response.statusCode == 422) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(response.data);
       throw Exception(data['message']);
     } else {
       throw Exception('Terjadi Kesalahan');
@@ -48,27 +46,24 @@ class KegiatanDetailRepository {
     if (kode == null || kode == '') {
       kodePerf = await getActivityCode();
     }
-    final response = await http
+    Response response = await dio
         .post('${EndPointPath.rdt}/event-check',
-            headers: await HttpHeaders.headers(),
-            body: json.encode(
+            data: json.encode(
                 {"event_code": kode == null || kode == '' ? kodePerf : kode}))
         .timeout(const Duration(seconds: 10));
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      final data = response.data;
       KodeKegiatanModel record = KodeKegiatanModel.fromJson(data);
-      print(data);
       return record;
     } else if (response.statusCode == 401) {
       throw Exception(ErrorException.unauthorizedException);
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      final data = jsonDecode(response.body);
       throw Exception(ErrorException.notFoundEvent);
-    }else if (response.statusCode == 422) {
-      final data = jsonDecode(response.body);
+    } else if (response.statusCode == 422) {
+      final data = jsonDecode(response.data);
       throw Exception(data['message']);
     } else {
       throw Exception('Terjadi Kesalahan');
@@ -98,7 +93,7 @@ class KegiatanDetailRepository {
     prefs.remove('activityCode');
   }
 
-   Future<void> setLocation(String location) async {
+  Future<void> setLocation(String location) async {
     // obtain shared preferences
     final prefs = await SharedPreferences.getInstance();
     // set value
