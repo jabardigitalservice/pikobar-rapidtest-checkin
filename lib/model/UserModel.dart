@@ -1,5 +1,6 @@
 // To parse this JSON data, do
 //
+//     final userModel = userModelFromJson(jsonString);
 
 import 'dart:convert';
 
@@ -10,6 +11,10 @@ class UserModel {
     this.id,
     this.name,
     this.email,
+    this.provinceCode,
+    this.province,
+    this.cityCode,
+    this.city,
     this.role,
     this.permissions,
   });
@@ -17,6 +22,10 @@ class UserModel {
   String id;
   String name;
   String email;
+  dynamic provinceCode;
+  dynamic province;
+  dynamic cityCode;
+  dynamic city;
   String role;
   List<String> permissions;
 
@@ -24,6 +33,10 @@ class UserModel {
         id: json["id"],
         name: json["name"],
         email: json["email"],
+        provinceCode: json["province_code"],
+        province: json["province"],
+        cityCode: json["city_code"],
+        city: json["city"],
         role: json["role"],
         permissions: List<String>.from(json["permissions"].map((x) => x)),
       );
@@ -32,6 +45,10 @@ class UserModel {
         "id": id,
         "name": name,
         "email": email,
+        "province_code": provinceCode,
+        "province": province,
+        "city_code": cityCode,
+        "city": city,
         "role": role,
         "permissions": List<dynamic>.from(permissions.map((x) => x)),
       };

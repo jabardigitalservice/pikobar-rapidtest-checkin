@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 class KegiatanDetailRepository {
   Future<CheckinModel> checkNomorPendaftaran(
       String kode, eventCode, labCodeSample, location) async {
-    print('masuk');
     await Future.delayed(Duration(seconds: 1));
     final response = await dio
         .post('${EndPointPath.rdt}/checkin',

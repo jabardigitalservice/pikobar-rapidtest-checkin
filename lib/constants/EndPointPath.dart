@@ -1,4 +1,3 @@
-
 import 'package:rapid_test/config/FlavorConfig.dart';
 
 class EndPointPath {
@@ -8,6 +7,8 @@ class EndPointPath {
   // static String login = baseUrl + '/user/login';
   // static String logout = baseUrl + '/user/logout';
   // static String profile = baseUrl + '/user/me';
+  static String authToken =
+      'https://keycloak.digitalservice.id/auth/realms/jabarprov/protocol/openid-connect/token';
   static String rdt = baseUrl + '/rdt';
-
+  static String userInfo = baseUrl + '/user';
 }

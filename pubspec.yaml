@@ -37,6 +37,7 @@ dependencies:
   font_awesome_flutter: ^8.7.0
   liquid_pull_to_refresh: ^2.0.0
   dio: ^3.0.10
+  flutter_secure_storage: ^3.3.3
   
 
 dev_dependencies:

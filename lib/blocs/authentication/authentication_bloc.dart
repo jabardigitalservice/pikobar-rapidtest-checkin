@@ -40,14 +40,13 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppLoadedToState(AppLoaded event) async* {
     yield AuthenticationLoading(); // to display splash screen
     try {
-      await Future.delayed(Duration(milliseconds: 500)); // a simulated delay
-      // final currentUser = await _authenticationRepository.userInfo();
+      final currentUser = await _authenticationRepository.userInfo();
 
-      // if (currentUser != null) {
-      //   yield AuthenticationAuthenticated(user: currentUser);
-      // } else {
-      //   yield AuthenticationNotAuthenticated();
-      // }
+      if (currentUser != null) {
+        yield AuthenticationAuthenticated(user: currentUser);
+      } else {
+        yield AuthenticationNotAuthenticated();
+      }
     } catch (e) {
       yield AuthenticationFailure(
           message: e.message ?? 'An unknown error occurred');

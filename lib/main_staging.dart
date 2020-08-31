@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
@@ -60,9 +62,14 @@ class _MyAppState extends State<MyApp> {
         if (state is AuthenticationAuthenticated) {
           // show home page
           return MyHomePage();
+        } else if (state is AuthenticationLoading) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          // otherwise show login page
+          return LoginScreen();
         }
-        // otherwise show login page
-        return LoginScreen();
       }),
       // home: MyHomePage(),
     );

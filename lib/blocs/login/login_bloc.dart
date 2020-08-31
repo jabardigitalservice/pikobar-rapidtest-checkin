@@ -40,7 +40,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (token != null) {
         // get user info
         final user = await _authenticationRepository.userInfo();
-        print(user.toString());
 
         if (user != null) {
           // push new authentication event
