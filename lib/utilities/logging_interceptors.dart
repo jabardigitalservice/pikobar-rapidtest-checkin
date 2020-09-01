@@ -41,12 +41,16 @@ class LoggingInterceptors extends InterceptorsWrapper {
 
   @override
   Future<FutureOr> onError(DioError dioError) async {
+    // logging
+    print(
+        "<-- ${dioError.message} ${(dioError.response?.request != null ? (dioError.response.request.baseUrl + dioError.response.request.path) : 'URL')}");
+    print(
+        "${dioError.response != null ? dioError.response.data : 'Unknown Error'}");
+    print("<-- End error");
+
     if (dioError.response?.statusCode == 401) {
       // dio.interceptors.requestLock.lock();
       // dio.interceptors.responseLock.lock();
-
-      // get refresh token
-      String token = await SecureStore().readValue(key: kRefreshTokenKey);
 
       AuthenticationRepository authenticationRepository =
           AuthenticationRepository();
@@ -54,33 +58,28 @@ class LoggingInterceptors extends InterceptorsWrapper {
       TokenModel refreshToken = await authenticationRepository.refreshToken();
 
       if (refreshToken != null) {
+        // get new access token
+        String token = await SecureStore().readValue(key: kAccessTokenKey);
         RequestOptions options = dioError.response.request;
         options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
+
         // dio.interceptors.requestLock.unlock();
         // dio.interceptors.responseLock.unlock();
 
         return dio.request(options.path, options: options);
       } else {
-        super.onError(dioError);
+        return dioError;
       }
-
-      return dioError;
     }
-
-    // logging
-    print(
-        "<-- ${dioError.message} ${(dioError.response?.request != null ? (dioError.response.request.baseUrl + dioError.response.request.path) : 'URL')}");
-    print(
-        "${dioError.response != null ? dioError.response.data : 'Unknown Error'}");
-    print("<-- End error");
   }
 
   @override
   Future<FutureOr> onResponse(Response response) async {
     print(
         "<-- ${response.statusCode} ${(response.request != null ? (response.request.baseUrl + response.request.path) : 'URL')}");
-    print("Headers:");
-    response.headers?.forEach((k, v) => print('$k: $v'));
+    // get respon header
+    // print("Headers:");
+    // response.headers?.forEach((k, v) => print('$k: $v'));
     print("Response: ${response.data}");
     print("<-- END HTTP");
   }

@@ -16,11 +16,6 @@ class SecureStore {
     await storage.write(key: key, value: value);
   }
 
-  // deleteOne({@required key}) async {
-  //   // Delete value
-  //   await storage.delete(key: key);
-  // }
-
   // delete all
   deleteAll() async {
     await storage.deleteAll();

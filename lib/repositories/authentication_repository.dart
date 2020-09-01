@@ -57,9 +57,6 @@ class AuthenticationRepository {
       final data = response.data;
       TokenModel record = TokenModel.fromJson(data);
 
-      // // delete access token from storage
-      // await SecureStore().deleteOne(key: kAccessTokenKey);
-
       // replace token to secure storage
       await SecureStore()
           .writeValue(key: kAccessTokenKey, value: record.accessToken);
