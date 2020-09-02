@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:rapid_test/constants/ErrorException.dart';
+import 'package:rapid_test/constants/route_paths.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/model/TokenModel.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/utilities/http.dart';
+import 'package:rapid_test/utilities/navigation_service.dart';
 import 'package:rapid_test/utilities/secure_store.dart';
 
 class LoggingInterceptors extends InterceptorsWrapper {
@@ -69,6 +72,19 @@ class LoggingInterceptors extends InterceptorsWrapper {
         return dio.request(options.path, options: options);
       } else {
         return dioError;
+      }
+    }
+
+    if (dioError.response?.statusCode == 400) {
+      final response = dioError.response?.data;
+      final errorMessage = response['error'];
+
+      if (errorMessage == ErrorException.invalidGrant) {
+        // delete all storages
+        await SecureStore().deleteAll();
+
+        navService.pushNamed(kLoginRoute,
+            args: 'Session Anda habis, silahkan Login kembali');
       }
     }
   }

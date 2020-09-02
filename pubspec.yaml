@@ -38,6 +38,7 @@ dependencies:
   liquid_pull_to_refresh: ^2.0.0
   dio: ^3.0.10
   flutter_secure_storage: ^3.3.3
+  no_context_navigation: ^1.0.2
   
 
 dev_dependencies:

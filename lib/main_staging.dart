@@ -9,6 +9,8 @@ import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/http.dart'; // make dio as global variable
 import 'package:rapid_test/utilities/logging_interceptors.dart';
+import 'package:rapid_test/utilities/navigation_service.dart';
+import 'package:rapid_test/config/router.dart' as router;
 
 import 'config/FlavorConfig.dart';
 import 'environment/environment/Environment.dart';
@@ -57,6 +59,8 @@ class _MyAppState extends State<MyApp> {
           primaryColorBrightness: Brightness.dark,
           fontFamily: FontsFamily.sourceSansPro),
       debugShowCheckedModeBanner: false,
+      navigatorKey: NavigationService.navigationKey,
+      onGenerateRoute: router.generateRoute,
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
         if (state is AuthenticationAuthenticated) {

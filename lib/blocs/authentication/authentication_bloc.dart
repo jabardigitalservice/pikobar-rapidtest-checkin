@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/model/UserModel.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
+import 'package:rapid_test/utilities/secure_store.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -40,10 +42,15 @@ class AuthenticationBloc
   Stream<AuthenticationState> _mapAppLoadedToState(AppLoaded event) async* {
     yield AuthenticationLoading(); // to display splash screen
     try {
-      final currentUser = await _authenticationRepository.userInfo();
+      // get access token
+      String accessToken = await SecureStore().readValue(key: kAccessTokenKey);
 
-      if (currentUser != null) {
-        yield AuthenticationAuthenticated(user: currentUser);
+      if (accessToken != null) {
+        final currentUser = await _authenticationRepository.userInfo();
+
+        if (currentUser != null) {
+          yield AuthenticationAuthenticated(user: currentUser);
+        }
       } else {
         yield AuthenticationNotAuthenticated();
       }

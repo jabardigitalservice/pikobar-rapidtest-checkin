@@ -40,7 +40,7 @@ class AuthenticationRepository {
   }
 
   Future<TokenModel> refreshToken() async {
-    // add token
+    // get refresh token
     String refreshToken = await SecureStore().readValue(key: kRefreshTokenKey);
 
     try {

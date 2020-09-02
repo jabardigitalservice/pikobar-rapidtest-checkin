@@ -24,7 +24,7 @@ class LoginScreen extends StatelessWidget {
 
 class LoginForm extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => new _State();
+  State<StatefulWidget> createState() => _State();
 }
 
 class _State extends State<LoginForm> {
