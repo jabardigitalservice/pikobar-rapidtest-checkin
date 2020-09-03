@@ -14,12 +14,12 @@ class AuthenticationLoading extends AuthenticationState {}
 class AuthenticationNotAuthenticated extends AuthenticationState {}
 
 class AuthenticationAuthenticated extends AuthenticationState {
-  final UserModel user;
+  final accessToken;
 
-  AuthenticationAuthenticated({@required this.user});
+  AuthenticationAuthenticated({@required this.accessToken});
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => [accessToken];
 }
 
 class AuthenticationFailure extends AuthenticationState {

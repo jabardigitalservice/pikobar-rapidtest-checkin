@@ -46,11 +46,7 @@ class AuthenticationBloc
       String accessToken = await SecureStore().readValue(key: kAccessTokenKey);
 
       if (accessToken != null) {
-        final currentUser = await _authenticationRepository.userInfo();
-
-        if (currentUser != null) {
-          yield AuthenticationAuthenticated(user: currentUser);
-        }
+        yield AuthenticationAuthenticated(accessToken: accessToken);
       } else {
         yield AuthenticationNotAuthenticated();
       }
@@ -62,7 +58,7 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapUserLoggedInToState(
       UserLoggedIn event) async* {
-    yield AuthenticationAuthenticated(user: event.user);
+    yield AuthenticationAuthenticated(accessToken: event.accessToken);
   }
 
   Stream<AuthenticationState> _mapUserLoggedOutToState(

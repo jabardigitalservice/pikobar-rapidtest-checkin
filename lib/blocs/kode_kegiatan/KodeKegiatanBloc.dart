@@ -18,6 +18,7 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
     KodeKegiatanEvent event,
   ) async* {
     if (event is AppStart) {
+      print('test test');
       yield KodeKegiatanLoading();
 
       try {
@@ -53,8 +54,8 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
         KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(event.kodeKegiatan);
         await repository.setActivityCode(kodeKegiatanModel.data.eventCode);
-        if (event.location!=null) {
-        await repository.setLocation(event.location);
+        if (event.location != null) {
+          await repository.setLocation(event.location);
         }
         String location = await repository.getLocation();
         String isLogin = await repository.getActivityCode();

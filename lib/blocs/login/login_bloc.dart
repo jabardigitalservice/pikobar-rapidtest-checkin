@@ -38,15 +38,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       final token = await _authenticationRepository.loginUser(
           event.username, event.password);
       if (token != null) {
-        // get user info
-        final user = await _authenticationRepository.userInfo();
+        // push new authentication event
+        _authenticationBloc.add(UserLoggedIn(accessToken: token.accessToken));
 
-        if (user != null) {
-          // push new authentication event
-          _authenticationBloc.add(UserLoggedIn(user: user));
-        } else {
-          yield LoginFailure(error: 'Something very weird just happened');
-        }
         yield LoginSuccess();
         yield LoginInitial();
       } else {

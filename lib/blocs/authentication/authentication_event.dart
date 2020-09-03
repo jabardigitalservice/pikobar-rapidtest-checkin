@@ -12,12 +12,12 @@ class AppLoaded extends AuthenticationEvent {}
 
 // Fired when a user has successfully logged in
 class UserLoggedIn extends AuthenticationEvent {
-  final UserModel user;
+  final accessToken;
 
-  UserLoggedIn({@required this.user});
+  UserLoggedIn({@required this.accessToken});
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => [accessToken];
 }
 
 // Fired when the user has logged out
