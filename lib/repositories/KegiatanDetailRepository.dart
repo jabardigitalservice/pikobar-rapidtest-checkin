@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class KegiatanDetailRepository {
   Future<CheckinModel> checkNomorPendaftaran(
-      String kode, eventCode, labCodeSample,location) async {
+      String kode, eventCode, labCodeSample, location) async {
     await Future.delayed(Duration(seconds: 1));
     final response = await http
         .post('${EndPointPath.rdt}/checkin',
@@ -18,9 +18,9 @@ class KegiatanDetailRepository {
               "registration_code": kode,
               "event_code": eventCode,
               "lab_code_sample": labCodeSample,
-              "location":location
+              "location": location
             }))
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -32,7 +32,6 @@ class KegiatanDetailRepository {
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      final data = jsonDecode(response.body);
       throw Exception(ErrorException.notFoundUser);
     } else if (response.statusCode == 422) {
       final data = jsonDecode(response.body);
@@ -53,7 +52,7 @@ class KegiatanDetailRepository {
             headers: await HttpHeaders.headers(),
             body: json.encode(
                 {"event_code": kode == null || kode == '' ? kodePerf : kode}))
-        .timeout(const Duration(seconds: 10));
+        .timeout(const Duration(seconds: 15));
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -65,9 +64,37 @@ class KegiatanDetailRepository {
     } else if (response.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);
     } else if (response.statusCode == 404) {
-      final data = jsonDecode(response.body);
       throw Exception(ErrorException.notFoundEvent);
-    }else if (response.statusCode == 422) {
+    } else if (response.statusCode == 422) {
+      final data = jsonDecode(response.body);
+      throw Exception(data['message']);
+    } else {
+      throw Exception('Terjadi Kesalahan');
+    }
+  }
+
+  Future<Map<String,dynamic>> getName(
+      String registrationCode) async {
+    await Future.delayed(Duration(seconds: 1));
+    final response = await http
+        .post('${EndPointPath.baseUrl}/checkin/applicant-profile',
+            headers: await HttpHeaders.headers(),
+            body: json.encode({
+              "registration_code": registrationCode
+            }))
+        .timeout(const Duration(seconds: 15));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      return data;
+    } else if (response.statusCode == 401) {
+      throw Exception(ErrorException.unauthorizedException);
+    } else if (response.statusCode == 408) {
+      throw Exception(ErrorException.timeoutException);
+    } else if (response.statusCode == 404) {
+      throw Exception(ErrorException.notFoundUser);
+    } else if (response.statusCode == 422) {
       final data = jsonDecode(response.body);
       throw Exception(data['message']);
     } else {
@@ -98,7 +125,7 @@ class KegiatanDetailRepository {
     prefs.remove('activityCode');
   }
 
-   Future<void> setLocation(String location) async {
+  Future<void> setLocation(String location) async {
     // obtain shared preferences
     final prefs = await SharedPreferences.getInstance();
     // set value

@@ -58,14 +58,14 @@ class CustomAppBar {
       {@required TextEditingController searchController,
       @required String title,
       @required String hintText,
-      ValueChanged<String> onChanged,
+      ValueChanged<String> onChanged,ValueChanged<String> onSubmitted,
       BuildContext context,
       r}) {
     return AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(60.0),
-          child: buildSearchField(searchController, hintText, onChanged),
+          child: buildSearchField(searchController, hintText, onChanged,onSubmitted),
         ),
         title: CustomAppBar.setTitleAppBar(title));
   }
@@ -81,7 +81,7 @@ class CustomAppBar {
   }
 
   static Widget buildSearchField(TextEditingController searchController,
-      String hintText, ValueChanged<String> onChanged) {
+      String hintText, ValueChanged<String> onChanged,ValueChanged<String> onSubmitted) {
     return Container(
       margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
       height: 40.0,
@@ -104,7 +104,7 @@ class CustomAppBar {
             contentPadding:
                 EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
         style: TextStyle(color: Colors.black, fontSize: 16.0),
-        onChanged: onChanged,
+        onChanged: onChanged,onSubmitted: onSubmitted,
       ),
     );
   }

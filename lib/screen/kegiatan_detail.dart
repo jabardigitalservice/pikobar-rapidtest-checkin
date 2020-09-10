@@ -11,6 +11,7 @@ import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogRequestPermission.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/ErrorException.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
@@ -95,7 +96,6 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             )
                           ],
                         ),
-                        duration: Duration(seconds: 5),
                       ),
                     );
                   } else if (state is CheckinLoaded) {
@@ -115,6 +115,14 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               },
                             ));
                     Scaffold.of(context).hideCurrentSnackBar();
+                  } else if (state is GetNameLoaded) {
+                    GetNameLoaded getNameLoaded = state as GetNameLoaded;
+                    _buildConfirmDialog(
+                        getNameLoaded.registrationCode,
+                        getNameLoaded.labCode,
+                        getNameLoaded.eventCode,
+                        getNameLoaded.name);
+                    Scaffold.of(context).hideCurrentSnackBar();
                   } else {
                     Scaffold.of(context).hideCurrentSnackBar();
                   }
@@ -130,25 +138,18 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               onOkPressed: () {
                                 Navigator.of(context)
                                     .pop(); // To close the dialog
+                                if (state.error
+                                        .toString()
+                                        .contains('sudah berakhir') ||
+                                    state.error.toString().contains(
+                                        ErrorException.notFoundEvent)) {
+                                  _kodeKegiatanBloc.add(Logout());
+                                } else {
+                                  _kodeKegiatanBloc.add(KodeKegiatanLoad());
+                                }
                               },
                             ));
                     Scaffold.of(context).hideCurrentSnackBar();
-                  } else if (state is KodeKegiatanLoading) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        content: Row(
-                          children: <Widget>[
-                            CircularProgressIndicator(),
-                            Container(
-                              margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
-                            )
-                          ],
-                        ),
-                        duration: Duration(seconds: 5),
-                      ),
-                    );
                   } else if (state is KodeKegiatanUnauthenticated) {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => MyHomePage()));
@@ -161,12 +162,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                 BuildContext context,
                 KodeKegiatanState state,
               ) {
-                if (state is InitialKodeKegiatanState ||
-                    state is KodeKegiatanLoading ||
-                    state is KodeKegiatanFailure ||
-                    state is KodeKegiatanUnauthenticated) {
-                  return Container();
-                } else if (state is KodeKegiatanLoaded) {
+                if (state is KodeKegiatanLoaded) {
                   KodeKegiatanLoaded kodeKegiatanModel =
                       state as KodeKegiatanLoaded;
 
@@ -243,96 +239,89 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             BuildContext context,
                             CheckinState state,
                           ) {
-                            if (state is InitialCheckinState ||
-                                state is CheckinLoading ||
-                                state is CheckinFailure ||
-                                state is CheckinLoaded) {
-                              return Column(
-                                children: <Widget>[
-                                  InkWell(
-                                    onTap: () async {
-                                      var permissionService = Permission.camera;
-                                      if (await permissionService
-                                          .status.isGranted) {
-                                        barcodeScan(kodeKegiatanModel);
-                                      } else {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                DialogRequestPermission(
-                                                  image: Image.asset(
-                                                    '${Environment.iconAssets}map_pin.png',
-                                                    fit: BoxFit.contain,
-                                                    color: Colors.white,
-                                                  ),
-                                                  description:
-                                                      'Untuk scan QR Code izinkan mengakses kamera',
-                                                  onOkPressed: () async {
-                                                    Navigator.of(context).pop();
-                                                    if (await permissionService
-                                                        .status.isDenied) {
-                                                      await AppSettings
-                                                          .openLocationSettings();
-                                                    } else {
-                                                      permissionService
-                                                          .request()
-                                                          .then((status) {
-                                                        _onStatusRequested(
-                                                            context,
-                                                            status,
-                                                            kodeKegiatanModel);
-                                                      });
-                                                    }
-                                                  },
-                                                  onCancelPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ));
-                                      }
-                                    },
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration:
-                                          BoxDecoration(color: Colors.green),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Text('Scan QR Code',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
+                            return Column(
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () async {
+                                    var permissionService = Permission.camera;
+                                    if (await permissionService
+                                        .status.isGranted) {
+                                      barcodeScan(kodeKegiatanModel);
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              DialogRequestPermission(
+                                                image: Image.asset(
+                                                  '${Environment.iconAssets}map_pin.png',
+                                                  fit: BoxFit.contain,
+                                                  color: Colors.white,
+                                                ),
+                                                description:
+                                                    'Untuk scan QR Code izinkan mengakses kamera',
+                                                onOkPressed: () async {
+                                                  Navigator.of(context).pop();
+                                                  if (await permissionService
+                                                      .status.isDenied) {
+                                                    await AppSettings
+                                                        .openLocationSettings();
+                                                  } else {
+                                                    permissionService
+                                                        .request()
+                                                        .then((status) {
+                                                      _onStatusRequested(
+                                                          context,
+                                                          status,
+                                                          kodeKegiatanModel);
+                                                    });
+                                                  }
+                                                },
+                                                onCancelPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ));
+                                    }
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration:
+                                        BoxDecoration(color: Colors.green),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Text('Scan QR Code',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => InputNomor(
-                                                    kodeKegiatanModel:
-                                                        kodeKegiatanModel
-                                                            .kodeKegiatan,
-                                                  )));
-                                    },
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration:
-                                          BoxDecoration(color: Colors.green),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Text('Input Nomor Pendaftaran',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => InputNomor(
+                                                  kodeKegiatanModel:
+                                                      kodeKegiatanModel
+                                                          .kodeKegiatan,
+                                                )));
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration:
+                                        BoxDecoration(color: Colors.green),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Text('Input Nomor Pendaftaran',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
-                                  )
-                                ],
-                              );
-                            } else {
-                              return Container();
-                            }
+                                  ),
+                                )
+                              ],
+                            );
                           },
                         ),
                         SizedBox(
@@ -370,6 +359,8 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       ],
                     ),
                   ));
+                } else {
+                  return Center(child: CircularProgressIndicator());
                 }
               }),
             ),
@@ -448,11 +439,11 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
                                 FocusScope.of(context).unfocus();
-                                _buildConfirmDialog(
-                                    barcode.rawContent,
-                                    _codeSampleController.text,
-                                    kodeKegiatanModel
-                                        .kodeKegiatan.data.eventCode);
+                                _checkinBloc.add(GetNameLoad(
+                                    registrationCode: barcode.rawContent,
+                                    eventCode: kodeKegiatanModel
+                                        .kodeKegiatan.data.eventCode,
+                                    labCode: _codeSampleController.text));
                               }
                             },
                           ),
@@ -465,7 +456,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
     }
   }
 
-  _buildConfirmDialog(String registrationCode, labCode, eventCode) {
+  _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
         context: context,
         builder: (BuildContext context) => Dialog(
@@ -479,6 +470,19 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Nama : '),
+                          Expanded(
+                              child: Text(name,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[

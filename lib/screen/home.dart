@@ -64,7 +64,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                     ],
                   ),
-                  duration: Duration(seconds: 5),
                 ),
               );
             } else if (state is KodeKegiatanLoaded) {

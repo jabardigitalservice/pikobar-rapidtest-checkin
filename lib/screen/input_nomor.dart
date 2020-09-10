@@ -59,7 +59,6 @@ class _InputNomorState extends State<InputNomor> {
                         )
                       ],
                     ),
-                    duration: Duration(seconds: 5),
                   ),
                 );
               } else if (state is CheckinLoaded) {
@@ -78,7 +77,15 @@ class _InputNomorState extends State<InputNomor> {
                           },
                         ));
                 Scaffold.of(context).hideCurrentSnackBar();
-              } else {
+              }else if (state is GetNameLoaded) {
+                    GetNameLoaded getNameLoaded = state as GetNameLoaded;
+                    _buildConfirmDialog(
+                        getNameLoaded.registrationCode,
+                        getNameLoaded.labCode,
+                        getNameLoaded.eventCode,
+                        getNameLoaded.name);
+                    Scaffold.of(context).hideCurrentSnackBar();
+                  } else {
                 Scaffold.of(context).hideCurrentSnackBar();
               }
             },
@@ -87,10 +94,7 @@ class _InputNomorState extends State<InputNomor> {
                 BuildContext context,
                 CheckinState state,
               ) {
-                if (state is InitialCheckinState ||
-                    state is CheckinLoading ||
-                    state is CheckinFailure ||
-                    state is CheckinLoaded) {
+               
                   return Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: Form(
@@ -141,10 +145,10 @@ class _InputNomorState extends State<InputNomor> {
                               onPressed: () {
                                 if (_formKey.currentState.validate()) {
                                   FocusScope.of(context).unfocus();
-                                  _buildConfirmDialog(
-                                      _codeActivity.text,
-                                      _codeSampleController.text,
-                                      widget.kodeKegiatanModel.data.eventCode);
+                                   _checkinBloc.add(GetNameLoad(
+                                    registrationCode: _codeActivity.text,
+                                    eventCode: widget.kodeKegiatanModel.data.eventCode,
+                                    labCode: _codeSampleController.text));
                                 }
                               },
                             ),
@@ -153,16 +157,14 @@ class _InputNomorState extends State<InputNomor> {
                       ),
                     ),
                   );
-                } else {
-                  return Container();
-                }
+                
               },
             ),
           ),
         ));
   }
 
-  _buildConfirmDialog(String registrationCode, labCode, eventCode) {
+  _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
         context: context,
         builder: (BuildContext context) => Dialog(
@@ -176,6 +178,19 @@ class _InputNomorState extends State<InputNomor> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Nama : '),
+                          Expanded(
+                              child: Text(name,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -210,7 +225,8 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: <Widget>[
-                          Container(width: MediaQuery.of(context).size.width*0.3,
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
                               padding: EdgeInsets.all(0.0),
@@ -231,7 +247,8 @@ class _InputNomorState extends State<InputNomor> {
                               },
                             ),
                           ),
-                          Container(width: MediaQuery.of(context).size.width*0.3,
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
                               padding: EdgeInsets.all(0.0),

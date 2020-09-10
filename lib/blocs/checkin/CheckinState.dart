@@ -35,6 +35,20 @@ class CheckinLoaded extends CheckinState {
   List<Object> get props => [checkinModel];
 }
 
+class GetNameLoaded extends CheckinState {
+  final String name,registrationCode, labCode, eventCode;
+
+  GetNameLoaded({this.name,this.registrationCode,this.labCode,this.eventCode}) : super([name]);
+
+  @override
+  String toString() {
+    return 'State CheckinLoaded';
+  }
+
+  @override
+  List<Object> get props => [name,registrationCode,labCode,eventCode];
+}
+
 class  CheckinFailure extends  CheckinState {
   final String error;
 
