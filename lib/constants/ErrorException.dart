@@ -8,6 +8,6 @@ class ErrorException {
   static String emptyList = 'EmptyList';
   static String notFound = 'NotFound';
   static String notFoundUser = 'Peserta tidak terdaftar di Event';
-  static String notFoundEvent = 'Event tidak ditemukan';
+  static String notFoundEvent = 'Event/Peserta tidak ditemukan';
   static String invalidGrant = 'invalid_grant';
 }

@@ -11,31 +11,21 @@ class KegiatanDetailRepository {
   Future<CheckinModel> checkNomorPendaftaran(
       String kode, eventCode, labCodeSample, location) async {
     await Future.delayed(Duration(seconds: 1));
-    final response = await dio
-        .post('${EndPointPath.rdt}/checkin',
-            data: json.encode({
-              "registration_code": kode,
-              "event_code": eventCode,
-              "lab_code_sample": labCodeSample,
-              "location": location
-            }))
-        .timeout(const Duration(seconds: 10));
-
-    if (response.statusCode == 200) {
+    try {
+      final response = await dio
+          .post('${EndPointPath.rdt}/checkin',
+              data: json.encode({
+                "registration_code": kode,
+                "event_code": eventCode,
+                "lab_code_sample": labCodeSample,
+                "location": location
+              }))
+          .timeout(const Duration(seconds: 15));
       final data = response.data;
       CheckinModel record = CheckinModel.fromJson(data);
       return record;
-    } else if (response.statusCode == 401) {
-      throw Exception(ErrorException.unauthorizedException);
-    } else if (response.statusCode == 408) {
-      throw Exception(ErrorException.timeoutException);
-    } else if (response.statusCode == 404) {
-      throw Exception(ErrorException.notFoundUser);
-    } else if (response.statusCode == 422) {
-      final data = jsonDecode(response.data);
-      throw Exception(data['message']);
-    } else {
-      throw Exception('Terjadi Kesalahan');
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
@@ -45,27 +35,32 @@ class KegiatanDetailRepository {
     if (kode == null || kode == '') {
       kodePerf = await getActivityCode();
     }
-    Response response = await dio
-        .post('${EndPointPath.rdt}/event-check',
-            data: json.encode(
-                {"event_code": kode == null || kode == '' ? kodePerf : kode}))
-        .timeout(const Duration(seconds: 10));
-
-    if (response.statusCode == 200) {
+    try {
+      Response response = await dio
+          .post('${EndPointPath.rdt}/event-check',
+              data: json.encode(
+                  {"event_code": kode == null || kode == '' ? kodePerf : kode}))
+          .timeout(const Duration(seconds: 15));
       final data = response.data;
       KodeKegiatanModel record = KodeKegiatanModel.fromJson(data);
       return record;
-    } else if (response.statusCode == 401) {
-      throw Exception(ErrorException.unauthorizedException);
-    } else if (response.statusCode == 408) {
-      throw Exception(ErrorException.timeoutException);
-    } else if (response.statusCode == 404) {
-      throw Exception(ErrorException.notFoundEvent);
-    } else if (response.statusCode == 422) {
-      final data = jsonDecode(response.data);
-      throw Exception(data['message']);
-    } else {
-      throw Exception('Terjadi Kesalahan');
+    } catch (e) {
+      throw Exception(e);
+    }
+  }
+
+  Future<Map<String, dynamic>> getName(String registrationCode) async {
+    await Future.delayed(Duration(seconds: 1));
+    try {
+      Response response = await dio
+          .post('${EndPointPath.baseUrl}/checkin/applicant-profile',
+              data: json.encode({"registration_code": registrationCode}))
+          .timeout(const Duration(seconds: 15));
+      final data = response.data;
+      print(data);
+      return data;
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
@@ -113,5 +108,32 @@ class KegiatanDetailRepository {
     final prefs = await SharedPreferences.getInstance();
     // set value
     prefs.remove('location');
+  }
+
+  Future<void> setIsFromLogin(bool isFromLogin) async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+    await prefs.setBool('IsFromLogin', isFromLogin);
+    return;
+  }
+
+  Future<bool> getIsFromLogin() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+    bool temp = prefs.getBool('IsFromLogin');
+    if (temp == null) {
+      return true;
+    } else {
+      return prefs.getBool('IsFromLogin');
+    }
+  }
+
+  Future<void> clearIsFromLogin() async {
+    // obtain shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    // set value
+    prefs.remove('IsFromLogin');
   }
 }

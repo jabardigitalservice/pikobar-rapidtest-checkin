@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/blocs/account_profile/account_profile_bloc.dart';
+import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
@@ -11,6 +12,9 @@ import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
+import 'package:countdown_flutter/countdown_flutter.dart';
+
+import 'login_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
@@ -30,6 +34,8 @@ class _MyHomePageState extends State<MyHomePage> {
   // init bloc
   AccountProfileBloc _accountProfileBloc;
   KodeKegiatanBloc _kodeKegiatanBloc;
+  AuthenticationBloc _authenticationBloc;
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -57,52 +63,67 @@ class _MyHomePageState extends State<MyHomePage> {
                   KodeKegiatanBloc(repository: _kegiatanDetailRepository)
                     ..add(AppStart()),
             ),
+
+            // bloc auth
+            BlocProvider<AuthenticationBloc>(
+                create: (BuildContext context) => _authenticationBloc =
+                    AuthenticationBloc(_authenticationRepository)),
           ],
-          child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
-              listener: (context, state) {
-                if (state is KodeKegiatanFailure) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
-                            buttonText: "OK",
-                            onOkPressed: () {
-                              Navigator.of(context)
-                                  .pop(); // To close the dialog
-                            },
-                          ));
-                  Scaffold.of(context).hideCurrentSnackBar();
-                } else if (state is KodeKegiatanLoading) {
-                  Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                      backgroundColor: Theme.of(context).primaryColor,
-                      content: Row(
-                        children: <Widget>[
-                          CircularProgressIndicator(),
-                          Container(
-                            margin: EdgeInsets.only(left: 15.0),
-                            child: Text('Tunggu Sebentar'),
-                          )
-                        ],
+          child: BlocListener<AuthenticationBloc, AuthenticationState>(
+            listener: (context, state) {
+              if (state is AuthenticationNotAuthenticated) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              }
+            },
+            child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
+                listener: (context, state) {
+                  if (state is KodeKegiatanFailure) {
+                    if (state.error.toString().contains('Token Expired')) {
+                      _authenticationBloc.add(UserLoggedOut());
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) => DialogTextOnly(
+                              description: state.error.toString(),
+                              buttonText: "OK",
+                              onOkPressed: () {
+                                Navigator.of(context)
+                                    .pop(); // To close the dialog
+                              }));
+                    }
+                    Scaffold.of(context).hideCurrentSnackBar();
+                  } else if (state is KodeKegiatanLoading) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        content: Row(
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                            Container(
+                              margin: EdgeInsets.only(left: 15.0),
+                              child: Text('Tunggu Sebentar'),
+                            )
+                          ],
+                        ),
                       ),
-                      duration: Duration(seconds: 5),
-                    ),
-                  );
-                } else if (state is KodeKegiatanLoaded) {
-                  KodeKegiatanLoaded kodeKegiatanLoaded =
-                      state as KodeKegiatanLoaded;
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => KegiatanPage(
-                                kodeKegiatanModel:
-                                    kodeKegiatanLoaded.kodeKegiatan,
-                              )));
-                } else {
-                  Scaffold.of(context).hideCurrentSnackBar();
-                }
-              },
-              child: _buildContent()),
+                    );
+                  } else if (state is KodeKegiatanLoaded) {
+                    KodeKegiatanLoaded kodeKegiatanLoaded =
+                        state as KodeKegiatanLoaded;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => KegiatanPage(
+                                  kodeKegiatanModel:
+                                      kodeKegiatanLoaded.kodeKegiatan,
+                                )));
+                  } else {
+                    Scaffold.of(context).hideCurrentSnackBar();
+                  }
+                },
+                child: _buildContent()),
+          ),
         ));
   }
 
@@ -125,20 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  BlocBuilder<AccountProfileBloc, AccountProfileState>(
-                    builder: (context, state) => state is AccountProfileLoading
-                        ? Center(
-                            child: CircularProgressIndicator(),
-                          )
-                        : state is AccountProfileLoaded
-                            ? Center(
-                                child: Text(
-                                state.user.name,
-                                style: TextStyle(fontSize: 18),
-                              ))
-                            : Container(),
-                  ),
-                  SizedBox(height: 25),
                   buildTextField(
                     title: 'Kode Kegiatan',
                     controller: _codeActivity,
@@ -182,11 +189,28 @@ class _MyHomePageState extends State<MyHomePage> {
                           FocusScope.of(context).unfocus();
                           _kodeKegiatanBloc.add(KodeKegiatanLoad(
                               kodeKegiatan: _codeActivity.text,
-                              location: _location.text));
+                              location: _location.text,
+                              isFromLogin: false));
                         }
                       },
                     ),
-                  )
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()));
+                      },
+                      child: Center(
+                        child: Text(
+                          'Kembali Ke Login',
+                          style: TextStyle(color: Colors.blue),
+                        ),
+                      ))
                 ],
               ),
             ),

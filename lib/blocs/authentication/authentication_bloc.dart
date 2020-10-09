@@ -63,7 +63,9 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapUserLoggedOutToState(
       UserLoggedOut event) async* {
-    // await _authenticationRepository.signOut();
+    await _authenticationRepository.clearActivityCode();
+    await _authenticationRepository.deleteTokens();
+    await _authenticationRepository.clearIsFromLogin();
     yield AuthenticationNotAuthenticated();
   }
 }

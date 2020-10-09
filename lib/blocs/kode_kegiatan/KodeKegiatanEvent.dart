@@ -6,7 +6,8 @@ abstract class KodeKegiatanEvent extends Equatable {
 
 class KodeKegiatanLoad extends KodeKegiatanEvent {
   final String kodeKegiatan, location;
-  KodeKegiatanLoad({this.kodeKegiatan, this.location});
+  final bool isFromLogin;
+  KodeKegiatanLoad({this.kodeKegiatan, this.location, this.isFromLogin});
 
   @override
   String toString() {

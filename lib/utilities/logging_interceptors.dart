@@ -6,6 +6,7 @@ import 'package:rapid_test/constants/ErrorException.dart';
 import 'package:rapid_test/constants/route_paths.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/model/TokenModel.dart';
+import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/utilities/http.dart';
 import 'package:rapid_test/utilities/navigation_service.dart';
@@ -14,15 +15,48 @@ import 'package:rapid_test/utilities/secure_store.dart';
 class LoggingInterceptors extends InterceptorsWrapper {
   @override
   Future<FutureOr> onRequest(RequestOptions options) async {
-    dio.interceptors.requestLock.lock();
+    KegiatanDetailRepository kegiatanDetailRepository =
+        KegiatanDetailRepository();
+    bool isFromLogin = await kegiatanDetailRepository.getIsFromLogin();
+    print(isFromLogin);
+    if (isFromLogin) {
+      AuthenticationRepository authenticationRepository =
+          AuthenticationRepository();
+      bool isGetRefreshToken = await authenticationRepository.getisRefresh();
+      print('Mengambil refresh token : $isGetRefreshToken');
+      if (isGetRefreshToken) {
+        dio.interceptors.requestLock.lock();
+        String token = await SecureStore().readValue(key: kAccessTokenKey);
+        if (token != null) {
+          options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
+        }
+        dio.interceptors.requestLock.unlock();
+      } else {
+        dio.interceptors.requestLock.lock();
 
-    // get access token
-    String token = await SecureStore().readValue(key: kAccessTokenKey);
-    if (token != null) {
-      options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
+        bool hasToken = await authenticationRepository.hasTokens();
+
+        print('Sudah login :$hasToken');
+        if (hasToken) {
+          if (await authenticationRepository.isTokenExpired()) {
+            print('expired');
+            dio.interceptors.requestLock.unlock();
+
+            // await SecureStore().deleteAll();
+
+            // navService.pushReplacementNamed(kLoginRoute,
+            //     args: 'Session Anda habis, silahkan Login kembali');
+            throw Exception('Token Expired');
+          }
+        }
+
+        String token = await SecureStore().readValue(key: kAccessTokenKey);
+        if (token != null) {
+          options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
+        }
+        dio.interceptors.requestLock.unlock();
+      }
     }
-
-    dio.interceptors.requestLock.unlock();
 
     // logging
     print(
@@ -50,43 +84,58 @@ class LoggingInterceptors extends InterceptorsWrapper {
     print(
         "${dioError.response != null ? dioError.response.data : 'Unknown Error'}");
     print("<-- End error");
+    AuthenticationRepository authenticationRepository =
+        AuthenticationRepository();
+    authenticationRepository.setisRefresh(false);
 
+    // if (dioError.response?.statusCode == 401) {
+    // dio.interceptors.requestLock.lock();
+    // dio.interceptors.responseLock.lock();
+
+    // AuthenticationRepository authenticationRepository =
+    //     AuthenticationRepository();
+
+    // TokenModel refreshToken = await authenticationRepository.refreshToken();
+
+    // if (refreshToken != null) {
+    //   // get new access token
+    //   String token = await SecureStore().readValue(key: kAccessTokenKey);
+    //   RequestOptions options = dioError.response.request;
+    //   options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
+
+    //   // dio.interceptors.requestLock.unlock();
+    //   // dio.interceptors.responseLock.unlock();
+
+    //   return dio.request(options.path, options: options);
+    // } else {
+    // return dioError;
+    // }
+    // }
     if (dioError.response?.statusCode == 401) {
-      // dio.interceptors.requestLock.lock();
-      // dio.interceptors.responseLock.lock();
-
-      AuthenticationRepository authenticationRepository =
-          AuthenticationRepository();
-
-      TokenModel refreshToken = await authenticationRepository.refreshToken();
-
-      if (refreshToken != null) {
-        // get new access token
-        String token = await SecureStore().readValue(key: kAccessTokenKey);
-        RequestOptions options = dioError.response.request;
-        options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
-
-        // dio.interceptors.requestLock.unlock();
-        // dio.interceptors.responseLock.unlock();
-
-        return dio.request(options.path, options: options);
-      } else {
-        return dioError;
-      }
+      throw Exception(ErrorException.unauthorizedException);
+    } else if (dioError.response?.statusCode == 408) {
+      throw Exception(ErrorException.timeoutException);
+    } else if (dioError.response?.statusCode == 404) {
+      throw Exception(ErrorException.notFoundEvent);
+    } else if (dioError.response?.statusCode == 422) {
+      final data = dioError.response.data;
+      throw Exception(data['message']);
+    } else {
+      throw Exception(dioError.message);
     }
 
-    if (dioError.response?.statusCode == 400) {
-      final response = dioError.response?.data;
-      final errorMessage = response['error'];
+    // if (dioError.response?.statusCode == 400) {
+    //   final response = dioError.response?.data;
+    //   final errorMessage = response['error'];
 
-      if (errorMessage == ErrorException.invalidGrant) {
-        // delete all storages
-        await SecureStore().deleteAll();
+    //   if (errorMessage == ErrorException.invalidGrant) {
+    //     // delete all storages
+    //     await SecureStore().deleteAll();
 
-        navService.pushNamed(kLoginRoute,
-            args: 'Session Anda habis, silahkan Login kembali');
-      }
-    }
+    //     navService.pushNamed(kLoginRoute,
+    //         args: 'Session Anda habis, silahkan Login kembali');
+    //   }
+    // }
   }
 
   @override

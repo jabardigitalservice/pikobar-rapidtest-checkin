@@ -59,13 +59,15 @@ class CustomAppBar {
       @required String title,
       @required String hintText,
       ValueChanged<String> onChanged,
+      ValueChanged<String> onSubmitted,
       BuildContext context,
       r}) {
     return AppBar(
         backgroundColor: Theme.of(context).primaryColor,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(60.0),
-          child: buildSearchField(searchController, hintText, onChanged),
+          child: buildSearchField(
+              searchController, hintText, onChanged, onSubmitted),
         ),
         title: CustomAppBar.setTitleAppBar(title));
   }
@@ -80,8 +82,11 @@ class CustomAppBar {
         overflow: TextOverflow.ellipsis);
   }
 
-  static Widget buildSearchField(TextEditingController searchController,
-      String hintText, ValueChanged<String> onChanged) {
+  static Widget buildSearchField(
+      TextEditingController searchController,
+      String hintText,
+      ValueChanged<String> onChanged,
+      ValueChanged<String> onSubmitted) {
     return Container(
       margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
       height: 40.0,
@@ -90,22 +95,22 @@ class CustomAppBar {
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(8.0)),
       child: TextField(
-        controller: searchController,
-        autofocus: false,
-        decoration: InputDecoration(
-            prefixIcon: Icon(
-              Icons.search,
-              color: Color(0xff828282),
-            ),
-            hintText: hintText,
-            border: InputBorder.none,
-            hintStyle:
-                TextStyle(color: Color(0xff828282), fontSize: 12, height: 2.2),
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
-        style: TextStyle(color: Colors.black, fontSize: 16.0),
-        onChanged: onChanged,
-      ),
+          controller: searchController,
+          autofocus: false,
+          decoration: InputDecoration(
+              prefixIcon: Icon(
+                Icons.search,
+                color: Color(0xff828282),
+              ),
+              hintText: hintText,
+              border: InputBorder.none,
+              hintStyle: TextStyle(
+                  color: Color(0xff828282), fontSize: 12, height: 2.2),
+              contentPadding:
+                  EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
+          style: TextStyle(color: Colors.black, fontSize: 16.0),
+          onChanged: onChanged,
+          onSubmitted: onSubmitted),
     );
   }
 }

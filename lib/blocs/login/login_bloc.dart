@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
+import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 
 part 'login_event.dart';
@@ -12,9 +13,10 @@ part 'login_state.dart';
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationBloc _authenticationBloc;
   final AuthenticationRepository _authenticationRepository;
+  final KegiatanDetailRepository kegiatanDetailrepository;
 
   LoginBloc(AuthenticationBloc authenticationBloc,
-      AuthenticationRepository authenticationRepository)
+      AuthenticationRepository authenticationRepository,this.kegiatanDetailrepository)
       : assert(authenticationBloc != null),
         assert(authenticationRepository != null),
         _authenticationBloc = authenticationBloc,
@@ -35,6 +37,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginSubmitted(LoginSubmitted event) async* {
     yield LoginLoading();
     try {
+      await _authenticationRepository.clearActivityCode();
+      await kegiatanDetailrepository.setIsFromLogin(true);
+       await kegiatanDetailrepository.setLocation(event.location);
       final token = await _authenticationRepository.loginUser(
           event.username, event.password);
       if (token != null) {
@@ -47,7 +52,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginFailure(error: 'Something very weird just happened');
       }
     } catch (err) {
-      yield LoginFailure(error: err.message ?? 'An unknown error occured');
+      yield LoginFailure(error: err.toString());
     }
   }
 }

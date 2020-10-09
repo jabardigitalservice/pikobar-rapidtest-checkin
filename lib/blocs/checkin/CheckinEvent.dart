@@ -16,3 +16,16 @@ class CheckinLoad extends CheckinEvent {
   @override
   List<Object> get props => [nomorPendaftaran,eventCode];
 }
+
+class GetNameLoad extends CheckinEvent {
+  final String registrationCode, labCode, eventCode;
+  GetNameLoad({this.registrationCode, this.labCode, this.eventCode});
+
+  @override
+  String toString() {
+    return 'Event CheckinLoad';
+  }
+
+  @override
+  List<Object> get props => [registrationCode, labCode, eventCode];
+}

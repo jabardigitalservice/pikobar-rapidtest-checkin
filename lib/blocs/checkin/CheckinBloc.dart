@@ -35,5 +35,18 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
         yield CheckinFailure(error: e.toString());
       }
     }
+    if (event is GetNameLoad) {
+      yield CheckinLoading();
+      try {
+        var getName = await repository.getName(event.registrationCode);
+        yield GetNameLoaded(
+            name: getName['data']['name'],
+            registrationCode: event.registrationCode,
+            eventCode: event.eventCode,
+            labCode: event.labCode);
+      } catch (e) {
+        yield CheckinFailure(error: e.toString());
+      }
+    }
   }
 }

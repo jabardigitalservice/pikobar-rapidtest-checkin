@@ -3,16 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/login/login_bloc.dart';
+import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/FontsFamily.dart';
+import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
+import 'package:rapid_test/screen/event_list.dart';
+import 'package:rapid_test/screen/home.dart';
+import 'package:rapid_test/utilities/Validations.dart';
 
 class LoginScreen extends StatelessWidget {
+  final KegiatanDetailRepository _kegiatanDetailRepository =
+      KegiatanDetailRepository();
   @override
   Widget build(BuildContext context) {
     final authenticationRepository = AuthenticationRepository();
     return BlocProvider<LoginBloc>(
         create: (context) => LoginBloc(
             BlocProvider.of<AuthenticationBloc>(context),
-            authenticationRepository),
+            authenticationRepository,
+            _kegiatanDetailRepository),
         child: Scaffold(
           appBar: AppBar(
             title: Text('Login Screen'),
@@ -31,6 +41,8 @@ class _State extends State<LoginForm> {
   LoginBloc _loginBloc;
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  TextEditingController _location = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -42,64 +54,189 @@ class _State extends State<LoginForm> {
   Widget build(BuildContext context) {
     _loginSubmitted() {
       _loginBloc.add(LoginSubmitted(
-          username: nameController.text, password: passwordController.text));
+          username: nameController.text,
+          password: passwordController.text,
+          location: _location.text));
     }
 
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailure) {
-          _showError(state.error);
+          showDialog(
+              context: context,
+              builder: (BuildContext context) => DialogTextOnly(
+                    description: state.error.toString(),
+                    buttonText: "OK",
+                    onOkPressed: () {
+                      Navigator.of(context).pop(); // To close the dialog
+                    },
+                  ));
+          Scaffold.of(context).hideCurrentSnackBar();
+        } else if (state is LoginSuccess) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => EventListPage()));
+        } else if (state is LoginLoading) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Theme.of(context).primaryColor,
+              content: Row(
+                children: <Widget>[
+                  CircularProgressIndicator(),
+                  Container(
+                    margin: EdgeInsets.only(left: 15.0),
+                    child: Text('Tunggu Sebentar'),
+                  )
+                ],
+              ),
+            ),
+          );
+        } else {
+          Scaffold.of(context).hideCurrentSnackBar();
         }
       },
       child: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, state) {
-          if (state is LoginLoading) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          return Padding(
-            padding: EdgeInsets.all(10),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: TextField(
+          return Form(
+            key: _formKey,
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: ListView(
+                children: <Widget>[
+                  buildTextField(
+                    title: 'Username',
                     controller: nameController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'User Name',
-                    ),
+                    hintText: 'Masukan Username',
+                    isEdit: true,
+                    validation: Validations.usernameValidation,
                   ),
-                ),
-                Container(
-                  padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  child: TextField(
-                    obscureText: true,
+                  SizedBox(height: 15),
+                  buildTextField(
+                    title: 'Password',
                     controller: passwordController,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
+                    hintText: 'Masukan Password',
+                    isEdit: true,
+                    obsecureText: true,
+                    validation: Validations.passwordValidation,
+                  ),
+                  SizedBox(height: 15),
+                  buildTextField(
+                    title: 'Lokasi',
+                    controller: _location,
+                    hintText: 'Masukan lokasi',
+                    isEdit: true,
+                    textCapitalization: TextCapitalization.characters,
+                    validation: Validations.locationValidation,
+                  ),
+                  SizedBox(height: 15),
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 40.0,
+                    child: RaisedButton(
+                      splashColor: Colors.lightGreenAccent,
+                      padding: EdgeInsets.all(0.0),
+                      color: ColorBase.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text(
+                        'Login',
+                        style: TextStyle(
+                            fontFamily: FontsFamily.productSans,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12.0,
+                            color: Colors.white),
+                      ),
+                      onPressed: () {
+                        if (_formKey.currentState.validate()) {
+                          FocusScope.of(context).unfocus();
+                          _loginSubmitted();
+                        }
+                      },
                     ),
                   ),
-                ),
-                SizedBox(height: 15),
-                Container(
-                  height: 50,
-                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: RaisedButton(
-                    textColor: Colors.white,
-                    color: Colors.blue,
-                    child: Text('Login'),
-                    onPressed: () {
-                      _loginSubmitted();
-                    },
+                  SizedBox(
+                    height: 20,
                   ),
-                )
-              ],
+                  Center(child: Text('Atau')),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MyHomePage()));
+                      },
+                      child: Text(
+                        'Input Kode Kegiatan',
+                        style: TextStyle(color: Colors.blue),
+                      ))
+                ],
+              ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget buildTextField(
+      {String title,
+      TextEditingController controller,
+      String hintText,
+      validation,
+      TextInputType textInputType,
+      TextStyle textStyle,
+      bool isEdit,
+      int maxLines,
+      TextCapitalization textCapitalization = TextCapitalization.none,
+      bool obsecureText = false}) {
+    return Container(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Text(
+                title,
+                style: TextStyle(fontSize: 18.0, color: Color(0xff828282)),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          TextFormField(
+            maxLines: maxLines != null ? maxLines : 1,
+            style: isEdit
+                ? TextStyle(
+                    color: Colors.black,
+                  )
+                : TextStyle(color: Color(0xffBDBDBD)),
+            enabled: isEdit,
+            validator: validation,
+            obscureText: obsecureText,
+            textCapitalization: textCapitalization,
+            controller: controller,
+            decoration: InputDecoration(
+                hintText: hintText,
+                enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
+                disabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide:
+                        BorderSide(color: Color(0xffE0E0E0), width: 1.5))),
+            keyboardType:
+                textInputType != null ? textInputType : TextInputType.text,
+          )
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
@@ -14,6 +15,7 @@ import 'package:rapid_test/config/router.dart' as router;
 
 import 'config/FlavorConfig.dart';
 import 'environment/environment/Environment.dart';
+import 'screen/event_list.dart';
 
 void main() {
   FlavorConfig(
@@ -52,6 +54,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting();
     return MaterialApp(
       title: 'PIKOBAR Tes Masif Checkin',
       theme: ThemeData(
@@ -65,7 +68,7 @@ class _MyAppState extends State<MyApp> {
           builder: (context, state) {
         if (state is AuthenticationAuthenticated) {
           // show home page
-          return MyHomePage();
+          return EventListPage();
         } else if (state is AuthenticationLoading) {
           return Center(
             child: CircularProgressIndicator(),

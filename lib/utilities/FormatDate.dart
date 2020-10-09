@@ -8,6 +8,14 @@ String unixTimeStampToDateTime(String date) {
   return dateTimeString;
 }
 
+String unixTimeStampToDateWithoutHour(String date) {
+  var format = DateFormat('EEEE, dd MMMM yyyy', 'id');
+  var dateTimeString =
+      format.format(DateTime.parse(date).toLocal());
+
+  return dateTimeString;
+}
+
 String unixTimeStampToHour(String date) {
   var format = DateFormat('HH:mm', 'id');
   var dateTimeString =
