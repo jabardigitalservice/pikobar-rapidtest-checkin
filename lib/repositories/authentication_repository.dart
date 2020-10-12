@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:rapid_test/config/FlavorConfig.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/model/TokenModel.dart';
@@ -52,7 +53,7 @@ class AuthenticationRepository {
     try {
       final loginBody = {
         "grant_type": "refresh_token",
-        "client_id": "tes-masif-checkin",
+        "client_id": FlavorConfig.instance.values.clientId,
         "refresh_token": refreshToken
       };
       response = await dio.post(EndPointPath.authToken,
@@ -120,7 +121,7 @@ class AuthenticationRepository {
     var arrToken = token.split('.');
     String payloadToken =
         utf8.decode(base64.decode(base64.normalize(arrToken[1])));
-        print(jsonDecode(payloadToken));
+    print(jsonDecode(payloadToken));
     return jsonDecode(payloadToken);
   }
 

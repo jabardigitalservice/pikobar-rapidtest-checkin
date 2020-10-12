@@ -49,7 +49,6 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
-        await Future.delayed(Duration(seconds: 2));
         if (event.isFromLogin != null) {
           await repository.setIsFromLogin(event.isFromLogin);
           if (event.location != null) {
