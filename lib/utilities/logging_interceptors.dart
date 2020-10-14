@@ -112,6 +112,8 @@ class LoggingInterceptors extends InterceptorsWrapper {
     // }
     // }
     if (dioError.response?.statusCode == 401) {
+      // final data = dioError.response.data;
+      // throw Exception(data['error_description']);
       throw Exception(ErrorException.unauthorizedException);
     } else if (dioError.response?.statusCode == 408) {
       throw Exception(ErrorException.timeoutException);

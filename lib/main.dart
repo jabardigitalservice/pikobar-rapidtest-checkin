@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
@@ -20,7 +21,9 @@ void main() {
       flavor: Flavor.PRODUCTION,
       color: ColorBase.green,
       values: FlavorValues(
-          baseUrl: Environment.baseUrl, clientId: Environment.clientId));
+          baseUrl: Environment.baseUrl,
+          clientId: Environment.clientId,
+          loginUrl: Environment.loginUrl));
   // init DIO options
   dio.options.connectTimeout = 50000;
   dio.options.receiveTimeout = 50000;
@@ -48,6 +51,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting();
     return MaterialApp(
       title: 'PIKOBAR Tes Masif Checkin',
       theme: ThemeData(
