@@ -47,6 +47,7 @@ class _EventListPageState extends State<EventListPage>
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
 
+
   @override
   void initState() {
     _initialize();
@@ -261,19 +262,19 @@ class _EventListPageState extends State<EventListPage>
                                 borderRadius: BorderRadius.circular(12),
                                 color: unixTimeStampToDateWithoutHour(DateTime.now().toString()) ==
                                         unixTimeStampToDateWithoutHour(
-                                            listEvent[i].startAt)
+                                            listEvent[i].endAt)
                                     ? Colors.white
-                                    : (DateTime.now().difference(DateTime.parse(listEvent[i].startAt).toLocal()).isNegative)
+                                    : (DateTime.now().difference(DateTime.parse(listEvent[i].endAt).toLocal()).isNegative)
                                         ? Colors.white
                                         : Colors.grey[300],
                                 border: Border.all(
                                     color: unixTimeStampToDateWithoutHour(
                                                 DateTime.now().toString()) ==
                                             unixTimeStampToDateWithoutHour(
-                                                listEvent[i].startAt)
+                                                listEvent[i].endAt)
                                         ? Theme.of(context).primaryColor
                                         : (DateTime.now()
-                                                .difference(DateTime.parse(listEvent[i].startAt).toLocal())
+                                                .difference(DateTime.parse(listEvent[i].endAt).toLocal())
                                                 .isNegative)
                                             ? Theme.of(context).primaryColor
                                             : Colors.grey,
@@ -317,22 +318,24 @@ class _EventListPageState extends State<EventListPage>
                                                     DateTime.now()
                                                         .toString()) ==
                                                 unixTimeStampToDateWithoutHour(
-                                                    listEvent[i].startAt)) {
+                                                    listEvent[i].endAt)) {
                                               _kodeKegiatanBloc.add(
                                                   KodeKegiatanLoad(
                                                       kodeKegiatan: listEvent[i]
-                                                          .eventCode,isFromLogin: true));
+                                                          .eventCode,
+                                                      isFromLogin: true));
                                             } else {
                                               if (DateTime.now()
                                                   .difference(DateTime.parse(
-                                                          listEvent[i].startAt)
+                                                          listEvent[i].endAt)
                                                       .toLocal())
                                                   .isNegative) {
                                                 _kodeKegiatanBloc.add(
                                                     KodeKegiatanLoad(
                                                         kodeKegiatan:
                                                             listEvent[i]
-                                                                .eventCode,isFromLogin: true));
+                                                                .eventCode,
+                                                        isFromLogin: true));
                                               } else {
                                                 showDialog(
                                                     context: context,
@@ -357,13 +360,13 @@ class _EventListPageState extends State<EventListPage>
                                                       DateTime.now()
                                                           .toString()) ==
                                                   unixTimeStampToDateWithoutHour(
-                                                      listEvent[i].startAt)
+                                                      listEvent[i].endAt)
                                               ? Theme.of(context).primaryColor
                                               : (DateTime.now()
                                                       .difference(
                                                           DateTime.parse(
                                                                   listEvent[i]
-                                                                      .startAt)
+                                                                      .endAt)
                                                               .toLocal())
                                                       .isNegative)
                                                   ? Theme.of(context)
@@ -387,11 +390,11 @@ class _EventListPageState extends State<EventListPage>
                                       color: unixTimeStampToDateWithoutHour(
                                                   DateTime.now().toString()) ==
                                               unixTimeStampToDateWithoutHour(
-                                                  listEvent[i].startAt)
+                                                  listEvent[i].endAt)
                                           ? Theme.of(context).primaryColor
                                           : (DateTime.now()
                                                   .difference(DateTime.parse(
-                                                          listEvent[i].startAt)
+                                                          listEvent[i].endAt)
                                                       .toLocal())
                                                   .isNegative)
                                               ? Theme.of(context).primaryColor
@@ -404,15 +407,28 @@ class _EventListPageState extends State<EventListPage>
                                   Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
                                         'Tanggal: ',
                                         style: TextStyle(fontSize: 12),
                                       ),
-                                      Text(
-                                          unixTimeStampToDateWithoutHour(
-                                              listEvent[i].startAt),
-                                          style: TextStyle(fontSize: 12)),
+                                      Expanded(
+                                        child: Text(
+                                            checkingSameDate(
+                                                    DateTime.parse(listEvent[i]
+                                                            .startAt)
+                                                        .toLocal(),
+                                                    DateTime.parse(
+                                                            listEvent[i].endAt)
+                                                        .toLocal())
+                                                ? unixTimeStampToDateWithoutHour(
+                                                    listEvent[i].startAt)
+                                                : "${unixTimeStampToDateWithoutHour(listEvent[i].startAt)} - ${unixTimeStampToDateWithoutHour(listEvent[i].endAt)}",
+                                            textAlign: TextAlign.right,
+                                            style: TextStyle(fontSize: 12)),
+                                      ),
                                     ],
                                   ),
                                   Row(
@@ -458,6 +474,12 @@ class _EventListPageState extends State<EventListPage>
                   ),
                 ],
               ));
+  }
+
+  bool checkingSameDate(DateTime startAt, endAt) {
+    return startAt.year == endAt.year &&
+        startAt.month == endAt.month &&
+        startAt.day == endAt.day;
   }
 
   void _initialize() async {

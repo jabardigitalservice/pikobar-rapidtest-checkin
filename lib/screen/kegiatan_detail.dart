@@ -217,6 +217,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                 child: Text(
                                     kodeKegiatanModel
                                         .kodeKegiatan.data.eventName,
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
@@ -230,12 +231,22 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             Text('Waktu : '),
                             Expanded(
                               child: Text(
-                                  unixTimeStampToDateTime(kodeKegiatanModel
-                                          .kodeKegiatan.data.startAt) +
-                                      ' - ' +
-                                      unixTimeStampToHour(kodeKegiatanModel
-                                          .kodeKegiatan.data.endAt) +
-                                      ' WIB',
+                                  checkingSameDate(
+                                          DateTime.parse(kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt)
+                                              .toLocal(),
+                                          DateTime.parse(kodeKegiatanModel
+                                                  .kodeKegiatan.data.endAt)
+                                              .toLocal())
+                                      ? unixTimeStampToDateTime(
+                                              kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt) +
+                                          ' - ' +
+                                          unixTimeStampToHour(kodeKegiatanModel
+                                              .kodeKegiatan.data.endAt) +
+                                          ' WIB'
+                                      : "${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.startAt)} - ${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.endAt)}",
+                                  textAlign: TextAlign.right,
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
                             ),
@@ -266,6 +277,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             Text('Tempat Checkin : '),
                             Expanded(
                                 child: Text(kodeKegiatanModel.location,
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
@@ -706,6 +718,12 @@ class _KegiatanPageState extends State<KegiatanPage> {
         ],
       ),
     );
+  }
+
+  bool checkingSameDate(DateTime startAt, endAt) {
+    return startAt.year == endAt.year &&
+        startAt.month == endAt.month &&
+        startAt.day == endAt.day;
   }
 
   void _onStatusRequested(BuildContext context, PermissionStatus statuses,
