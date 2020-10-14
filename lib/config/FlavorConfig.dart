@@ -4,8 +4,8 @@ enum Flavor { STAGING, PRODUCTION }
 
 class FlavorValues {
   FlavorValues(
-      {@required this.baseUrl,@required this.clientId});
-  final String baseUrl,clientId;
+      {@required this.baseUrl,@required this.clientId,@required this.loginUrl});
+  final String baseUrl,clientId,loginUrl;
   //Add other flavor specific values, e.g database name
 }
 

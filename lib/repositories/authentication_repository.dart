@@ -18,11 +18,11 @@ class AuthenticationRepository {
     try {
       final loginBody = {
         "grant_type": "password",
-        "client_id": "tes-masif-checkin",
+        "client_id": FlavorConfig.instance.values.clientId,
         "username": username,
         "password": password
       };
-      response = await dio.post(EndPointPath.authToken,
+      response = await dio.post(FlavorConfig.instance.values.loginUrl,
           data: loginBody,
           options: Options(contentType: Headers.formUrlEncodedContentType));
 
@@ -56,7 +56,7 @@ class AuthenticationRepository {
         "client_id": FlavorConfig.instance.values.clientId,
         "refresh_token": refreshToken
       };
-      response = await dio.post(EndPointPath.authToken,
+      response = await dio.post(FlavorConfig.instance.values.loginUrl,
           data: loginBody,
           options: Options(contentType: Headers.formUrlEncodedContentType));
       final data = response.data;

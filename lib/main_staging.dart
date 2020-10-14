@@ -22,7 +22,7 @@ void main() {
     flavor: Flavor.STAGING,
     color: Colors.blue,
     values: FlavorValues(
-      baseUrl: Environment.stagingUrl,clientId: Environment.stagingclientId
+      baseUrl: Environment.stagingUrl,clientId: Environment.stagingclientId,loginUrl:Environment.loginStagingUrl
     ),
   );
 

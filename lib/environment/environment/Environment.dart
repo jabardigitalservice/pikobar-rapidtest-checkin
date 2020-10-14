@@ -9,12 +9,17 @@ class Environment {
   // production
   static String baseUrl = 'https://api.tesmasif.pikobar.jabarprov.go.id/api';
   static String clientId = 'pikobar-tesmasif-checkin';
+  static String loginUrl='https://sso.digitalservice.jabarprov.go.id/auth/realms/jabarprov/protocol/openid-connect/token';
 
 
   // staging
   static String stagingUrl='https://tesmasif-api.digitalservice.id/api';
   static String stagingclientId='tes-masif-checkin';
+  static String loginStagingUrl='https://keycloak.digitalservice.id/auth/realms/jabarprov/protocol/openid-connect/token';
+
+  
 
 
 
 }
+ 
