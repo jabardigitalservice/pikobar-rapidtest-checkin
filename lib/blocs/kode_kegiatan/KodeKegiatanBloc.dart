@@ -39,7 +39,6 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
 
       try {
         await repository.clearActivityCode();
-        await repository.clearLocation();
         yield KodeKegiatanUnauthenticated();
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());
@@ -50,12 +49,17 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
+        if (event.isFromLogin != null) {
+          await repository.setIsFromLogin(event.isFromLogin);
+          if (event.location != null) {
+            await repository.setLocation(event.location);
+          }
+        }
+
         KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(event.kodeKegiatan);
         await repository.setActivityCode(kodeKegiatanModel.data.eventCode);
-        if (event.location!=null) {
-        await repository.setLocation(event.location);
-        }
+
         String location = await repository.getLocation();
         String isLogin = await repository.getActivityCode();
         yield KodeKegiatanLoaded(

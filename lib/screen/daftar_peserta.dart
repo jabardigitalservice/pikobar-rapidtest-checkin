@@ -1,15 +1,22 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
-import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
+import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
+import 'package:rapid_test/blocs/list_participants/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
-import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/model/ListParticipantModel.dart';
+import 'package:rapid_test/repositories/ListParticipantRepository.dart';
+import 'package:rapid_test/repositories/authentication_repository.dart';
+import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 
 class DaftarPesertaPage extends StatefulWidget {
   KodeKegiatanModel kodeKegiatanModel;
@@ -18,93 +25,163 @@ class DaftarPesertaPage extends StatefulWidget {
   _DaftarPesertaPageState createState() => _DaftarPesertaPageState();
 }
 
-class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
-  final KegiatanDetailRepository _kegiatanDetailRepository =
-      KegiatanDetailRepository();
-  KodeKegiatanBloc _kodeKegiatanBloc;
+class _DaftarPesertaPageState extends State<DaftarPesertaPage>
+    with TickerProviderStateMixin {
+  final ListParticipantRepository _listParticipantRepository =
+      ListParticipantRepository();
+  ListParticipantBloc _listParticipantBloc;
   TextEditingController _searchController = TextEditingController();
   String searchQuery;
+  ScrollController _scrollController = ScrollController();
+  int maxDataLength;
+  int _page = 1;
+  Timer _debounce;
+  bool _hasChange = false;
+  bool _isSearch = false;
+  AnimationController _animationController;
+  var containerWidth = 40.0;
+  final _nodeOne = FocusNode();
+  final AuthenticationRepository _authenticationRepository =
+      AuthenticationRepository();
+  AuthenticationBloc _authenticationBloc;
+
+  @override
+  void initState() {
+    _initialize();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    //   _searchController.addListener((() {
+    //   _onSearchChanged();
+    // }));
+
+    _scrollController.addListener(() {
+      _scrollListener();
+    });
+    super.initState();
+  }
+  // void onScroll() {
+  //   double maxScroll = _scrollController.position.maxScrollExtent;
+  //   double currentScroll = _scrollController.position.pixels;
+  //   if (currentScroll == maxScroll) {
+  //     _listParticipantBloc.add(ListParticipantLoadMore(
+  //         eventCode: widget.kodeKegiatanModel.data.eventCode,
+  //         page: 2,
+  //         keyword: ''));
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    // _scrollController.addListener(onScroll);
     return Scaffold(
       appBar: CustomAppBar.bottomSearchAppBar(
           searchController: _searchController,
           title: 'Daftar Peserta',
           hintText: 'Cari Daftar Peserta',
-          onChanged: updateSearchQuery,
+          onSubmitted: updateSearchQuery,
           context: context),
-      body: BlocProvider<KodeKegiatanBloc>(
-        create: (BuildContext context) => _kodeKegiatanBloc =
-            KodeKegiatanBloc(repository: _kegiatanDetailRepository)
-              ..add(KodeKegiatanLoad(
-                  kodeKegiatan: widget.kodeKegiatanModel.data.eventCode)),
-        child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
-          listener: (context, state) {
-            if (state is KodeKegiatanFailure) {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) => DialogTextOnly(
-                        description: state.error.toString(),
-                        buttonText: "OK",
-                        onOkPressed: () {
-                          Navigator.of(context).pop(); // To close the dialog
-                        },
-                      ));
-              Scaffold.of(context).hideCurrentSnackBar();
-            } else if (state is KodeKegiatanLoading) {
-              Scaffold.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  content: Row(
-                    children: <Widget>[
-                      CircularProgressIndicator(),
-                      Container(
-                        margin: EdgeInsets.only(left: 15.0),
-                        child: Text('Tunggu Sebentar'),
-                      )
-                    ],
-                  ),
-                  duration: Duration(seconds: 5),
-                ),
-              );
-            } else {
-              Scaffold.of(context).hideCurrentSnackBar();
-            }
-          },
-          child: BlocBuilder<KodeKegiatanBloc, KodeKegiatanState>(
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<ListParticipantBloc>(
+            create: (BuildContext context) => _listParticipantBloc =
+                ListParticipantBloc(repository: _listParticipantRepository)
+                  ..add(ListParticipantLoad(
+                      eventCode: widget.kodeKegiatanModel.data.eventCode,
+                      page: _page,
+                      keyword: '',
+                      isFirstLoad: true)),
+          ),
+          BlocProvider<AuthenticationBloc>(
+              create: (BuildContext context) => _authenticationBloc =
+                  AuthenticationBloc(_authenticationRepository)),
+        ],
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<ListParticipantBloc, ListParticipantState>(
+                listener: (context, state) {
+              if (state is ListParticipantFailure) {
+                if (state.error.toString().contains('Token Expired')) {
+                  _authenticationBloc.add(UserLoggedOut());
+                } else {
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) => DialogTextOnly(
+                            description: state.error.toString(),
+                            buttonText: "OK",
+                            onOkPressed: () {
+                              Navigator.of(context).pop();
+                              _listParticipantBloc.add(ListParticipantLoad(
+                                  eventCode:
+                                      widget.kodeKegiatanModel.data.eventCode,
+                                  page: 1,
+                                  keyword: '')); // To close the dialog
+                            },
+                          ));
+                }
+                Scaffold.of(context).hideCurrentSnackBar();
+              }
+              // else if (state is ListParticipantLoading) {
+              //   Scaffold.of(context).showSnackBar(R
+              //     SnackBar(
+              //       backgroundColor: Theme.of(context).primaryColor,
+              //       content: Row(
+              //         children: <Widget>[
+              //           CircularProgressIndicator(),
+              //           Container(
+              //             margin: EdgeInsets.only(left: 15.0),
+              //             child: Text('Tunggu Sebentar'),
+              //           )
+              //         ],
+              //       ),
+              //     ),
+              //   );
+              // }
+              else {
+                Scaffold.of(context).hideCurrentSnackBar();
+              }
+            }),
+            BlocListener<AuthenticationBloc, AuthenticationState>(
+                listener: (context, state) {
+              if (state is AuthenticationNotAuthenticated) {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()));
+              }
+            })
+          ],
+          child: BlocBuilder<ListParticipantBloc, ListParticipantState>(
             builder: (
               BuildContext context,
-              KodeKegiatanState state,
+              ListParticipantState state,
             ) {
-              if (state is InitialKodeKegiatanState ||
-                  state is KodeKegiatanLoading ||
-                  state is KodeKegiatanFailure) {
-                return Container();
-              } else if (state is KodeKegiatanLoaded) {
-                KodeKegiatanLoaded kodeKegiatanLoaded =
-                    state as KodeKegiatanLoaded;
-                List<Applicants> invitationsList;
+              if (state is ListParticipantLoaded) {
+                // List<DataParticipant> invitationsList;
 
-                /// Checking search field
-                if (searchQuery != null) {
-                  /// Filtering data by search
-                  invitationsList = kodeKegiatanLoaded
-                      .kodeKegiatan.data.applicants
-                      .where((test) =>
-                          test.name
-                              .toLowerCase()
-                              .contains(searchQuery.toLowerCase()) ||
-                          test.registrationCode
-                              .toLowerCase()
-                              .contains(searchQuery.toLowerCase()))
-                      .toList();
-                } else {
-                  invitationsList =
-                      kodeKegiatanLoaded.kodeKegiatan.data.applicants;
-                }
+                // /// Checking search field
+                // if (searchQuery != null) {
+                //   /// Filtering data by search
+                //   invitationsList = listParticipantLoaded
+                //       .listParticipantModel
+                //       .where((test) =>
+                //           test.name
+                //               .toLowerCase()
+                //               .contains(searchQuery.toLowerCase()) ||
+                //           test.registrationCode
+                //               .toLowerCase()
+                //               .contains(searchQuery.toLowerCase()))
+                //       .toList();
+                // } else {
+                //   invitationsList =
+                //       listParticipantLoaded.listParticipantModel;
+                // }
+                _updatePage(state.listParticipantModel);
+                maxDataLength = state.maxData;
                 return SafeArea(
-                    child: invitationsList.length == 0
+                    child: state.listParticipantModel.length == 0
                         ? Center(
                             child: Text('Tidak ada data daftar peserta'),
                           )
@@ -117,15 +194,43 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                   height: 50,
                                   color: ColorBase.green,
                                   onRefresh: () {
-                                    _kodeKegiatanBloc.add(KodeKegiatanLoad(
-                                        kodeKegiatan: widget
-                                            .kodeKegiatanModel.data.eventCode));
+                                    _listParticipantBloc.add(
+                                        ListParticipantLoad(
+                                            eventCode: widget.kodeKegiatanModel
+                                                .data.eventCode,
+                                            page: 1,
+                                            keyword: _searchController.text));
                                   },
                                   child: ListView.builder(
-                                    itemCount: invitationsList.length,
+                                    controller: _scrollController,
+                                    itemCount:
+                                        state.listParticipantModel.length + 1,
                                     itemBuilder: (context, i) {
-                                      invitationsList.sort(
-                                          (a, b) => a.name.compareTo(b.name));
+                                      if (i ==
+                                          state.listParticipantModel.length) {
+                                        if (state.listParticipantModel.length >
+                                                15 &&
+                                            maxDataLength !=
+                                                state.listParticipantModel
+                                                    .length) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 20.0, bottom: 20.0),
+                                            child: Column(
+                                              children: <Widget>[
+                                                CupertinoActivityIndicator(),
+                                                SizedBox(
+                                                  height: 5.0,
+                                                ),
+                                                Text(
+                                                    'Sedang mengambil data ...'),
+                                              ],
+                                            ),
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
+                                      }
                                       return Container(
                                         margin: EdgeInsets.only(
                                             bottom: 10,
@@ -137,11 +242,11 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(12),
-                                            color:
-                                                invitationsList[i].attendedAt ==
-                                                        null
-                                                    ? Colors.white
-                                                    : Colors.green[100],
+                                            color: state.listParticipantModel[i]
+                                                        .attendedAt ==
+                                                    null
+                                                ? Colors.white
+                                                : Colors.green[100],
                                             border: Border.all(
                                                 color: Theme.of(context)
                                                     .primaryColor,
@@ -155,12 +260,15 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                                     MainAxisAlignment
                                                         .spaceBetween,
                                                 children: <Widget>[
-                                                  Text(invitationsList[i].name),
-                                                  Text(invitationsList[i]
-                                                              .attendedAt ==
-                                                          null
-                                                      ? 'Tidak Hadir'
-                                                      : 'Hadir'),
+                                                  Text(state
+                                                      .listParticipantModel[i]
+                                                      .name),
+                                                  Text(
+                                                      state.listParticipantModel[i]
+                                                                  .attendedAt ==
+                                                              null
+                                                          ? 'Tidak Hadir'
+                                                          : 'Hadir'),
                                                 ],
                                               ),
                                               SizedBox(
@@ -187,11 +295,15 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
-                                                      invitationsList[i]
+                                                      state
+                                                                  .listParticipantModel[
+                                                                      i]
                                                                   .registrationCode ==
                                                               null
                                                           ? ''
-                                                          : invitationsList[i]
+                                                          : state
+                                                              .listParticipantModel[
+                                                                  i]
                                                               .registrationCode,
                                                       style: TextStyle(
                                                           fontSize: 12)),
@@ -208,11 +320,15 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
-                                                      invitationsList[i]
+                                                      state
+                                                                  .listParticipantModel[
+                                                                      i]
                                                                   .labCodeSample ==
                                                               null
                                                           ? ''
-                                                          : invitationsList[i]
+                                                          : state
+                                                              .listParticipantModel[
+                                                                  i]
                                                               .labCodeSample,
                                                       style: TextStyle(
                                                           fontSize: 12)),
@@ -229,12 +345,16 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
-                                                      invitationsList[i]
+                                                      state
+                                                                  .listParticipantModel[
+                                                                      i]
                                                                   .attendedAt ==
                                                               null
                                                           ? ''
                                                           : unixTimeStampToDateTime(
-                                                              invitationsList[i]
+                                                              state
+                                                                  .listParticipantModel[
+                                                                      i]
                                                                   .attendedAt),
                                                       style: TextStyle(
                                                           fontSize: 12)),
@@ -250,6 +370,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
                               ),
                             ],
                           ));
+              } else {
+                return Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -258,9 +380,85 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage> {
     );
   }
 
-  void updateSearchQuery(String newQuery) {
-    setState(() {
-      searchQuery = newQuery;
+  void _initialize() async {
+    _page = await Preferences.getParticipantPage() != null
+        ? await Preferences.getParticipantPage()
+        : 1;
+    maxDataLength = await Preferences.getTotalCount() != null
+        ? await Preferences.getTotalCount()
+        : 0;
+  }
+
+  void _updatePage(List<DataParticipant> records) async {
+    double tempPage = (records.length / 20);
+    var listPage = tempPage.toString().split('.');
+    if (int.parse(listPage[1]) < 50 && int.parse(listPage[1]) != 0) {
+      _page = (tempPage + 0.95).round() + 1;
+    } else {
+      _page = (records.length / 20).round() + 1;
+    }
+    print(_page);
+    await Preferences.setParticipantPage(_page);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _listParticipantBloc.add(ListParticipantLoadMore(
+        eventCode: widget.kodeKegiatanModel.data.eventCode,
+        page: _page,
+        keyword: _searchController.text,
+      ));
+      // }
+    }
+  }
+
+  void _onSearchChanged() {
+    if (_debounce?.isActive ?? false) _debounce.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _hasChange = true;
+      _listParticipantBloc.add(ListParticipantLoad(
+        eventCode: widget.kodeKegiatanModel.data.eventCode,
+        page: 1,
+        keyword: _searchController.text,
+      ));
     });
+  }
+
+  void _searchPressed() {
+    return setState(() {
+      _isSearch = !_isSearch;
+      _animationController.forward(from: 0.0);
+      _showSearch();
+    });
+  }
+
+  void _showSearch() {
+    if (!_isSearch) {
+      if (_hasChange) {
+        _hasChange = false;
+        _refresh();
+      }
+      containerWidth = 50.0;
+      FocusScope.of(context).unfocus();
+    } else {
+      containerWidth = MediaQuery.of(context).size.width;
+      FocusScope.of(context).requestFocus(_nodeOne);
+    }
+    _searchController.clear();
+  }
+
+  Future<void> _refresh() async {
+    _listParticipantBloc.add(ListParticipantLoad(
+      eventCode: widget.kodeKegiatanModel.data.eventCode,
+      page: 1,
+      keyword: '',
+    ));
+    _page = 1;
+    await Preferences.setParticipantPage(1);
+  }
+
+  void updateSearchQuery(String newQuery) {
+    _onSearchChanged();
   }
 }

@@ -6,18 +6,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/checkin/Bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogRequestPermission.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/ErrorException.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/daftar_peserta.dart';
 import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/input_nomor.dart';
+import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
@@ -34,6 +38,9 @@ class _KegiatanPageState extends State<KegiatanPage> {
   CheckinBloc _checkinBloc;
   final _codeSampleController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final AuthenticationRepository _authenticationRepository =
+      AuthenticationRepository();
+  AuthenticationBloc _authenticationBloc;
 
   KodeKegiatanBloc _kodeKegiatanBloc;
   var activityCode = '';
@@ -49,14 +56,13 @@ class _KegiatanPageState extends State<KegiatanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text("Tes Masif Checkin")),
-        body: DoubleBackToCloseApp(
-          snackBar: SnackBar(
-            backgroundColor: Theme.of(context).primaryColor,
-            content: Text('Tekan sekali lagi untuk keluar'),
-          ),
-          child: MultiBlocProvider(
+    return WillPopScope(
+      onWillPop: () {
+        _kodeKegiatanBloc.add(Logout());
+      },
+      child: Scaffold(
+          appBar: AppBar(title: Text("Tes Masif Checkin")),
+          body: MultiBlocProvider(
             providers: [
               BlocProvider<CheckinBloc>(
                   create: (BuildContext context) => _checkinBloc =
@@ -65,22 +71,39 @@ class _KegiatanPageState extends State<KegiatanPage> {
                   create: (BuildContext context) => _kodeKegiatanBloc =
                       KodeKegiatanBloc(repository: _kegiatanDetailRepository)
                         ..add(KodeKegiatanLoad())),
+              BlocProvider<AuthenticationBloc>(
+                  create: (BuildContext context) => _authenticationBloc =
+                      AuthenticationBloc(_authenticationRepository)),
             ],
             child: MultiBlocListener(
               listeners: [
                 BlocListener<CheckinBloc, CheckinState>(
                     listener: (context, state) {
                   if (state is CheckinFailure) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) => DialogTextOnly(
-                              description: state.error.toString(),
-                              buttonText: "OK",
-                              onOkPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // To close the dialog
-                              },
-                            ));
+                    if (state.error.toString().contains('Token Expired')) {
+                      Navigator.of(context).pop();
+                      _authenticationBloc.add(UserLoggedOut());
+                    } else {
+                      showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (BuildContext context) => DialogTextOnly(
+                                description: state.error.toString(),
+                                buttonText: "OK",
+                                onOkPressed: () {
+                                  if (state.error
+                                      .toString()
+                                      .contains('sudah berakhir')) {
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                    _kodeKegiatanBloc.add(Logout());
+                                  } else {
+                                    Navigator.of(context)
+                                        .pop(); // To close the dialog
+                                  }
+                                },
+                              ));
+                    }
                     Scaffold.of(context).hideCurrentSnackBar();
                   } else if (state is CheckinLoading) {
                     Scaffold.of(context).showSnackBar(
@@ -95,7 +118,6 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             )
                           ],
                         ),
-                        duration: Duration(seconds: 5),
                       ),
                     );
                   } else if (state is CheckinLoaded) {
@@ -115,6 +137,14 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               },
                             ));
                     Scaffold.of(context).hideCurrentSnackBar();
+                  } else if (state is GetNameLoaded) {
+                    GetNameLoaded getNameLoaded = state as GetNameLoaded;
+                    _buildConfirmDialog(
+                        getNameLoaded.registrationCode,
+                        getNameLoaded.labCode,
+                        getNameLoaded.eventCode,
+                        getNameLoaded.name);
+                    Scaffold.of(context).hideCurrentSnackBar();
                   } else {
                     Scaffold.of(context).hideCurrentSnackBar();
                   }
@@ -122,38 +152,44 @@ class _KegiatanPageState extends State<KegiatanPage> {
                 BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
                     listener: (context, state) {
                   if (state is KodeKegiatanFailure) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) => DialogTextOnly(
-                              description: state.error.toString(),
-                              buttonText: "OK",
-                              onOkPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // To close the dialog
-                              },
-                            ));
+                    if (state.error.toString().contains('Token Expired')) {
+                      _authenticationBloc.add(UserLoggedOut());
+                    } else {
+                      showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (BuildContext context) => DialogTextOnly(
+                                description: state.error.toString(),
+                                buttonText: "OK",
+                                onOkPressed: () {
+                                  if (state.error
+                                          .toString()
+                                          .contains('sudah berakhir') ||
+                                      state.error.toString().contains(
+                                          ErrorException.notFoundEvent)) {
+                                    Navigator.of(context).pop();
+                                    _kodeKegiatanBloc.add(Logout());
+                                  } else {
+                                    Navigator.of(context)
+                                        .pop(); // To close the dialog
+                                    _kodeKegiatanBloc.add(KodeKegiatanLoad());
+                                  }
+                                },
+                              ));
+                    }
                     Scaffold.of(context).hideCurrentSnackBar();
-                  } else if (state is KodeKegiatanLoading) {
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Theme.of(context).primaryColor,
-                        content: Row(
-                          children: <Widget>[
-                            CircularProgressIndicator(),
-                            Container(
-                              margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
-                            )
-                          ],
-                        ),
-                        duration: Duration(seconds: 5),
-                      ),
-                    );
                   } else if (state is KodeKegiatanUnauthenticated) {
-                    Navigator.pushReplacement(context,
-                        MaterialPageRoute(builder: (context) => MyHomePage()));
+                    Navigator.of(context).pop();
                   } else {
                     Scaffold.of(context).hideCurrentSnackBar();
+                  }
+                }),
+                BlocListener<AuthenticationBloc, AuthenticationState>(
+                    listener: (context, state) {
+                  if (state is AuthenticationNotAuthenticated) {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   }
                 })
               ],
@@ -161,12 +197,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                 BuildContext context,
                 KodeKegiatanState state,
               ) {
-                if (state is InitialKodeKegiatanState ||
-                    state is KodeKegiatanLoading ||
-                    state is KodeKegiatanFailure ||
-                    state is KodeKegiatanUnauthenticated) {
-                  return Container();
-                } else if (state is KodeKegiatanLoaded) {
+                if (state is KodeKegiatanLoaded) {
                   KodeKegiatanLoaded kodeKegiatanModel =
                       state as KodeKegiatanLoaded;
 
@@ -186,6 +217,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                 child: Text(
                                     kodeKegiatanModel
                                         .kodeKegiatan.data.eventName,
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
@@ -194,16 +226,30 @@ class _KegiatanPageState extends State<KegiatanPage> {
                           height: 5,
                         ),
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text('Waktu : '),
-                            Text(
-                                unixTimeStampToDateTime(kodeKegiatanModel
-                                        .kodeKegiatan.data.startAt) +
-                                    ' - ' +
-                                    unixTimeStampToHour(kodeKegiatanModel
-                                        .kodeKegiatan.data.endAt) +
-                                    ' WIB',
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            Expanded(
+                              child: Text(
+                                  checkingSameDate(
+                                          DateTime.parse(kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt)
+                                              .toLocal(),
+                                          DateTime.parse(kodeKegiatanModel
+                                                  .kodeKegiatan.data.endAt)
+                                              .toLocal())
+                                      ? unixTimeStampToDateTime(
+                                              kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt) +
+                                          ' - ' +
+                                          unixTimeStampToHour(kodeKegiatanModel
+                                              .kodeKegiatan.data.endAt) +
+                                          ' WIB'
+                                      : "${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.startAt)} - ${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.endAt)}",
+                                  textAlign: TextAlign.right,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -231,6 +277,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             Text('Tempat Checkin : '),
                             Expanded(
                                 child: Text(kodeKegiatanModel.location,
+                                    textAlign: TextAlign.right,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
@@ -243,96 +290,89 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             BuildContext context,
                             CheckinState state,
                           ) {
-                            if (state is InitialCheckinState ||
-                                state is CheckinLoading ||
-                                state is CheckinFailure ||
-                                state is CheckinLoaded) {
-                              return Column(
-                                children: <Widget>[
-                                  InkWell(
-                                    onTap: () async {
-                                      var permissionService = Permission.camera;
-                                      if (await permissionService
-                                          .status.isGranted) {
-                                        barcodeScan(kodeKegiatanModel);
-                                      } else {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) =>
-                                                DialogRequestPermission(
-                                                  image: Image.asset(
-                                                    '${Environment.iconAssets}map_pin.png',
-                                                    fit: BoxFit.contain,
-                                                    color: Colors.white,
-                                                  ),
-                                                  description:
-                                                      'Untuk scan QR Code izinkan mengakses kamera',
-                                                  onOkPressed: () async {
-                                                    Navigator.of(context).pop();
-                                                    if (await permissionService
-                                                        .status.isDenied) {
-                                                      await AppSettings
-                                                          .openLocationSettings();
-                                                    } else {
-                                                      permissionService
-                                                          .request()
-                                                          .then((status) {
-                                                        _onStatusRequested(
-                                                            context,
-                                                            status,
-                                                            kodeKegiatanModel);
-                                                      });
-                                                    }
-                                                  },
-                                                  onCancelPressed: () {
-                                                    Navigator.of(context).pop();
-                                                  },
-                                                ));
-                                      }
-                                    },
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration:
-                                          BoxDecoration(color: Colors.green),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Text('Scan QR Code',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
+                            return Column(
+                              children: <Widget>[
+                                InkWell(
+                                  onTap: () async {
+                                    var permissionService = Permission.camera;
+                                    if (await permissionService
+                                        .status.isGranted) {
+                                      barcodeScan(kodeKegiatanModel);
+                                    } else {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) =>
+                                              DialogRequestPermission(
+                                                image: Image.asset(
+                                                  '${Environment.iconAssets}map_pin.png',
+                                                  fit: BoxFit.contain,
+                                                  color: Colors.white,
+                                                ),
+                                                description:
+                                                    'Untuk scan QR Code izinkan mengakses kamera',
+                                                onOkPressed: () async {
+                                                  Navigator.of(context).pop();
+                                                  if (await permissionService
+                                                      .status.isDenied) {
+                                                    await AppSettings
+                                                        .openLocationSettings();
+                                                  } else {
+                                                    permissionService
+                                                        .request()
+                                                        .then((status) {
+                                                      _onStatusRequested(
+                                                          context,
+                                                          status,
+                                                          kodeKegiatanModel);
+                                                    });
+                                                  }
+                                                },
+                                                onCancelPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ));
+                                    }
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration:
+                                        BoxDecoration(color: Colors.green),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Text('Scan QR Code',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
                                   ),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  InkWell(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => InputNomor(
-                                                    kodeKegiatanModel:
-                                                        kodeKegiatanModel
-                                                            .kodeKegiatan,
-                                                  )));
-                                    },
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width,
-                                      decoration:
-                                          BoxDecoration(color: Colors.green),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20.0),
-                                        child: Text('Input Nomor Pendaftaran',
-                                            style:
-                                                TextStyle(color: Colors.white)),
-                                      ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => InputNomor(
+                                                  kodeKegiatanModel:
+                                                      kodeKegiatanModel
+                                                          .kodeKegiatan,
+                                                )));
+                                  },
+                                  child: Container(
+                                    width: MediaQuery.of(context).size.width,
+                                    decoration:
+                                        BoxDecoration(color: Colors.green),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20.0),
+                                      child: Text('Input Nomor Pendaftaran',
+                                          style:
+                                              TextStyle(color: Colors.white)),
                                     ),
-                                  )
-                                ],
-                              );
-                            } else {
-                              return Container();
-                            }
+                                  ),
+                                )
+                              ],
+                            );
                           },
                         ),
                         SizedBox(
@@ -355,26 +395,28 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               child: Text('Lihat Daftar Peserta',
                                   style: TextStyle(color: Colors.white))),
                         ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Container(
                             width: MediaQuery.of(context).size.width,
                             child: MaterialButton(
                                 color: Colors.red,
                                 onPressed: () {
-                                  _kodeKegiatanBloc.add(Logout());
+                                  _authenticationBloc.add(UserLoggedOut());
                                 },
                                 child: Text('Logout',
                                     style: TextStyle(color: Colors.white)))),
-                        SizedBox(
-                          height: 20,
-                        ),
                       ],
                     ),
                   ));
+                } else {
+                  return Center(child: CircularProgressIndicator());
                 }
               }),
             ),
-          ),
-        ));
+          )),
+    );
   }
 
   barcodeScan(KodeKegiatanLoaded kodeKegiatanModel) async {
@@ -448,11 +490,11 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             onPressed: () {
                               if (_formKey.currentState.validate()) {
                                 FocusScope.of(context).unfocus();
-                                _buildConfirmDialog(
-                                    barcode.rawContent,
-                                    _codeSampleController.text,
-                                    kodeKegiatanModel
-                                        .kodeKegiatan.data.eventCode);
+                                _checkinBloc.add(GetNameLoad(
+                                    registrationCode: barcode.rawContent,
+                                    eventCode: kodeKegiatanModel
+                                        .kodeKegiatan.data.eventCode,
+                                    labCode: _codeSampleController.text));
                               }
                             },
                           ),
@@ -465,20 +507,33 @@ class _KegiatanPageState extends State<KegiatanPage> {
     }
   }
 
-  _buildConfirmDialog(String registrationCode, labCode, eventCode) {
+  _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
         context: context,
         builder: (BuildContext context) => Dialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               child: Container(
-                height: MediaQuery.of(context).size.height * 0.28,
+                height: MediaQuery.of(context).size.height * 0.30,
                 child: Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text('Nama : '),
+                          Expanded(
+                              child: Text(name,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold))),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
@@ -515,6 +570,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
                               padding: EdgeInsets.all(0.0),
@@ -537,6 +593,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
                               padding: EdgeInsets.all(0.0),
@@ -661,6 +718,12 @@ class _KegiatanPageState extends State<KegiatanPage> {
         ],
       ),
     );
+  }
+
+  bool checkingSameDate(DateTime startAt, endAt) {
+    return startAt.year == endAt.year &&
+        startAt.month == endAt.month &&
+        startAt.day == endAt.day;
   }
 
   void _onStatusRequested(BuildContext context, PermissionStatus statuses,
