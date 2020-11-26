@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:rapid_test/config/FlavorConfig.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
+import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/TokenModel.dart';
 import 'package:rapid_test/model/UserModel.dart';
 import 'package:rapid_test/utilities/http.dart';
@@ -121,7 +122,7 @@ class AuthenticationRepository {
     var arrToken = token.split('.');
     String payloadToken =
         utf8.decode(base64.decode(base64.normalize(arrToken[1])));
-    print(jsonDecode(payloadToken));
+    print(jsonDecode(payloadToken)['aud']);
     return jsonDecode(payloadToken);
   }
 
@@ -156,6 +157,20 @@ class AuthenticationRepository {
                 .then((_) => false);
           }
         });
+      } else {
+        return false;
+      }
+    });
+  }
+
+  Future<bool> isAccessGranted() async {
+    print('--- Mengecek Hak Akses ----');
+    return await decodeToken(TokenType.ACCESS_TOKEN)
+        .then((value) => value['aud'].toString().contains(Environment.audKey))
+        .then((isGranted) async {
+      print('Hak Akses : $isGranted');
+      if (isGranted) {
+        return true;
       } else {
         return false;
       }

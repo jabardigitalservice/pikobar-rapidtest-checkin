@@ -19,8 +19,7 @@ class KegiatanDetailRepository {
                 "event_code": eventCode,
                 "lab_code_sample": labCodeSample,
                 "location": location
-              }))
-          .timeout(const Duration(seconds: 15));
+              }));
       final data = response.data;
       CheckinModel record = CheckinModel.fromJson(data);
       return record;
