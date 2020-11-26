@@ -1,5 +1,6 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,22 +13,24 @@ import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogRequestPermission.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/ErrorException.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/daftar_peserta.dart';
 import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/input_nomor.dart';
 import 'package:rapid_test/screen/login_screen.dart';
+import 'package:rapid_test/screen/offline/checkin_list.dart';
+import 'package:rapid_test/screen/offline/daftar_peserta_offline.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class KegiatanPage extends StatefulWidget {
-  KodeKegiatanModel kodeKegiatanModel;
-  KegiatanPage({this.kodeKegiatanModel});
   @override
   _KegiatanPageState createState() => _KegiatanPageState();
 }
@@ -35,6 +38,7 @@ class KegiatanPage extends StatefulWidget {
 class _KegiatanPageState extends State<KegiatanPage> {
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
+  final OfflineRepository _offlineRepository = OfflineRepository();
   CheckinBloc _checkinBloc;
   final _codeSampleController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -61,15 +65,20 @@ class _KegiatanPageState extends State<KegiatanPage> {
         _kodeKegiatanBloc.add(Logout());
       },
       child: Scaffold(
-          appBar: AppBar(title: Text("Tes Masif Checkin")),
+          appBar: AppBar(
+            title: Text(Dictionary.testMasifCheckin),
+          ),
           body: MultiBlocProvider(
             providers: [
               BlocProvider<CheckinBloc>(
-                  create: (BuildContext context) => _checkinBloc =
-                      CheckinBloc(repository: _kegiatanDetailRepository)),
+                  create: (BuildContext context) => _checkinBloc = CheckinBloc(
+                      repository: _kegiatanDetailRepository,
+                      offlineRepository: _offlineRepository)),
               BlocProvider<KodeKegiatanBloc>(
-                  create: (BuildContext context) => _kodeKegiatanBloc =
-                      KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+                  create: (BuildContext context) =>
+                      _kodeKegiatanBloc = KodeKegiatanBloc(
+                          repository: _kegiatanDetailRepository,
+                          offlineRepository: _offlineRepository)
                         ..add(KodeKegiatanLoad())),
               BlocProvider<AuthenticationBloc>(
                   create: (BuildContext context) => _authenticationBloc =
@@ -89,7 +98,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
                                 description: state.error.toString(),
-                                buttonText: "OK",
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   if (state.error
                                       .toString()
@@ -114,7 +123,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             CircularProgressIndicator(),
                             Container(
                               margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
+                              child: Text(Dictionary.pleaseWait),
                             )
                           ],
                         ),
@@ -124,12 +133,12 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     CheckinLoaded checkinLoaded = state as CheckinLoaded;
                     Navigator.of(context).pop();
                     showDialog(
+                        barrierDismissible: false,
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
-                              description:
-                                  checkinLoaded.checkinModel.data.name +
-                                      ' berhasil checkin',
-                              buttonText: "OK",
+                              description: checkinLoaded.name +
+                                  Dictionary.checkinSuccess,
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context).pop();
                                 Navigator.of(context)
@@ -160,7 +169,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                           context: context,
                           builder: (BuildContext context) => DialogTextOnly(
                                 description: state.error.toString(),
-                                buttonText: "OK",
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   if (state.error
                                           .toString()
@@ -202,213 +211,278 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       state as KodeKegiatanLoaded;
 
                   return SafeArea(
-                      child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: ListView(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Nama Kegiatan Test : '),
-                            Expanded(
-                                child: Text(
-                                    kodeKegiatanModel
-                                        .kodeKegiatan.data.eventName,
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Waktu : '),
-                            Expanded(
-                              child: Text(
-                                  checkingSameDate(
-                                          DateTime.parse(kodeKegiatanModel
-                                                  .kodeKegiatan.data.startAt)
-                                              .toLocal(),
-                                          DateTime.parse(kodeKegiatanModel
-                                                  .kodeKegiatan.data.endAt)
-                                              .toLocal())
-                                      ? unixTimeStampToDateTime(
-                                              kodeKegiatanModel
-                                                  .kodeKegiatan.data.startAt) +
-                                          ' - ' +
-                                          unixTimeStampToHour(kodeKegiatanModel
-                                              .kodeKegiatan.data.endAt) +
-                                          ' WIB'
-                                      : "${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.startAt)} - ${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.endAt)}",
-                                  textAlign: TextAlign.right,
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        // Row(
-                        //   crossAxisAlignment: CrossAxisAlignment.start,
-                        //   children: <Widget>[
-                        //     Text('Tempat : '),
-                        //     Container(
-                        //         width: 300,
-                        //         child: Text(
-                        //             kodeKegiatanModel
-                        //                 .kodeKegiatan.data.eventLocation,
-                        //             style: TextStyle(
-                        //                 fontWeight: FontWeight.bold))),
-                        //   ],
-                        // ),
-                        // SizedBox(
-                        //   height: 5,
-                        // ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text('Tempat Checkin : '),
-                            Expanded(
-                                child: Text(kodeKegiatanModel.location,
-                                    textAlign: TextAlign.right,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                          ],
-                        ),
-                        SizedBox(
+                      child: ListView(
+                    children: <Widget>[
+                      ConnectivityWidgetWrapper(
+                        stacked: false,
+                        offlineWidget: Container(
+                          width: MediaQuery.of(context).size.width,
                           height: 50,
+                          color: Colors.red,
+                          child: Center(
+                            child: Text(
+                              Dictionary.offlineMode,
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18),
+                            ),
+                          ),
                         ),
-                        BlocBuilder<CheckinBloc, CheckinState>(
-                          builder: (
-                            BuildContext context,
-                            CheckinState state,
-                          ) {
-                            return Column(
+                        child: Container(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                InkWell(
-                                  onTap: () async {
-                                    var permissionService = Permission.camera;
-                                    if (await permissionService
-                                        .status.isGranted) {
-                                      barcodeScan(kodeKegiatanModel);
+                                Text(Dictionary.activityName),
+                                Expanded(
+                                    child: Text(
+                                        kodeKegiatanModel
+                                            .kodeKegiatan.data.eventName,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(Dictionary.time),
+                                Expanded(
+                                  child: Text(
+                                      checkingSameDate(
+                                              DateTime.parse(kodeKegiatanModel
+                                                      .kodeKegiatan
+                                                      .data
+                                                      .startAt)
+                                                  .toLocal(),
+                                              DateTime.parse(kodeKegiatanModel
+                                                      .kodeKegiatan.data.endAt)
+                                                  .toLocal())
+                                          ? unixTimeStampToDateTime(kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt) +
+                                              ' - ' +
+                                              unixTimeStampToHour(
+                                                  kodeKegiatanModel.kodeKegiatan
+                                                      .data.endAt) +
+                                              Dictionary.wib
+                                          : "${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.startAt)} - ${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.endAt)}",
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            // Row(
+                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                            //   children: <Widget>[
+                            //     Text('Tempat : '),
+                            //     Container(
+                            //         width: 300,
+                            //         child: Text(
+                            //             kodeKegiatanModel
+                            //                 .kodeKegiatan.data.eventLocation,
+                            //             style: TextStyle(
+                            //                 fontWeight: FontWeight.bold))),
+                            //   ],
+                            // ),
+                            // SizedBox(
+                            //   height: 5,
+                            // ),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(Dictionary.checkinLocation),
+                                Expanded(
+                                    child: Text(kodeKegiatanModel.location,
+                                        textAlign: TextAlign.right,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold))),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            BlocBuilder<CheckinBloc, CheckinState>(
+                              builder: (
+                                BuildContext context,
+                                CheckinState state,
+                              ) {
+                                return Column(
+                                  children: <Widget>[
+                                    InkWell(
+                                      onTap: () async {
+                                        var permissionService =
+                                            Permission.camera;
+                                        if (await permissionService
+                                            .status.isGranted) {
+                                          barcodeScan(kodeKegiatanModel);
+                                        } else {
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) =>
+                                                  DialogRequestPermission(
+                                                    image: Image.asset(
+                                                      '${Environment.iconAssets}map_pin.png',
+                                                      fit: BoxFit.contain,
+                                                      color: Colors.white,
+                                                    ),
+                                                    description: Dictionary
+                                                        .scanQRPermission,
+                                                    onOkPressed: () async {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      if (await permissionService
+                                                          .status.isDenied) {
+                                                        await AppSettings
+                                                            .openLocationSettings();
+                                                      } else {
+                                                        permissionService
+                                                            .request()
+                                                            .then((status) {
+                                                          _onStatusRequested(
+                                                              context,
+                                                              status,
+                                                              kodeKegiatanModel);
+                                                        });
+                                                      }
+                                                    },
+                                                    onCancelPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ));
+                                        }
+                                      },
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        decoration:
+                                            BoxDecoration(color: Colors.green),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20.0),
+                                          child: Text(Dictionary.scanQR,
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    InputNomor(
+                                                      kodeKegiatanModel:
+                                                          kodeKegiatanModel
+                                                              .kodeKegiatan,
+                                                    )));
+                                      },
+                                      child: Container(
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        decoration:
+                                            BoxDecoration(color: Colors.green),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(20.0),
+                                          child: Text(
+                                              Dictionary.inputRegistrationCode,
+                                              style: TextStyle(
+                                                  color: Colors.white)),
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                );
+                              },
+                            ),
+                            SizedBox(
+                              height: 80,
+                            ),
+                            Container(
+                              width: MediaQuery.of(context).size.width,
+                              child: MaterialButton(
+                                  color: Theme.of(context).primaryColor,
+                                  elevation: 0,
+                                  onPressed: () async {
+                                    if (await ConnectivityWrapper
+                                        .instance.isConnected) {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DaftarPesertaPage(
+                                                    kodeKegiatanModel:
+                                                        kodeKegiatanModel
+                                                            .kodeKegiatan,
+                                                  )));
                                     } else {
-                                      showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) =>
-                                              DialogRequestPermission(
-                                                image: Image.asset(
-                                                  '${Environment.iconAssets}map_pin.png',
-                                                  fit: BoxFit.contain,
-                                                  color: Colors.white,
-                                                ),
-                                                description:
-                                                    'Untuk scan QR Code izinkan mengakses kamera',
-                                                onOkPressed: () async {
-                                                  Navigator.of(context).pop();
-                                                  if (await permissionService
-                                                      .status.isDenied) {
-                                                    await AppSettings
-                                                        .openLocationSettings();
-                                                  } else {
-                                                    permissionService
-                                                        .request()
-                                                        .then((status) {
-                                                      _onStatusRequested(
-                                                          context,
-                                                          status,
-                                                          kodeKegiatanModel);
-                                                    });
-                                                  }
-                                                },
-                                                onCancelPressed: () {
-                                                  Navigator.of(context).pop();
-                                                },
-                                              ));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  DaftarPesertaOfflinePage(
+                                                    kodeKegiatanModel:
+                                                        kodeKegiatanModel
+                                                            .kodeKegiatan,
+                                                  )));
                                     }
                                   },
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration:
-                                        BoxDecoration(color: Colors.green),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Text('Scan QR Code',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => InputNomor(
-                                                  kodeKegiatanModel:
-                                                      kodeKegiatanModel
-                                                          .kodeKegiatan,
-                                                )));
-                                  },
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width,
-                                    decoration:
-                                        BoxDecoration(color: Colors.green),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(20.0),
-                                      child: Text('Input Nomor Pendaftaran',
-                                          style:
-                                              TextStyle(color: Colors.white)),
-                                    ),
-                                  ),
-                                )
-                              ],
-                            );
-                          },
+                                  child: Text(Dictionary.listParticipant,
+                                      style: TextStyle(color: Colors.white))),
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            // Container(
+                            //   width: MediaQuery.of(context).size.width,
+                            //   child: MaterialButton(
+                            //       elevation: 0,
+                            //       color: Theme.of(context).primaryColor,
+                            //       onPressed: () {
+                            //         Navigator.push(
+                            //             context,
+                            //             MaterialPageRoute(
+                            //                 builder: (context) =>
+                            //                     CheckinList()));
+                            //       },
+                            //       child: Text('Lihat Data Checkin',
+                            //           style: TextStyle(color: Colors.white))),
+                            // ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                                width: MediaQuery.of(context).size.width,
+                                child: MaterialButton(
+                                    color: Colors.red,
+                                    onPressed: () {
+                                      _authenticationBloc.add(UserLoggedOut());
+                                    },
+                                    child: Text(Dictionary.logout,
+                                        style:
+                                            TextStyle(color: Colors.white)))),
+                          ],
                         ),
-                        SizedBox(
-                          height: 80,
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          child: MaterialButton(
-                              color: Theme.of(context).primaryColor,
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => DaftarPesertaPage(
-                                              kodeKegiatanModel:
-                                                  kodeKegiatanModel
-                                                      .kodeKegiatan,
-                                            )));
-                              },
-                              child: Text('Lihat Daftar Peserta',
-                                  style: TextStyle(color: Colors.white))),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                            width: MediaQuery.of(context).size.width,
-                            child: MaterialButton(
-                                color: Colors.red,
-                                onPressed: () {
-                                  _authenticationBloc.add(UserLoggedOut());
-                                },
-                                child: Text('Logout',
-                                    style: TextStyle(color: Colors.white)))),
-                      ],
-                    ),
+                      )
+                    ],
                   ));
                 } else {
                   return Center(child: CircularProgressIndicator());
@@ -429,6 +503,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
       print(barcode.formatNote);
       print(barcode.type);
       showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (BuildContext context) => Dialog(
                 shape: RoundedRectangleBorder(
@@ -443,7 +518,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('No Registrasi anda : '),
+                            Text(Dictionary.registrationCode),
                             Expanded(
                                 child: Text(barcode.rawContent,
                                     style: TextStyle(
@@ -453,15 +528,14 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text(
-                            'Masukan kode sampel terlebih dahulu atau langsung tekan checkin'),
+                        Text(Dictionary.checkinDesc),
                         SizedBox(
                           height: 10,
                         ),
                         buildTextField(
-                            title: 'Kode Sampel',
+                            title: Dictionary.labCode,
                             controller: _codeSampleController,
-                            hintText: 'Masukan atau scan kode sampel',
+                            hintText: Dictionary.labCodePlaceholder,
                             isEdit: true,
                             validation: Validations.kodeSampleValidation,
                             qrIcon: true,
@@ -480,7 +554,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Text(
-                              'Checkin',
+                              Dictionary.checkin,
                               style: TextStyle(
                                   fontFamily: FontsFamily.productSans,
                                   fontWeight: FontWeight.bold,
@@ -524,7 +598,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Nama : '),
+                          Text(Dictionary.name),
                           Expanded(
                               child: Text(name,
                                   style:
@@ -537,7 +611,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('No Registrasi Anda : '),
+                          Text(Dictionary.registrationCode),
                           Expanded(
                               child: Text(registrationCode,
                                   style:
@@ -550,7 +624,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Kode Sample : '),
+                          Text(Dictionary.labCodeInput),
                           Expanded(
                               child: Text(labCode,
                                   style:
@@ -560,8 +634,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                          'Pastikan data sudah benar sebelum menekan tombol submit'),
+                      Text(Dictionary.warningBeforeCheckin),
                       SizedBox(
                         height: 10,
                       ),
@@ -579,7 +652,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Cancel',
+                                Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -602,7 +675,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Submit',
+                                Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,

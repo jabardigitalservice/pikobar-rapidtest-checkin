@@ -18,6 +18,20 @@ class KodeKegiatanLoad extends KodeKegiatanEvent {
   List<Object> get props => [];
 }
 
+class KodeKegiatanMovePage extends KodeKegiatanEvent {
+  final String kodeKegiatan, location;
+  final bool isFromLogin;
+  KodeKegiatanMovePage({this.kodeKegiatan, this.location, this.isFromLogin});
+
+  @override
+  String toString() {
+    return 'Event KodeKegiatanLoad';
+  }
+
+  @override
+  List<Object> get props => [];
+}
+
 class AppStart extends KodeKegiatanEvent {
   @override
   String toString() {

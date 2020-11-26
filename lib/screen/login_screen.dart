@@ -5,12 +5,15 @@ import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/login/login_bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_list.dart';
 import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/utilities/Validations.dart';
+
+import 'offline/input_activity_code_offline.dart';
 
 class LoginScreen extends StatelessWidget {
   final KegiatanDetailRepository _kegiatanDetailRepository =
@@ -66,7 +69,7 @@ class _State extends State<LoginForm> {
               context: context,
               builder: (BuildContext context) => DialogTextOnly(
                     description: state.error.toString(),
-                    buttonText: "OK",
+                    buttonText: Dictionary.ok,
                     onOkPressed: () {
                       Navigator.of(context).pop(); // To close the dialog
                     },
@@ -84,7 +87,7 @@ class _State extends State<LoginForm> {
                   CircularProgressIndicator(),
                   Container(
                     margin: EdgeInsets.only(left: 15.0),
-                    child: Text('Tunggu Sebentar'),
+                    child: Text(Dictionary.pleaseWait),
                   )
                 ],
               ),
@@ -103,26 +106,26 @@ class _State extends State<LoginForm> {
               child: ListView(
                 children: <Widget>[
                   buildTextField(
-                    title: 'Username',
+                    title: Dictionary.username,
                     controller: nameController,
-                    hintText: 'Masukan Username',
+                    hintText: Dictionary.usernamePlaceholder,
                     isEdit: true,
                     validation: Validations.usernameValidation,
                   ),
                   SizedBox(height: 15),
                   buildTextField(
-                    title: 'Password',
+                    title: Dictionary.password,
                     controller: passwordController,
-                    hintText: 'Masukan Password',
+                    hintText: Dictionary.passwordPlaceholder,
                     isEdit: true,
                     obsecureText: true,
                     validation: Validations.passwordValidation,
                   ),
                   SizedBox(height: 15),
                   buildTextField(
-                    title: 'Lokasi',
+                    title: Dictionary.location,
                     controller: _location,
-                    hintText: 'Masukan lokasi',
+                    hintText: Dictionary.locationPlaceholder,
                     isEdit: true,
                     textCapitalization: TextCapitalization.characters,
                     validation: Validations.locationValidation,
@@ -139,7 +142,7 @@ class _State extends State<LoginForm> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'Login',
+                        Dictionary.login,
                         style: TextStyle(
                             fontFamily: FontsFamily.productSans,
                             fontWeight: FontWeight.bold,
@@ -157,7 +160,7 @@ class _State extends State<LoginForm> {
                   SizedBox(
                     height: 20,
                   ),
-                  Center(child: Text('Atau')),
+                  Center(child: Text(Dictionary.or)),
                   SizedBox(
                     height: 20,
                   ),
@@ -169,9 +172,27 @@ class _State extends State<LoginForm> {
                                 builder: (context) => MyHomePage()));
                       },
                       child: Text(
-                        'Input Kode Kegiatan',
+                        Dictionary.inputActivityCode,
                         style: TextStyle(color: Colors.blue),
-                      ))
+                      )),
+                      SizedBox(
+                    height: 20,
+                  ),
+                  // Center(child: Text('Atau')),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  // FlatButton(
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (context) => InputActivityCodeOffline()));
+                  //     },
+                  //     child: Text(
+                  //       'Offline Mode',
+                  //       style: TextStyle(color: Colors.blue),
+                  //     ))
                 ],
               ),
             ),

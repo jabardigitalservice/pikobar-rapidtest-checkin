@@ -12,6 +12,7 @@ import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
@@ -46,7 +47,7 @@ class _EventListPageState extends State<EventListPage>
   KodeKegiatanBloc _kodeKegiatanBloc;
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
-
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   @override
   void initState() {
@@ -99,8 +100,10 @@ class _EventListPageState extends State<EventListPage>
               create: (BuildContext context) => _authenticationBloc =
                   AuthenticationBloc(_authenticationRepository)),
           BlocProvider<KodeKegiatanBloc>(
-            create: (BuildContext context) => _kodeKegiatanBloc =
-                KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+            create: (BuildContext context) =>
+                _kodeKegiatanBloc = KodeKegiatanBloc(
+                    repository: _kegiatanDetailRepository,
+                    offlineRepository: _offlineRepository)
                   ..add(AppStart()),
           ),
         ],
@@ -170,16 +173,14 @@ class _EventListPageState extends State<EventListPage>
                     ),
                   ),
                 );
-              } else if (state is KodeKegiatanLoaded) {
+              } else if (state is KodeKegiatanSuccessMovePage) {
                 Scaffold.of(context).hideCurrentSnackBar();
-                KodeKegiatanLoaded kodeKegiatanLoaded =
-                    state as KodeKegiatanLoaded;
+                
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => KegiatanPage(
-                              kodeKegiatanModel:
-                                  kodeKegiatanLoaded.kodeKegiatan,
+                              
                             )));
               } else {
                 Scaffold.of(context).hideCurrentSnackBar();
@@ -260,11 +261,16 @@ class _EventListPageState extends State<EventListPage>
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: unixTimeStampToDateWithoutHour(DateTime.now().toString()) ==
+                                color: unixTimeStampToDateWithoutHour(
+                                            DateTime.now().toString()) ==
                                         unixTimeStampToDateWithoutHour(
                                             listEvent[i].endAt)
                                     ? Colors.white
-                                    : (DateTime.now().difference(DateTime.parse(listEvent[i].endAt).toLocal()).isNegative)
+                                    : (DateTime.now()
+                                            .difference(
+                                                DateTime.parse(listEvent[i].endAt)
+                                                    .toLocal())
+                                            .isNegative)
                                         ? Colors.white
                                         : Colors.grey[300],
                                 border: Border.all(
@@ -274,7 +280,9 @@ class _EventListPageState extends State<EventListPage>
                                                 listEvent[i].endAt)
                                         ? Theme.of(context).primaryColor
                                         : (DateTime.now()
-                                                .difference(DateTime.parse(listEvent[i].endAt).toLocal())
+                                                .difference(DateTime.parse(
+                                                        listEvent[i].endAt)
+                                                    .toLocal())
                                                 .isNegative)
                                             ? Theme.of(context).primaryColor
                                             : Colors.grey,
@@ -320,7 +328,7 @@ class _EventListPageState extends State<EventListPage>
                                                 unixTimeStampToDateWithoutHour(
                                                     listEvent[i].endAt)) {
                                               _kodeKegiatanBloc.add(
-                                                  KodeKegiatanLoad(
+                                                  KodeKegiatanMovePage(
                                                       kodeKegiatan: listEvent[i]
                                                           .eventCode,
                                                       isFromLogin: true));
@@ -331,7 +339,7 @@ class _EventListPageState extends State<EventListPage>
                                                       .toLocal())
                                                   .isNegative) {
                                                 _kodeKegiatanBloc.add(
-                                                    KodeKegiatanLoad(
+                                                    KodeKegiatanMovePage(
                                                         kodeKegiatan:
                                                             listEvent[i]
                                                                 .eventCode,

@@ -1,4 +1,5 @@
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,6 +10,7 @@ import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
@@ -32,6 +34,7 @@ class _InputNomorState extends State<InputNomor> {
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   @override
   Widget build(BuildContext context) {
@@ -40,8 +43,9 @@ class _InputNomorState extends State<InputNomor> {
         body: MultiBlocProvider(
           providers: [
             BlocProvider<CheckinBloc>(
-              create: (BuildContext context) => _checkinBloc =
-                  CheckinBloc(repository: _kegiatanDetailRepository),
+              create: (BuildContext context) => _checkinBloc = CheckinBloc(
+                  repository: _kegiatanDetailRepository,
+                  offlineRepository: _offlineRepository),
             ),
             BlocProvider<AuthenticationBloc>(
                 create: (BuildContext context) => _authenticationBloc =
@@ -86,11 +90,11 @@ class _InputNomorState extends State<InputNomor> {
                   } else if (state is CheckinLoaded) {
                     CheckinLoaded checkinLoaded = state as CheckinLoaded;
                     showDialog(
+                        barrierDismissible: false,
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
                               description:
-                                  checkinLoaded.checkinModel.data.name +
-                                      ' berhasil checkin',
+                                  checkinLoaded.name + ' berhasil checkin',
                               buttonText: "OK",
                               onOkPressed: () {
                                 _codeActivity.text = '';
@@ -129,67 +133,91 @@ class _InputNomorState extends State<InputNomor> {
                 BuildContext context,
                 CheckinState state,
               ) {
-                return Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        buildTextField(
-                            title: 'Nomor Pendaftaran',
-                            controller: _codeActivity,
-                            hintText: 'Masukan nomor pendaftaran',
-                            isEdit: true,
-                            validation: Validations.kodeValidation,
-                            textInputType: TextInputType.text),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        buildTextField(
-                            title: 'Kode Sampel',
-                            controller: _codeSampleController,
-                            validation: Validations.kodeSampleValidation,
-                            hintText: 'Masukan atau scan kode sampel',
-                            isEdit: true,
-                            qrIcon: true,
-                            textInputType: TextInputType.text),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
+                return Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      ConnectivityWidgetWrapper(
+                        stacked: false,
+                        offlineWidget: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 40.0,
-                          child: RaisedButton(
-                            splashColor: Colors.lightGreenAccent,
-                            padding: EdgeInsets.all(0.0),
-                            color: ColorBase.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
+                          height: 50,
+                          color: Colors.red,
+                          child: Center(
                             child: Text(
-                              'Checkin',
+                              'Offline Mode',
                               style: TextStyle(
-                                  fontFamily: FontsFamily.productSans,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
-                                  color: Colors.white),
+                                  fontSize: 18),
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                FocusScope.of(context).unfocus();
-                                _checkinBloc.add(GetNameLoad(
-                                    registrationCode: _codeActivity.text,
-                                    eventCode:
-                                        widget.kodeKegiatanModel.data.eventCode,
-                                    labCode: _codeSampleController.text));
-                              }
-                            },
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                        child: Container(),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              buildTextField(
+                                  title: 'Nomor Pendaftaran',
+                                  controller: _codeActivity,
+                                  hintText: 'Masukan nomor pendaftaran',
+                                  isEdit: true,
+                                  validation: Validations.kodeValidation,
+                                  textInputType: TextInputType.text),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              buildTextField(
+                                  title: 'Kode Sampel',
+                                  controller: _codeSampleController,
+                                  validation: Validations.kodeSampleValidation,
+                                  hintText: 'Masukan atau scan kode sampel',
+                                  isEdit: true,
+                                  qrIcon: true,
+                                  textInputType: TextInputType.text),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 40.0,
+                                child: RaisedButton(
+                                  splashColor: Colors.lightGreenAccent,
+                                  padding: EdgeInsets.all(0.0),
+                                  color: ColorBase.green,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Text(
+                                    'Checkin',
+                                    style: TextStyle(
+                                        fontFamily: FontsFamily.productSans,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.0,
+                                        color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      FocusScope.of(context).unfocus();
+                                      _checkinBloc.add(GetNameLoad(
+                                          registrationCode: _codeActivity.text,
+                                          eventCode: widget
+                                              .kodeKegiatanModel.data.eventCode,
+                                          labCode: _codeSampleController.text));
+                                    }
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 );
               },
@@ -200,6 +228,7 @@ class _InputNomorState extends State<InputNomor> {
 
   _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) => Dialog(
               shape: RoundedRectangleBorder(

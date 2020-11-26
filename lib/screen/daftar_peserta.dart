@@ -7,16 +7,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/list_participants/Bloc.dart';
+import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/ListParticipantRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
+
+import 'offline/checkin_list.dart';
 
 class DaftarPesertaPage extends StatefulWidget {
   KodeKegiatanModel kodeKegiatanModel;
@@ -44,6 +48,10 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
+  ListCheckinOfflineBloc _listCheckin;
+  OfflineRepository _offlineRepository = OfflineRepository();
+  ListCheckinOfflineLoaded listCheckinOfflineLoaded;
+  int lengthDataOffline = 0;
 
   @override
   void initState() {
@@ -72,6 +80,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
   //   }
   // }
 
+ 
+
   @override
   Widget build(BuildContext context) {
     // _scrollController.addListener(onScroll);
@@ -96,9 +106,60 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
           BlocProvider<AuthenticationBloc>(
               create: (BuildContext context) => _authenticationBloc =
                   AuthenticationBloc(_authenticationRepository)),
+          BlocProvider<ListCheckinOfflineBloc>(
+              create: (BuildContext context) => _listCheckin =
+                  ListCheckinOfflineBloc(repository: _offlineRepository)
+                    ..add(ListCheckinOfflineLoad())),
         ],
         child: MultiBlocListener(
           listeners: [
+            BlocListener<ListCheckinOfflineBloc, ListCheckinOfflineState>(
+              listener: (context, state) {
+                if (state is ListCheckinOfflineLoaded) {
+                  listCheckinOfflineLoaded = state as ListCheckinOfflineLoaded;
+                  lengthDataOffline =
+                      listCheckinOfflineLoaded.checkinOfflineModel.length;
+                  if (lengthDataOffline != 0) {
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: Theme.of(context).primaryColor,
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Ada ${lengthDataOffline.toString()} Data Offline ',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                            Container(
+                              height: 20,
+                              width: 80,
+                              child: RaisedButton(
+                                color: ColorBase.green,
+                                onPressed: () async {
+                                  lengthDataOffline = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CheckinList()));
+                                  if (lengthDataOffline == 0) {
+                                    Scaffold.of(context).hideCurrentSnackBar();
+                                  }
+                                },
+                                child: Text(
+                                  'Lihat',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                        duration: Duration(minutes: 2),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
             BlocListener<ListParticipantBloc, ListParticipantState>(
                 listener: (context, state) {
               if (state is ListParticipantFailure) {
@@ -139,9 +200,9 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
               //     ),
               //   );
               // }
-              else {
-                Scaffold.of(context).hideCurrentSnackBar();
-              }
+              // else {
+              //   Scaffold.of(context).hideCurrentSnackBar();
+              // }
             }),
             BlocListener<AuthenticationBloc, AuthenticationState>(
                 listener: (context, state) {

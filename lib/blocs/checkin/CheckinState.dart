@@ -22,9 +22,9 @@ class CheckinLoading extends CheckinState {
 }
 
 class CheckinLoaded extends CheckinState {
-  final CheckinModel checkinModel;
+  final String name;
 
-  CheckinLoaded({this.checkinModel}) : super([checkinModel]);
+  CheckinLoaded({this.name}) : super([name]);
 
   @override
   String toString() {
@@ -32,7 +32,7 @@ class CheckinLoaded extends CheckinState {
   }
 
   @override
-  List<Object> get props => [checkinModel];
+  List<Object> get props => [name];
 }
 
 class GetNameLoaded extends CheckinState {

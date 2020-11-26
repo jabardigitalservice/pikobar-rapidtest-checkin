@@ -9,6 +9,7 @@ import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dimens.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
@@ -30,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
       AuthenticationRepository();
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   // init bloc
   AccountProfileBloc _accountProfileBloc;
@@ -59,8 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
             // bloc kegiatan
             BlocProvider<KodeKegiatanBloc>(
-              create: (BuildContext context) => _kodeKegiatanBloc =
-                  KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+              create: (BuildContext context) =>
+                  _kodeKegiatanBloc = KodeKegiatanBloc(
+                      repository: _kegiatanDetailRepository,
+                      offlineRepository: _offlineRepository)
                     ..add(AppStart()),
             ),
 
@@ -108,16 +112,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
                     );
-                  } else if (state is KodeKegiatanLoaded) {
-                    KodeKegiatanLoaded kodeKegiatanLoaded =
-                        state as KodeKegiatanLoaded;
+                  } else if (state is KodeKegiatanSuccessMovePage) {
+                    Scaffold.of(context).hideCurrentSnackBar();
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => KegiatanPage(
-                                  kodeKegiatanModel:
-                                      kodeKegiatanLoaded.kodeKegiatan,
-                                )));
+                            builder: (context) => KegiatanPage()));
                   } else {
                     Scaffold.of(context).hideCurrentSnackBar();
                   }
@@ -126,7 +127,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ));
   }
-
   _buildContent() {
     return BlocBuilder<KodeKegiatanBloc, KodeKegiatanState>(
       builder: (
@@ -136,7 +136,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (state is InitialKodeKegiatanState ||
             state is KodeKegiatanLoading ||
             state is KodeKegiatanFailure ||
-            state is KodeKegiatanLoaded ||
+            state is KodeKegiatanSuccessMovePage ||
             state is KodeKegiatanUnauthenticated) {
           return Form(
             key: _formKey,
@@ -187,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           FocusScope.of(context).unfocus();
-                          _kodeKegiatanBloc.add(KodeKegiatanLoad(
+                          _kodeKegiatanBloc.add(KodeKegiatanMovePage(
                               kodeKegiatan: _codeActivity.text,
                               location: _location.text,
                               isFromLogin: false));

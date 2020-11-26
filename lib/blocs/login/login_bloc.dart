@@ -15,8 +15,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationRepository _authenticationRepository;
   final KegiatanDetailRepository kegiatanDetailrepository;
 
-  LoginBloc(AuthenticationBloc authenticationBloc,
-      AuthenticationRepository authenticationRepository,this.kegiatanDetailrepository)
+  LoginBloc(
+      AuthenticationBloc authenticationBloc,
+      AuthenticationRepository authenticationRepository,
+      this.kegiatanDetailrepository)
       : assert(authenticationBloc != null),
         assert(authenticationRepository != null),
         _authenticationBloc = authenticationBloc,
@@ -39,15 +41,25 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     try {
       await _authenticationRepository.clearActivityCode();
       await kegiatanDetailrepository.setIsFromLogin(true);
-       await kegiatanDetailrepository.setLocation(event.location);
+      await kegiatanDetailrepository.setLocation(event.location);
       final token = await _authenticationRepository.loginUser(
           event.username, event.password);
       if (token != null) {
+        // bool isGranted = await _authenticationRepository.isAccessGranted();
+        // if (isGranted) {
         // push new authentication event
         _authenticationBloc.add(UserLoggedIn(accessToken: token.accessToken));
 
         yield LoginSuccess();
         yield LoginInitial();
+        // } else {
+        //   await _authenticationRepository.clearActivityCode();
+        //   await _authenticationRepository.deleteTokens();
+        //   await _authenticationRepository.clearIsFromLogin();
+        //   yield LoginFailure(
+        //       error:
+        //           'Hak akses ditolak, silahkan hubungi admin untuk meminta hak akses');
+        // }
       } else {
         yield LoginFailure(error: 'Something very weird just happened');
       }
