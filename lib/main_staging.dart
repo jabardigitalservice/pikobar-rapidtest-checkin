@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -22,8 +23,9 @@ void main() {
     flavor: Flavor.STAGING,
     color: Colors.blue,
     values: FlavorValues(
-      baseUrl: Environment.stagingUrl,clientId: Environment.stagingclientId,loginUrl:Environment.loginStagingUrl
-    ),
+        baseUrl: Environment.stagingUrl,
+        clientId: Environment.stagingclientId,
+        loginUrl: Environment.loginStagingUrl),
   );
 
   // init DIO options
@@ -55,30 +57,32 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting();
-    return MaterialApp(
-      title: 'PIKOBAR Tes Masif Checkin',
-      theme: ThemeData(
-          primaryColor: Colors.blue,
-          primaryColorBrightness: Brightness.dark,
-          fontFamily: FontsFamily.sourceSansPro),
-      debugShowCheckedModeBanner: false,
-      navigatorKey: NavigationService.navigationKey,
-      onGenerateRoute: router.generateRoute,
-      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-          builder: (context, state) {
-        if (state is AuthenticationAuthenticated) {
-          // show home page
-          return EventListPage();
-        } else if (state is AuthenticationLoading) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
-        } else {
-          // otherwise show login page
-          return LoginScreen();
-        }
-      }),
-      // home: MyHomePage(),
+    return ConnectivityAppWrapper(
+      app: MaterialApp(
+        title: 'PIKOBAR Tes Masif Checkin',
+        theme: ThemeData(
+            primaryColor: Colors.blue,
+            primaryColorBrightness: Brightness.dark,
+            fontFamily: FontsFamily.sourceSansPro),
+        debugShowCheckedModeBanner: false,
+        navigatorKey: NavigationService.navigationKey,
+        onGenerateRoute: router.generateRoute,
+        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+            builder: (context, state) {
+          if (state is AuthenticationAuthenticated) {
+            // show home page
+            return EventListPage();
+          } else if (state is AuthenticationLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            // otherwise show login page
+            return LoginScreen();
+          }
+        }),
+        // home: MyHomePage(),
+      ),
     );
   }
 }
