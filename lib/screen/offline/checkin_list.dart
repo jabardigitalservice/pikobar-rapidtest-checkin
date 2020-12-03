@@ -4,6 +4,7 @@ import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/send_checkin_data/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
@@ -32,7 +33,7 @@ class _CheckinListState extends State<CheckinList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tes Masif Checkin Offline Mode"),
+        title: Text(Dictionary.testMasifOffline),
         leading: IconButton(
             icon: Icon(Icons.arrow_back),
             onPressed: () {
@@ -65,7 +66,7 @@ class _CheckinListState extends State<CheckinList> {
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: state.error.toString(),
-                            buttonText: "OK",
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
@@ -86,7 +87,7 @@ class _CheckinListState extends State<CheckinList> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Tunggu Sebentar...'),
+                                  Text(Dictionary.pleaseWait),
                                   Container(
                                     height: 20,
                                     width: 20,
@@ -102,7 +103,7 @@ class _CheckinListState extends State<CheckinList> {
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: state.message.toString(),
-                            buttonText: "OK",
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               _listCheckin.add(ListCheckinOfflineLoad());
                               Navigator.of(context).pop();
@@ -122,7 +123,7 @@ class _CheckinListState extends State<CheckinList> {
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: state.error.toString(),
-                            buttonText: "OK",
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();
                               _listCheckin.add(
@@ -182,7 +183,7 @@ class _CheckinListState extends State<CheckinList> {
       FlatButton(
         padding: EdgeInsets.all(0),
         child: _getTitleItemWidget(
-            'Kode Kegiatan' +
+            Dictionary.activityCode +
                 (sortType == sortEvent ? (isAscending ? ' ↓' : ' ↑') : ''),
             150),
         onPressed: () {
@@ -202,7 +203,7 @@ class _CheckinListState extends State<CheckinList> {
       FlatButton(
         padding: EdgeInsets.all(0),
         child: _getTitleItemWidget(
-            'Kode Registrasi' +
+            Dictionary.registrationCode +
                 (sortType == sortRegistration
                     ? (isAscending ? ' ↓' : ' ↑')
                     : ''),
@@ -224,7 +225,7 @@ class _CheckinListState extends State<CheckinList> {
       FlatButton(
         padding: EdgeInsets.all(0),
         child: _getTitleItemWidget(
-            'Kode Lab' +
+            Dictionary.labCode +
                 (sortType == sortlabCodeSample
                     ? (isAscending ? ' ↓' : ' ↑')
                     : ''),
@@ -246,7 +247,7 @@ class _CheckinListState extends State<CheckinList> {
       FlatButton(
         padding: EdgeInsets.all(0),
         child: _getTitleItemWidget(
-            'Lokasi' +
+            Dictionary.location +
                 (sortType == sortlocation ? (isAscending ? ' ↓' : ' ↑') : ''),
             150),
         onPressed: () {
@@ -266,7 +267,7 @@ class _CheckinListState extends State<CheckinList> {
       FlatButton(
         padding: EdgeInsets.all(0),
         child: _getTitleItemWidget(
-            'Created At' +
+            Dictionary.createdAt +
                 (sortType == sortcreatedAt ? (isAscending ? ' ↓' : ' ↑') : ''),
             150),
         onPressed: () {
@@ -380,7 +381,7 @@ class _CheckinListState extends State<CheckinList> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Batal',
+                                Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -403,7 +404,7 @@ class _CheckinListState extends State<CheckinList> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Kirim',
+                                Dictionary.send,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,

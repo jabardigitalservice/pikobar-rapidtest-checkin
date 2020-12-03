@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rapid_test/blocs/offline/checkin_offline/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/utilities/Validations.dart';
@@ -24,7 +25,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Input Nomor Pendaftaran")),
+        appBar: AppBar(title: Text(Dictionary.inputRegistrationCOde)),
         body: MultiBlocProvider(
           providers: [
             BlocProvider<CheckinOfflineBloc>(
@@ -41,7 +42,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: state.error.toString(),
-                            buttonText: "OK",
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context)
                                   .pop(); // To close the dialog
@@ -58,7 +59,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                           CircularProgressIndicator(),
                           Container(
                             margin: EdgeInsets.only(left: 15.0),
-                            child: Text('Tunggu Sebentar'),
+                            child: Text(Dictionary.pleaseWait),
                           )
                         ],
                       ),
@@ -69,8 +70,8 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: 'Berhasil checkin',
-                            buttonText: "OK",
+                            description: Dictionary.checkinSuccessOffline,
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();
                               Navigator.of(context)
@@ -102,9 +103,9 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         buildTextField(
-                            title: 'Nomor Pendaftaran',
+                            title: Dictionary.registrationCode,
                             controller: _codeActivity,
-                            hintText: 'Masukan nomor pendaftaran',
+                            hintText: Dictionary.registrationCodePlaceholder,
                             isEdit: true,
                             validation: Validations.kodeValidation,
                             textInputType: TextInputType.text),
@@ -112,10 +113,10 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                           height: 10,
                         ),
                         buildTextField(
-                            title: 'Kode Sampel',
+                            title: Dictionary.labCode,
                             controller: _codeSampleController,
                             validation: Validations.kodeSampleValidation,
-                            hintText: 'Masukan atau scan kode sampel',
+                            hintText: Dictionary.labCodePlaceholder,
                             isEdit: true,
                             qrIcon: true,
                             textInputType: TextInputType.text),
@@ -133,7 +134,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Text(
-                              'Checkin',
+                              Dictionary.checkin,
                               style: TextStyle(
                                   fontFamily: FontsFamily.productSans,
                                   fontWeight: FontWeight.bold,

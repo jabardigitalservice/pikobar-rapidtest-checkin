@@ -7,18 +7,18 @@ import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/checkin/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 import 'login_screen.dart';
 
 class InputNomor extends StatefulWidget {
-  KodeKegiatanModel kodeKegiatanModel;
+  final KodeKegiatanModel kodeKegiatanModel;
   InputNomor({this.kodeKegiatanModel});
   @override
   _InputNomorState createState() => _InputNomorState();
@@ -39,7 +39,7 @@ class _InputNomorState extends State<InputNomor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Input Nomor Pendaftaran")),
+        appBar: AppBar(title: Text(Dictionary.inputRegistrationCOde)),
         body: MultiBlocProvider(
           providers: [
             BlocProvider<CheckinBloc>(
@@ -64,7 +64,7 @@ class _InputNomorState extends State<InputNomor> {
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
                                 description: state.error.toString(),
-                                buttonText: "OK",
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   Navigator.of(context)
                                       .pop(); // To close the dialog
@@ -81,7 +81,7 @@ class _InputNomorState extends State<InputNomor> {
                             CircularProgressIndicator(),
                             Container(
                               margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
+                              child: Text(Dictionary.pleaseWait),
                             )
                           ],
                         ),
@@ -93,9 +93,9 @@ class _InputNomorState extends State<InputNomor> {
                         barrierDismissible: false,
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
-                              description:
-                                  checkinLoaded.name + ' berhasil checkin',
-                              buttonText: "OK",
+                              description: checkinLoaded.name +
+                                  Dictionary.checkinSuccess,
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 _codeActivity.text = '';
                                 _codeSampleController.text = '';
@@ -145,7 +145,7 @@ class _InputNomorState extends State<InputNomor> {
                           color: Colors.red,
                           child: Center(
                             child: Text(
-                              'Offline Mode',
+                              Dictionary.offlineMode,
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -163,9 +163,10 @@ class _InputNomorState extends State<InputNomor> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               buildTextField(
-                                  title: 'Nomor Pendaftaran',
+                                  title: Dictionary.registrationCode,
                                   controller: _codeActivity,
-                                  hintText: 'Masukan nomor pendaftaran',
+                                  hintText:
+                                      Dictionary.registrationCodePlaceholder,
                                   isEdit: true,
                                   validation: Validations.kodeValidation,
                                   textInputType: TextInputType.text),
@@ -173,10 +174,10 @@ class _InputNomorState extends State<InputNomor> {
                                 height: 10,
                               ),
                               buildTextField(
-                                  title: 'Kode Sampel',
+                                  title: Dictionary.labCode,
                                   controller: _codeSampleController,
                                   validation: Validations.kodeSampleValidation,
-                                  hintText: 'Masukan atau scan kode sampel',
+                                  hintText: Dictionary.labCodePlaceholder,
                                   isEdit: true,
                                   qrIcon: true,
                                   textInputType: TextInputType.text),
@@ -194,7 +195,7 @@ class _InputNomorState extends State<InputNomor> {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Text(
-                                    'Checkin',
+                                    Dictionary.checkin,
                                     style: TextStyle(
                                         fontFamily: FontsFamily.productSans,
                                         fontWeight: FontWeight.bold,
@@ -244,7 +245,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Nama : '),
+                          Text(Dictionary.name),
                           Expanded(
                               child: Text(name,
                                   style:
@@ -257,7 +258,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('No Registrasi Anda : '),
+                          Text(Dictionary.yourRegistrationCode),
                           Expanded(
                               child: Text(registrationCode,
                                   style:
@@ -270,7 +271,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Kode Sample : '),
+                          Text(Dictionary.labCodeInput),
                           Expanded(
                               child: Text(labCode,
                                   style:
@@ -280,8 +281,7 @@ class _InputNomorState extends State<InputNomor> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                          'Pastikan data sudah benar sebelum menekan tombol submit'),
+                      Text(Dictionary.warningBeforeCheckin),
                       SizedBox(
                         height: 10,
                       ),
@@ -299,7 +299,7 @@ class _InputNomorState extends State<InputNomor> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Cancel',
+                                Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -322,7 +322,7 @@ class _InputNomorState extends State<InputNomor> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Submit',
+                                Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,

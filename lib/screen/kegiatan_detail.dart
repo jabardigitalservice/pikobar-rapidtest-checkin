@@ -1,11 +1,9 @@
 import 'package:app_settings/app_settings.dart';
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
-import 'package:double_back_to_close_app/double_back_to_close_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/checkin/Bloc.dart';
@@ -17,15 +15,12 @@ import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/ErrorException.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
-import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/daftar_peserta.dart';
-import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/input_nomor.dart';
 import 'package:rapid_test/screen/login_screen.dart';
-import 'package:rapid_test/screen/offline/checkin_list.dart';
 import 'package:rapid_test/screen/offline/daftar_peserta_offline.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/Validations.dart';
@@ -445,7 +440,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                                   )));
                                     }
                                   },
-                                  child: Text(Dictionary.listParticipant,
+                                  child: Text(Dictionary.checkListParticipant,
                                       style: TextStyle(color: Colors.white))),
                             ),
                             SizedBox(
@@ -518,7 +513,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(Dictionary.registrationCode),
+                            Text(Dictionary.yourRegistrationCode),
                             Expanded(
                                 child: Text(barcode.rawContent,
                                     style: TextStyle(
@@ -611,7 +606,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(Dictionary.registrationCode),
+                          Text(Dictionary.yourRegistrationCode),
                           Expanded(
                               child: Text(registrationCode,
                                   style:

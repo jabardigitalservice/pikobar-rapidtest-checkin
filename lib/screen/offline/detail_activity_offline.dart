@@ -10,6 +10,7 @@ import 'package:rapid_test/blocs/offline/checkin_offline/Bloc.dart';
 import 'package:rapid_test/components/DialogRequestPermission.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
@@ -46,7 +47,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
         Navigator.pop(context);
       },
       child: Scaffold(
-          appBar: AppBar(title: Text("Tes Masif Checkin Offline Mode")),
+          appBar: AppBar(title: Text(Dictionary.testMasifOffline)),
           body: MultiBlocProvider(
             providers: [
               BlocProvider<CheckinOfflineBloc>(
@@ -63,7 +64,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
                                 description: state.error.toString(),
-                                buttonText: "OK",
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   if (state.error
                                       .toString()
@@ -88,7 +89,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                               CircularProgressIndicator(),
                               Container(
                                 margin: EdgeInsets.only(left: 15.0),
-                                child: Text('Tunggu Sebentar'),
+                                child: Text(Dictionary.pleaseWait),
                               )
                             ],
                           ),
@@ -99,8 +100,8 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       showDialog(
                           context: context,
                           builder: (BuildContext context) => DialogTextOnly(
-                                description: 'Berhasil checkin',
-                                buttonText: "OK",
+                                description: Dictionary.checkinSuccessOffline,
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   Navigator.of(context).pop();
                                   Navigator.of(context)
@@ -129,7 +130,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Kode Kegiatan : '),
+                          Text(Dictionary.activityCodeTitle),
                           Expanded(
                               child: Text(widget.codeActivity,
                                   textAlign: TextAlign.right,
@@ -143,7 +144,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Tempat Checkin : '),
+                          Text(Dictionary.checkinLocation),
                           Expanded(
                               child: Text(widget.location,
                                   textAlign: TextAlign.right,
@@ -178,7 +179,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                                 color: Colors.white,
                                               ),
                                               description:
-                                                  'Untuk scan QR Code izinkan mengakses kamera',
+                                                  Dictionary.scanQRPermission,
                                               onOkPressed: () async {
                                                 Navigator.of(context).pop();
                                                 if (await permissionService
@@ -208,7 +209,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                       BoxDecoration(color: Colors.green),
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
-                                    child: Text('Scan QR Code',
+                                    child: Text(Dictionary.scanQR,
                                         style: TextStyle(color: Colors.white)),
                                   ),
                                 ),
@@ -230,7 +231,8 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                       BoxDecoration(color: Colors.green),
                                   child: Padding(
                                     padding: const EdgeInsets.all(20.0),
-                                    child: Text('Input Nomor Pendaftaran',
+                                    child: Text(
+                                        Dictionary.inputRegistrationCode,
                                         style: TextStyle(color: Colors.white)),
                                   ),
                                 ),
@@ -252,7 +254,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                   MaterialPageRoute(
                                       builder: (context) => CheckinList()));
                             },
-                            child: Text('Lihat Data Checkin',
+                            child: Text(Dictionary.listDataCheckin,
                                 style: TextStyle(color: Colors.white))),
                       ),
                     ],
@@ -286,7 +288,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text('No Registrasi anda : '),
+                            Text(Dictionary.yourRegistrationCode),
                             Expanded(
                                 child: Text(barcode.rawContent,
                                     style: TextStyle(
@@ -296,15 +298,14 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                         SizedBox(
                           height: 10,
                         ),
-                        Text(
-                            'Masukan kode sampel terlebih dahulu atau langsung tekan checkin'),
+                        Text(Dictionary.checkinDesc),
                         SizedBox(
                           height: 10,
                         ),
                         buildTextField(
-                            title: 'Kode Sampel',
+                            title: Dictionary.labCode,
                             controller: _codeSampleController,
-                            hintText: 'Masukan atau scan kode sampel',
+                            hintText: Dictionary.labCodePlaceholder,
                             isEdit: true,
                             validation: Validations.kodeSampleValidation,
                             qrIcon: true,
@@ -323,7 +324,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Text(
-                              'Checkin',
+                              Dictionary.checkin,
                               style: TextStyle(
                                   fontFamily: FontsFamily.productSans,
                                   fontWeight: FontWeight.bold,
@@ -365,7 +366,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Nama Anda : '),
+                          Text(Dictionary.name),
                           Expanded(
                               child: Text(name,
                                   style:
@@ -378,7 +379,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('No Registrasi Anda : '),
+                          Text(Dictionary.yourRegistrationCode),
                           Expanded(
                               child: Text(registrationCode,
                                   style:
@@ -391,7 +392,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Kode Sample : '),
+                          Text(Dictionary.labCodeInput),
                           Expanded(
                               child: Text(labCode,
                                   style:
@@ -401,8 +402,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                          'Pastikan data sudah benar sebelum menekan tombol submit'),
+                      Text(Dictionary.warningBeforeCheckin),
                       SizedBox(
                         height: 10,
                       ),
@@ -420,7 +420,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Cancel',
+                                Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -443,7 +443,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Submit',
+                                Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,

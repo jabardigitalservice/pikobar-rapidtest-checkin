@@ -6,14 +6,13 @@ import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
-import 'package:rapid_test/constants/Dimens.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
-import 'package:countdown_flutter/countdown_flutter.dart';
 
 import 'login_screen.dart';
 
@@ -49,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Tes Masif Checkin")),
+        appBar: AppBar(title: Text(Dictionary.testMasifCheckin)),
         body: MultiBlocProvider(
           providers: [
             // bloc get account user
@@ -90,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context: context,
                           builder: (BuildContext context) => DialogTextOnly(
                               description: state.error.toString(),
-                              buttonText: "OK",
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context)
                                     .pop(); // To close the dialog
@@ -106,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             CircularProgressIndicator(),
                             Container(
                               margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
+                              child: Text(Dictionary.pleaseWait),
                             )
                           ],
                         ),
@@ -127,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ));
   }
+
   _buildContent() {
     return BlocBuilder<KodeKegiatanBloc, KodeKegiatanState>(
       builder: (
@@ -147,9 +147,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   buildTextField(
-                    title: 'Kode Kegiatan',
+                    title: Dictionary.activityCode,
                     controller: _codeActivity,
-                    hintText: 'Masukan kode kegiatan',
+                    hintText: Dictionary.activityCodePlaceholder,
                     isEdit: true,
                     validation: Validations.kodeValidation,
                   ),
@@ -157,9 +157,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 10,
                   ),
                   buildTextField(
-                    title: 'Lokasi',
+                    title: Dictionary.location,
                     controller: _location,
-                    hintText: 'Masukan lokasi',
+                    hintText: Dictionary.locationPlaceholder,
                     isEdit: true,
                     validation: Validations.locationValidation,
                   ),
@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'Submit',
+                        Dictionary.submit,
                         style: TextStyle(
                             fontFamily: FontsFamily.productSans,
                             fontWeight: FontWeight.bold,
@@ -207,7 +207,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: Center(
                         child: Text(
-                          'Kembali Ke Login',
+                          Dictionary.backToLogin,
                           style: TextStyle(color: Colors.blue),
                         ),
                       ))

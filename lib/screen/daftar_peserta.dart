@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +9,7 @@ import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/ListParticipantRepository.dart';
@@ -23,7 +22,7 @@ import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'offline/checkin_list.dart';
 
 class DaftarPesertaPage extends StatefulWidget {
-  KodeKegiatanModel kodeKegiatanModel;
+  final KodeKegiatanModel kodeKegiatanModel;
   DaftarPesertaPage({this.kodeKegiatanModel});
   @override
   _DaftarPesertaPageState createState() => _DaftarPesertaPageState();
@@ -80,16 +79,14 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
   //   }
   // }
 
- 
-
   @override
   Widget build(BuildContext context) {
     // _scrollController.addListener(onScroll);
     return Scaffold(
       appBar: CustomAppBar.bottomSearchAppBar(
           searchController: _searchController,
-          title: 'Daftar Peserta',
-          hintText: 'Cari Daftar Peserta',
+          title: Dictionary.listParticipant,
+          hintText: Dictionary.searchListParticipant,
           onSubmitted: updateSearchQuery,
           context: context),
       body: MultiBlocProvider(
@@ -135,7 +132,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                               height: 20,
                               width: 80,
                               child: RaisedButton(
-                                color: ColorBase.green,
+                                color: Colors.blue,
                                 onPressed: () async {
                                   lengthDataOffline = await Navigator.push(
                                       context,
@@ -146,7 +143,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                   }
                                 },
                                 child: Text(
-                                  'Lihat',
+                                  Dictionary.check,
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ),
@@ -171,7 +168,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: state.error.toString(),
-                            buttonText: "OK",
+                            buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();
                               _listParticipantBloc.add(ListParticipantLoad(
@@ -244,7 +241,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                 return SafeArea(
                     child: state.listParticipantModel.length == 0
                         ? Center(
-                            child: Text('Tidak ada data daftar peserta'),
+                            child: Text(Dictionary.emptyDataParticipant),
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,8 +280,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                 SizedBox(
                                                   height: 5.0,
                                                 ),
-                                                Text(
-                                                    'Sedang mengambil data ...'),
+                                                Text(Dictionary
+                                                    .dataParticipantLoading),
                                               ],
                                             ),
                                           );
@@ -328,8 +325,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                       state.listParticipantModel[i]
                                                                   .attendedAt ==
                                                               null
-                                                          ? 'Tidak Hadir'
-                                                          : 'Hadir'),
+                                                          ? Dictionary.absent
+                                                          : Dictionary.present),
                                                 ],
                                               ),
                                               SizedBox(
@@ -351,7 +348,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    'Nomor Registrasi: ',
+                                                    Dictionary
+                                                        .numberRegistration,
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),
@@ -376,7 +374,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    'Kode Sampel: ',
+                                                    Dictionary.labCodeInput,
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),
@@ -401,7 +399,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    'Tanggal Checkin: ',
+                                                    Dictionary.checkinDate,
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),

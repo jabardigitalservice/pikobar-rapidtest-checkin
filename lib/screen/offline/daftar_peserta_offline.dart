@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
-import 'package:rapid_test/blocs/list_participants/Bloc.dart';
 import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/list_participants_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
@@ -124,7 +121,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
                               height: 20,
                               width: 80,
                               child: RaisedButton(
-                                color: ColorBase.green,
+                                color: Colors.blue,
                                 onPressed: () async {
                                   lengthDataOffline = await Navigator.push(
                                       context,

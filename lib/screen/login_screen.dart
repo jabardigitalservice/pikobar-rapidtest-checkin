@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
@@ -13,8 +12,6 @@ import 'package:rapid_test/screen/event_list.dart';
 import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
-import 'offline/input_activity_code_offline.dart';
-
 class LoginScreen extends StatelessWidget {
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
@@ -28,7 +25,7 @@ class LoginScreen extends StatelessWidget {
             _kegiatanDetailRepository),
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Login Screen'),
+            title: Text(Dictionary.loginScreen),
           ),
           body: LoginForm(),
         ));
@@ -175,7 +172,7 @@ class _State extends State<LoginForm> {
                         Dictionary.inputActivityCode,
                         style: TextStyle(color: Colors.blue),
                       )),
-                      SizedBox(
+                  SizedBox(
                     height: 20,
                   ),
                   // Center(child: Text('Atau')),

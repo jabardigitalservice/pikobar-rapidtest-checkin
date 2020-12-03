@@ -1,21 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:rapid_test/blocs/account_profile/account_profile_bloc.dart';
-import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
-import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/blocs/offline/event_code/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
-import 'package:rapid_test/constants/Dimens.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
-import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
-import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/screen/offline/detail_activity_offline.dart';
 import 'package:rapid_test/utilities/Validations.dart';
-import 'package:countdown_flutter/countdown_flutter.dart';
 
 class InputActivityCodeOffline extends StatefulWidget {
   @override
@@ -46,7 +39,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Tes Masif Checkin Offline Mode")),
+        appBar: AppBar(title: Text(Dictionary.testMasifOffline)),
         body: MultiBlocProvider(
           providers: [
             // bloc kegiatan
@@ -62,7 +55,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
                           description: state.error.toString(),
-                          buttonText: "OK",
+                          buttonText: Dictionary.ok,
                           onOkPressed: () {
                             Navigator.of(context).pop(); // To close the dialog
                           }));
@@ -78,7 +71,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                           CircularProgressIndicator(),
                           Container(
                             margin: EdgeInsets.only(left: 15.0),
-                            child: Text('Tunggu Sebentar'),
+                            child: Text(Dictionary.pleaseWait),
                           )
                         ],
                       ),
@@ -121,9 +114,9 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   buildTextField(
-                    title: 'Kode Kegiatan',
+                    title: Dictionary.activityCode,
                     controller: _codeActivity,
-                    hintText: 'Masukan kode kegiatan',
+                    hintText: Dictionary.activityCodePlaceholder,
                     isEdit: true,
                     validation: Validations.kodeValidation,
                   ),
@@ -131,9 +124,9 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                     height: 10,
                   ),
                   buildTextField(
-                    title: 'Lokasi',
+                    title: Dictionary.location,
                     controller: _location,
-                    hintText: 'Masukan lokasi',
+                    hintText: Dictionary.locationPlaceholder,
                     isEdit: true,
                     validation: Validations.locationValidation,
                   ),
@@ -151,7 +144,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'Submit',
+                        Dictionary.submit,
                         style: TextStyle(
                             fontFamily: FontsFamily.productSans,
                             fontWeight: FontWeight.bold,

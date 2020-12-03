@@ -9,6 +9,7 @@ import 'package:rapid_test/blocs/event_list/Bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
@@ -119,7 +120,7 @@ class _EventListPageState extends State<EventListPage>
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
                               description: state.error.toString(),
-                              buttonText: "OK",
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context).pop();
                                 _eventListBloc.add(EventListLoad(
@@ -152,7 +153,7 @@ class _EventListPageState extends State<EventListPage>
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
                           description: state.error.toString(),
-                          buttonText: "OK",
+                          buttonText: Dictionary.ok,
                           onOkPressed: () {
                             Navigator.of(context).pop(); // To close the dialog
                           }));
@@ -167,7 +168,7 @@ class _EventListPageState extends State<EventListPage>
                         CircularProgressIndicator(),
                         Container(
                           margin: EdgeInsets.only(left: 15.0),
-                          child: Text('Tunggu Sebentar'),
+                          child: Text(Dictionary.pleaseWait),
                         )
                       ],
                     ),
@@ -175,13 +176,9 @@ class _EventListPageState extends State<EventListPage>
                 );
               } else if (state is KodeKegiatanSuccessMovePage) {
                 Scaffold.of(context).hideCurrentSnackBar();
-                
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => KegiatanPage(
-                              
-                            )));
+
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => KegiatanPage()));
               } else {
                 Scaffold.of(context).hideCurrentSnackBar();
               }
@@ -213,7 +210,7 @@ class _EventListPageState extends State<EventListPage>
     return SafeArea(
         child: listEvent.length == 0
             ? Center(
-                child: Text('Tidak ada data daftar peserta'),
+                child: Text(Dictionary.emptyDataParticipant),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +241,7 @@ class _EventListPageState extends State<EventListPage>
                                     SizedBox(
                                       height: 5.0,
                                     ),
-                                    Text('Sedang mengambil data ...'),
+                                    Text(Dictionary.dataParticipantLoading),
                                   ],
                                 ),
                               );
@@ -351,8 +348,10 @@ class _EventListPageState extends State<EventListPage>
                                                             context) =>
                                                         DialogTextOnly(
                                                             description:
-                                                                'Event Sudah Berakhir',
-                                                            buttonText: "OK",
+                                                                Dictionary
+                                                                    .eventExpired,
+                                                            buttonText:
+                                                                Dictionary.ok,
                                                             onOkPressed: () {
                                                               Navigator.of(
                                                                       context)
@@ -381,7 +380,7 @@ class _EventListPageState extends State<EventListPage>
                                                       .primaryColor
                                                   : Colors.grey,
                                           child: Text(
-                                            'Pilih',
+                                            Dictionary.choose,
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
@@ -419,7 +418,7 @@ class _EventListPageState extends State<EventListPage>
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        'Tanggal: ',
+                                        Dictionary.date,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Expanded(
@@ -444,7 +443,7 @@ class _EventListPageState extends State<EventListPage>
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Text(
-                                        'Waktu: ',
+                                        Dictionary.time,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Text(
@@ -453,7 +452,7 @@ class _EventListPageState extends State<EventListPage>
                                               ' - ' +
                                               unixTimeStampToHour(
                                                   listEvent[i].endAt) +
-                                              ' WIB',
+                                              Dictionary.wib,
                                           style: TextStyle(fontSize: 12)),
                                     ],
                                   ),
@@ -462,7 +461,7 @@ class _EventListPageState extends State<EventListPage>
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Text(
-                                        'Jumlah Peserta: ',
+                                        Dictionary.totalParticipant,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Text(
