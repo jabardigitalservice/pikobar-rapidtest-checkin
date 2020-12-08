@@ -62,10 +62,11 @@ class _State extends State<LoginForm> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailure) {
+          var split = state.error.split('Exception:');
           showDialog(
               context: context,
               builder: (BuildContext context) => DialogTextOnly(
-                    description: state.error.toString(),
+                    description: split.last.toString(),
                     buttonText: Dictionary.ok,
                     onOkPressed: () {
                       Navigator.of(context).pop(); // To close the dialog

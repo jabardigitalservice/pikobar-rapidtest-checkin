@@ -132,7 +132,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                               height: 20,
                               width: 80,
                               child: RaisedButton(
-                                color: Colors.blue,
+                                color: Theme.of(context).primaryColor,
                                 onPressed: () async {
                                   lengthDataOffline = await Navigator.push(
                                       context,
@@ -163,11 +163,12 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                 if (state.error.toString().contains('Token Expired')) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
+                            description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();

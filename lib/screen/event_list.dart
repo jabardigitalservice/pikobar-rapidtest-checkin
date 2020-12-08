@@ -116,10 +116,11 @@ class _EventListPageState extends State<EventListPage>
                   if (state.error.toString().contains('Token Expired')) {
                     _authenticationBloc.add(UserLoggedOut());
                   } else {
+                    var split = state.error.split('Exception:');
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
-                              description: state.error.toString(),
+                              description: split.last.toString(),
                               buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context).pop();
@@ -149,10 +150,11 @@ class _EventListPageState extends State<EventListPage>
                 if (state.error.toString().contains('Token Expired')) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
-                          description: state.error.toString(),
+                          description: split.last.toString(),
                           buttonText: Dictionary.ok,
                           onOkPressed: () {
                             Navigator.of(context).pop(); // To close the dialog

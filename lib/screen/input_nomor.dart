@@ -59,11 +59,12 @@ class _InputNomorState extends State<InputNomor> {
                     if (state.error.toString().contains('Token Expired')) {
                       _authenticationBloc.add(UserLoggedOut());
                     } else {
+                      var split = state.error.split('Exception:');
                       showDialog(
                           context: context,
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
-                                description: state.error.toString(),
+                                description: split.last.toString(),
                                 buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   Navigator.of(context)

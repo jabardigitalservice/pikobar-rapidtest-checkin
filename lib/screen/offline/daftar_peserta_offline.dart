@@ -121,7 +121,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
                               height: 20,
                               width: 80,
                               child: RaisedButton(
-                                color: Colors.blue,
+                                color: Theme.of(context).primaryColor,
                                 onPressed: () async {
                                   lengthDataOffline = await Navigator.push(
                                       context,
@@ -152,11 +152,12 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
                 if (state.error.toString().contains('Token Expired')) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
+                            description: split.last.toString(),
                             buttonText: "OK",
                             onOkPressed: () {
                               Navigator.of(context).pop();

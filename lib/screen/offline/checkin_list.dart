@@ -62,10 +62,11 @@ class _CheckinListState extends State<CheckinList> {
             BlocListener<SendCheckinDataBloc, SendCheckinDataState>(
               listener: (context, state) {
                 if (state is SendCheckinDataFailure) {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
+                            description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();
@@ -119,10 +120,11 @@ class _CheckinListState extends State<CheckinList> {
             BlocListener<ListCheckinOfflineBloc, ListCheckinOfflineState>(
               listener: (context, state) {
                 if (state is ListCheckinOfflineFailure) {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
+                            description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context).pop();

@@ -37,11 +37,12 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
               BlocListener<CheckinOfflineBloc, CheckinOfflineState>(
                   listener: (context, state) {
                 if (state is CheckinOfflineFailure) {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
-                            description: state.error.toString(),
+                            description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
                               Navigator.of(context)

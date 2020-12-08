@@ -88,11 +88,12 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Navigator.of(context).pop();
                       _authenticationBloc.add(UserLoggedOut());
                     } else {
+                       var split = state.error.split('Exception:');
                       showDialog(
                           context: context,
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
-                                description: state.error.toString(),
+                                description: split.last.toString(),
                                 buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   if (state.error
@@ -159,11 +160,12 @@ class _KegiatanPageState extends State<KegiatanPage> {
                     if (state.error.toString().contains('Token Expired')) {
                       _authenticationBloc.add(UserLoggedOut());
                     } else {
+                      var split = state.error.split('Exception:');
                       showDialog(
                           barrierDismissible: false,
                           context: context,
                           builder: (BuildContext context) => DialogTextOnly(
-                                description: state.error.toString(),
+                                description: split.last.toString(),
                                 buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   if (state.error
