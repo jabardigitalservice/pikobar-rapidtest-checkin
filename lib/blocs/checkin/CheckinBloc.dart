@@ -30,14 +30,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
         var checkinOfflineData = await offlineRepository.getCheckinList();
         if (checkinOfflineData.length != 0) {
           var getOfflineData = await offlineRepository.select();
-          for (var i = 0; i < getOfflineData.length; i++) {
-            await offlineRepository.checkin(
-                getOfflineData[i]['registration_code'],
-                getOfflineData[i]['event_code'],
-                getOfflineData[i]['lab_code_sample'],
-                getOfflineData[i]['location'],
-                getOfflineData[i]['id']);
-          }
+          await offlineRepository.checkin(getOfflineData);
         }
         try {
           String location = await repository.getLocation();
@@ -75,7 +68,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
               eventCode: eventCode,
               labCodeSample: event.labCodeSample,
               location: location,
-              createdAt: DateTime.now().toString(),
+              createdAt: DateTime.now().add(Duration(hours: -7)).toString(),
               registrationCode: event.nomorPendaftaran);
           await offlineRepository.insert(data);
           var getData = getList

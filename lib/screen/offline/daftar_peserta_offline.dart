@@ -121,7 +121,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
                               height: 20,
                               width: 80,
                               child: RaisedButton(
-                                color: Theme.of(context).primaryColor,
+                                color: ColorBase.green,
                                 onPressed: () async {
                                   lengthDataOffline = await Navigator.push(
                                       context,

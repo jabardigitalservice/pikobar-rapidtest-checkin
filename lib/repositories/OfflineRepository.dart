@@ -95,24 +95,31 @@ create table $tableListParticipant (
     }
   }
 
-  Future<dynamic> checkin(
-      String kode, eventCode, labCodeSample, location, int id) async {
+  Future<dynamic> checkin(List<dynamic> dataCheckin) async {
     await Future.delayed(Duration(seconds: 1));
-
-    final response = await http.post('${EndPointPath.rdt}/checkin', body: {
-      "registration_code": kode,
-      "event_code": eventCode,
-      "lab_code_sample": labCodeSample,
-      "location": location
-    });
+    final response = await http.post('${EndPointPath.rdt}/bulk-checkin',
+        body: jsonEncode({'data': dataCheckin})
+            .toString()
+            .replaceAll('created_at', 'attended_at'),
+        headers: {"Content-Type": "application/json"});
     final data = jsonDecode(response.body);
     print(data);
 
-    if (response.statusCode == 200 || data['error'] == 'ALREADY_CHECKIN') {
-      await deleteCheckinData(id);
+    if (response.statusCode == 200) {
+      for (var i = 0; i < dataCheckin.length; i++) {
+        var getData = data['succes']
+            .where((element) => element == dataCheckin[i]['registration_code'])
+            .toList();
+        print(getData);
+        if (getData.length != 0) {
+          await deleteCheckinData(dataCheckin[i]['id']);
+        }
+      }
+
       return data;
     } else {
-      throw Exception(data['error']);
+      throw Exception(
+          data['failed'].length.toString() + ' data tidak berhasil dikirim');
     }
   }
 
@@ -201,8 +208,6 @@ create table $tableListParticipant (
     }
     return contactList;
   }
-
-  
 
   Future close() async => db.close();
 

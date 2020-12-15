@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
@@ -22,14 +23,7 @@ class SendCheckinDataBloc
       yield SendCheckinDataLoading();
       try {
         startData = await repository.select();
-        for (var i = 0; i < startData.length; i++) {
-          await repository.checkin(
-              startData[i]['registration_code'],
-              startData[i]['event_code'],
-              startData[i]['lab_code_sample'],
-              startData[i]['location'],
-              startData[i]['id']);
-        }
+        await repository.checkin(startData);
         endData = await repository.select();
 
         yield SendCheckinDataSuccess(
@@ -37,9 +31,10 @@ class SendCheckinDataBloc
                 'Data berhasil terkirim ${startData.length - endData.length}/${startData.length}');
       } catch (e) {
         List<Map<String, dynamic>> endDataError = await repository.select();
+        print(e.toString());
         yield SendCheckinDataFailure(
             error:
-                ' ${e.toString()}, data terkirim ${startData.length - endDataError.length}/${startData.length}');
+                'Data berhasil terkirim ${startData.length - endDataError.length}/${startData.length}');
       }
     }
   }
