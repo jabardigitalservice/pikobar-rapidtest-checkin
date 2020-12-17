@@ -14,7 +14,7 @@ class Environment {
   static String audKey = 'tes-masif-checkin';
 
   // staging
-  static String stagingUrl = 'https://tesmasif-api.digitalservice.id/api';
+  static String stagingUrl = 'https://tesmasif-api.rover.digitalservice.id/api';
   static String stagingclientId = 'tes-masif-web';
   static String loginStagingUrl =
       'https://keycloak.digitalservice.id/auth/realms/jabarprov/protocol/openid-connect/token';
