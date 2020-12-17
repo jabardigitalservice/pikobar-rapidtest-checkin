@@ -27,7 +27,7 @@ class ListParticipantBloc
         listParticipantModel = await repository.getListOfParticipant(
             event.eventCode, event.keyword, event.page);
 
-        int maxDatalength = await Preferences.getTotalCount();
+        int maxDatalength = await Preferences.getDataInt('TotalCount');
         yield ListParticipantLoaded(
             listParticipantModel: listParticipantModel.data,
             maxData: maxDatalength);
@@ -41,7 +41,7 @@ class ListParticipantBloc
             state as ListParticipantLoaded;
         listParticipantModel = await repository.getListOfParticipant(
             event.eventCode, event.keyword, event.page);
-        int maxDatalength = await Preferences.getTotalCount();
+        int maxDatalength = await Preferences.getDataInt('TotalCount');
         yield ListParticipantLoaded(
             listParticipantModel: listParticipantLoaded.listParticipantModel +
                 listParticipantModel.data,

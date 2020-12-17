@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'Bloc.dart';
 
 class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
@@ -21,8 +22,8 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
     //   yield EventCodeLoading();
 
     //   try {
-    //     String isLogin = await repository.getActivityCode();
-    //     String location = await repository.getLocation();
+    //     String isLogin = await  Preferences.getDataString('activityCode');
+    //     String location = await Preferences.getDataString('location');
     //     if (isLogin != null) {
     //       yield EventCodeLoaded(
     //           location: location);
@@ -38,7 +39,7 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
     //   yield EventCodeLoading();
 
     //   try {
-    //     await repository.clearActivityCode();
+    //     await Preferences.clearData('activityCode');
     //     yield EventCodeUnauthenticated();
     //   } catch (e) {
     //     yield EventCodeFailure(error: e.toString());
@@ -51,12 +52,12 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
       try {
         int _page = 1;
         if (event.isFromLogin != null) {
-          await repository.setIsFromLogin(event.isFromLogin);
+          await Preferences.setDataBool('IsFromLogin', event.isFromLogin);
         }
-        await repository.setActivityCode(event.eventCode);
-        await repository.setLocation(event.location);
-        String location = await repository.getLocation();
-        String activityCode = await repository.getActivityCode();
+        await Preferences.setDataString('activityCode', event.eventCode);
+        await Preferences.setDataString('location', event.location);
+        String location = await Preferences.getDataString('location');
+        String activityCode = await Preferences.getDataString('activityCode');
         List<Map<String, dynamic>> checkData =
             await repository.selectParticipant();
         print("jumlah data " + checkData.length.toString());

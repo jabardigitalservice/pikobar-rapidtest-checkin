@@ -8,6 +8,7 @@ import 'package:rapid_test/model/ListParticipantOfflineModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import './Bloc.dart';
 
 class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
@@ -33,7 +34,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
           await offlineRepository.checkin(getOfflineData);
         }
         try {
-          String location = await repository.getLocation();
+          String location = await Preferences.getDataString('location');
           CheckinModel checkinModel = await repository.checkNomorPendaftaran(
               event.nomorPendaftaran,
               event.eventCode,
@@ -60,8 +61,8 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
         }
       } else {
         try {
-          String location = await repository.getLocation();
-          String eventCode = await repository.getActivityCode();
+          String location = await Preferences.getDataString('location');
+          String eventCode = await Preferences.getDataString('activityCode');
           List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
           final data = CheckinOfflineModel(
@@ -102,7 +103,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
         } else {
           List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
-          String eventCode = await repository.getActivityCode();
+          String eventCode = await Preferences.getDataString('activityCode');
           var getName = getList
               .where((element) =>
                   element.registrationCode == event.registrationCode)

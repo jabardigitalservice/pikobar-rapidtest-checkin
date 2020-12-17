@@ -5,6 +5,7 @@ import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/model/ListParticipantOfflineModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'Bloc.dart';
 
 class CheckinOfflineBloc
@@ -23,8 +24,8 @@ class CheckinOfflineBloc
     if (event is CheckinOfflineLoad) {
       yield CheckinOfflineLoading();
       try {
-        String location = await repository.getLocation();
-        String eventCode = await repository.getActivityCode();
+        String location = await Preferences.getDataString('location');
+        String eventCode = await Preferences.getDataString('activityCode');
         List<ListParticipantOfflineModel> getList =
             await repository.getParticipant();
         final data = CheckinOfflineModel(
@@ -55,7 +56,7 @@ class CheckinOfflineBloc
       try {
         List<ListParticipantOfflineModel> getList =
             await repository.getParticipant();
-        String eventCode = await repository.getActivityCode();
+        String eventCode = await Preferences.getDataString('activityCode');
         var getName = getList
             .where(
                 (element) => element.registrationCode == event.registrationCode)

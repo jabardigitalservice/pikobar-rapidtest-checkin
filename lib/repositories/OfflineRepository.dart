@@ -2,14 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
 import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/model/ListParticipantOfflineModel.dart';
 import 'package:rapid_test/utilities/http.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:http/http.dart' as http;
 
@@ -123,14 +121,6 @@ create table $tableListParticipant (
     }
   }
 
-  Future<void> setIsFromLogin(bool isFromLogin) async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    await prefs.setBool('IsFromLogin', isFromLogin);
-    return;
-  }
-
   Future<CheckinOfflineModel> getTable(int id) async {
     List<Map> maps = await db.query(tableCheckin,
         columns: [
@@ -210,50 +200,4 @@ create table $tableListParticipant (
   }
 
   Future close() async => db.close();
-
-  Future<void> setActivityCode(String activityCode) async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    await prefs.setString('activityCode', activityCode);
-    return;
-  }
-
-  Future<String> getActivityCode() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-
-    return prefs.getString('activityCode');
-  }
-
-  Future<void> clearActivityCode() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('activityCode');
-  }
-
-  Future<void> setLocation(String location) async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    await prefs.setString('location', location);
-    return;
-  }
-
-  Future<String> getLocation() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-
-    return prefs.getString('location');
-  }
-
-  Future<void> clearLocation() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('location');
-  }
 }

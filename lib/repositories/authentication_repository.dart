@@ -5,11 +5,11 @@ import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/TokenModel.dart';
 import 'package:rapid_test/model/UserModel.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/http.dart';
 import 'package:rapid_test/utilities/secure_store.dart';
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum TokenType { ACCESS_TOKEN, REFRESH_TOKEN }
 
@@ -47,7 +47,7 @@ class AuthenticationRepository {
 
   Future<TokenModel> refreshToken() async {
     print('--- Mengambil Access Token Yang Baru ---');
-    setisRefresh(true);
+    await Preferences.setDataBool('isRefresh', true);
     dio.interceptors.requestLock.unlock();
     // get refresh token
     String refreshToken = await SecureStore().readValue(key: kRefreshTokenKey);
@@ -71,7 +71,7 @@ class AuthenticationRepository {
           .writeValue(key: kAccessTokenKey, value: record.accessToken);
       await SecureStore()
           .writeValue(key: kRefreshTokenKey, value: record.refreshToken);
-      setisRefresh(false);
+      await Preferences.setDataBool('isRefresh', false);
       return record;
     } catch (e) {
       throw Exception(e);
@@ -92,20 +92,6 @@ class AuthenticationRepository {
   Future<void> deleteTokens() async {
     await SecureStore().deleteAll();
     return;
-  }
-
-  Future<void> clearActivityCode() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('activityCode');
-  }
-
-  Future<void> clearIsFromLogin() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('IsFromLogin');
   }
 
   Future<bool> hasTokens() async {
@@ -175,21 +161,5 @@ class AuthenticationRepository {
         return false;
       }
     });
-  }
-
-  Future<void> setisRefresh(bool isRefresh) async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    await prefs.setBool('isRefresh', isRefresh);
-    return;
-  }
-
-  Future<bool> getisRefresh() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-
-    return prefs.getBool('isRefresh') ?? false;
   }
 }

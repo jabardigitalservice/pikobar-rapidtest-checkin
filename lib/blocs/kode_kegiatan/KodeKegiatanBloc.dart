@@ -5,6 +5,7 @@ import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import './Bloc.dart';
 
 class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
@@ -25,8 +26,8 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
-        String isLogin = await repository.getActivityCode();
-        String location = await repository.getLocation();
+        String isLogin = await Preferences.getDataString('activityCode');
+        String location = await Preferences.getDataString('location');
         if (isLogin != null) {
           yield KodeKegiatanSuccessMovePage(
               kodeKegiatanPref: isLogin, location: location);
@@ -42,7 +43,7 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
-        await repository.clearActivityCode();
+        await Preferences.clearData('activityCode');
         yield KodeKegiatanUnauthenticated();
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());
@@ -55,15 +56,16 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       try {
         int _page = 1;
         if (event.isFromLogin != null) {
-          await repository.setIsFromLogin(event.isFromLogin);
+          await Preferences.setDataBool('IsFromLogin', event.isFromLogin);
           if (event.location != null) {
-            await repository.setLocation(event.location);
+            await Preferences.setDataString('location', event.location);
           }
         }
-        String eventCode = await repository.getActivityCode();
+        String eventCode = await Preferences.getDataString('activityCode');
         KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(eventCode);
-        await repository.setActivityCode(kodeKegiatanModel.data.eventCode);
+        await Preferences.setDataString(
+            'activityCode', kodeKegiatanModel.data.eventCode);
         List<Map<String, dynamic>> checkData =
             await offlineRepository.selectParticipant();
         print("jumlah data " + checkData.length.toString());
@@ -81,8 +83,8 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
           }
         }
 
-        String location = await repository.getLocation();
-        String isLogin = await repository.getActivityCode();
+        String location = await Preferences.getDataString('location');
+        String isLogin = await Preferences.getDataString('activityCode');
         yield KodeKegiatanLoaded(
             kodeKegiatan: kodeKegiatanModel,
             kodeKegiatanPref: isLogin,
@@ -97,12 +99,12 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
 
       try {
         if (event.isFromLogin != null) {
-          await repository.setIsFromLogin(event.isFromLogin);
+          await Preferences.setDataBool('IsFromLogin', event.isFromLogin);
           if (event.location != null) {
-            await repository.setLocation(event.location);
+            await Preferences.setDataString('location', event.location);
           }
         }
-        await repository.setActivityCode(event.kodeKegiatan);
+        await Preferences.setDataString('activityCode', event.kodeKegiatan);
         yield KodeKegiatanSuccessMovePage();
       } catch (e) {
         yield KodeKegiatanFailure(error: e.toString());

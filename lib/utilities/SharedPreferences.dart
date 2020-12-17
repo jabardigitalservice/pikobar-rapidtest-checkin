@@ -1,27 +1,45 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Preferences {
-  static Future<int> getParticipantPage() async {
+  static Future<void> setDataInt(String title, int value) async {
     final prefs = await SharedPreferences.getInstance();
 
-    return prefs.getInt('participantPage');
+    return prefs.setInt(title, value);
   }
 
-  static Future<bool> setParticipantPage(int value) async {
+  static Future<void> setDataString(String title, String value) async {
     final prefs = await SharedPreferences.getInstance();
 
-    return prefs.setInt('participantPage', value);
+    return prefs.setString(title, value);
   }
 
-  static Future<int> getTotalCount() async {
+  static Future<void> setDataBool(String title, bool value) async {
     final prefs = await SharedPreferences.getInstance();
 
-    return prefs.getInt('TotalCount');
+    return prefs.setBool(title, value);
   }
 
-  static Future<bool> setTotalCount(int value) async {
+  static Future<int> getDataInt(String title) async {
     final prefs = await SharedPreferences.getInstance();
 
-    return prefs.setInt('TotalCount', value);
+    return prefs.getInt(title);
+  }
+
+  static Future<String> getDataString(String title) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getString(title);
+  }
+
+  static Future<bool> getDataBool(String title) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    return prefs.getBool(title);
+  }
+
+  static Future<void> clearData(String title) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.remove(title);
   }
 }

@@ -12,6 +12,8 @@ import 'package:rapid_test/utilities/http.dart';
 import 'package:rapid_test/utilities/navigation_service.dart';
 import 'package:rapid_test/utilities/secure_store.dart';
 
+import 'SharedPreferences.dart';
+
 class LoggingInterceptors extends InterceptorsWrapper {
   @override
   Future<FutureOr> onRequest(RequestOptions options) async {
@@ -22,7 +24,7 @@ class LoggingInterceptors extends InterceptorsWrapper {
     if (isFromLogin) {
       AuthenticationRepository authenticationRepository =
           AuthenticationRepository();
-      bool isGetRefreshToken = await authenticationRepository.getisRefresh();
+      bool isGetRefreshToken = await Preferences.getDataBool('isRefresh');
       print('Mengambil refresh token : $isGetRefreshToken');
       if (isGetRefreshToken) {
         dio.interceptors.requestLock.lock();
@@ -86,7 +88,7 @@ class LoggingInterceptors extends InterceptorsWrapper {
     print("<-- End error");
     AuthenticationRepository authenticationRepository =
         AuthenticationRepository();
-    authenticationRepository.setisRefresh(false);
+    await Preferences.setDataBool('isRefresh', false);
 
     // if (dioError.response?.statusCode == 401) {
     // dio.interceptors.requestLock.lock();

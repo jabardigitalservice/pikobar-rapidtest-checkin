@@ -441,11 +441,11 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
   }
 
   void _initialize() async {
-    _page = await Preferences.getParticipantPage() != null
-        ? await Preferences.getParticipantPage()
+    _page = await Preferences.getDataInt('participantPage') != null
+        ? await Preferences.getDataInt('participantPage')
         : 1;
-    maxDataLength = await Preferences.getTotalCount() != null
-        ? await Preferences.getTotalCount()
+    maxDataLength = await Preferences.getDataInt('TotalCount') != null
+        ? await Preferences.getDataInt('TotalCount')
         : 0;
   }
 
@@ -458,7 +458,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
       _page = (records.length / 20).round() + 1;
     }
     print(_page);
-    await Preferences.setParticipantPage(_page);
+    await Preferences.setDataInt('participantPage', _page);
   }
 
   void _scrollListener() {
@@ -515,7 +515,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
       keyword: '',
     ));
     _page = 1;
-    await Preferences.setParticipantPage(1);
+    await Preferences.setDataInt('participantPage', 1);
   }
 
   void updateSearchQuery(String newQuery) {

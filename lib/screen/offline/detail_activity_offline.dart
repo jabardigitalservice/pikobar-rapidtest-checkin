@@ -17,6 +17,7 @@ import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/screen/offline/checkin_list.dart';
 import 'package:rapid_test/screen/offline/input_checkin_offline.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class ActivityOfflinePage extends StatefulWidget {
@@ -43,7 +44,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await _kegiatanDetailRepository.clearActivityCode();
+        await Preferences.clearData('activityCode');
         Navigator.pop(context);
       },
       child: Scaffold(

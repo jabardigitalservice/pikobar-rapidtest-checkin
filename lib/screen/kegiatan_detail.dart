@@ -23,6 +23,7 @@ import 'package:rapid_test/screen/input_nomor.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/screen/offline/daftar_peserta_offline.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class KegiatanPage extends StatefulWidget {
@@ -50,7 +51,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
   }
 
   getAcitivityCode() async {
-    activityCode = await _kegiatanDetailRepository.getActivityCode();
+    activityCode = await Preferences.getDataString('activityCode');
   }
 
   @override
@@ -88,7 +89,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                       Navigator.of(context).pop();
                       _authenticationBloc.add(UserLoggedOut());
                     } else {
-                       var split = state.error.split('Exception:');
+                      var split = state.error.split('Exception:');
                       showDialog(
                           context: context,
                           barrierDismissible: false,

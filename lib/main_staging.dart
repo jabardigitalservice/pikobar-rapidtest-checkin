@@ -7,7 +7,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/http.dart'; // make dio as global variable
 import 'package:rapid_test/utilities/logging_interceptors.dart';
