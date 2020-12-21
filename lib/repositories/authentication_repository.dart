@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:rapid_test/config/FlavorConfig.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/TokenModel.dart';
@@ -47,7 +48,7 @@ class AuthenticationRepository {
 
   Future<TokenModel> refreshToken() async {
     print('--- Mengambil Access Token Yang Baru ---');
-    await Preferences.setDataBool('isRefresh', true);
+    await Preferences.setDataBool(kIsRefresh, true);
     dio.interceptors.requestLock.unlock();
     // get refresh token
     String refreshToken = await SecureStore().readValue(key: kRefreshTokenKey);
@@ -71,7 +72,7 @@ class AuthenticationRepository {
           .writeValue(key: kAccessTokenKey, value: record.accessToken);
       await SecureStore()
           .writeValue(key: kRefreshTokenKey, value: record.refreshToken);
-      await Preferences.setDataBool('isRefresh', false);
+      await Preferences.setDataBool(kIsRefresh, false);
       return record;
     } catch (e) {
       throw Exception(e);

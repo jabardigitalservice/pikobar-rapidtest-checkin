@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/CheckinModel.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
@@ -31,7 +32,7 @@ class KegiatanDetailRepository {
     await Future.delayed(Duration(seconds: 1));
     String kodePerf;
     if (kode == null || kode == '') {
-      kodePerf = await Preferences.getDataString('activityCode');
+      kodePerf = await Preferences.getDataString(kActivityCode);
     }
     try {
       Response response = await dio
@@ -66,11 +67,11 @@ class KegiatanDetailRepository {
     // obtain shared preferences
     final prefs = await SharedPreferences.getInstance();
     // set value
-    bool temp = prefs.getBool('IsFromLogin');
+    bool temp = prefs.getBool(kIsFromLogin);
     if (temp == null) {
       return true;
     } else {
-      return prefs.getBool('IsFromLogin');
+      return prefs.getBool(kIsFromLogin);
     }
   }
 }

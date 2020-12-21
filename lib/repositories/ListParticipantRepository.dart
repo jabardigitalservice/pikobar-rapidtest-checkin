@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:rapid_test/constants/EndPointPath.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:dio/dio.dart';
@@ -10,7 +11,7 @@ class ListParticipantRepository {
     await Future.delayed(Duration(seconds: 1));
     String kodePerf;
     if (kode == null || kode == '') {
-      kodePerf = await Preferences.getDataString('activityCode');
+      kodePerf = await Preferences.getDataString(kActivityCode);
     }
     try {
       Response response = await dio.post(
@@ -22,7 +23,7 @@ class ListParticipantRepository {
           }));
       final data = response.data;
       ListParticipantModel record = ListParticipantModel.fromJson(data);
-      await Preferences.setDataInt('TotalCount', record.meta.total);
+      await Preferences.setDataInt(kTotalCount, record.meta.total);
       print(data);
       return record;
     } catch (e) {

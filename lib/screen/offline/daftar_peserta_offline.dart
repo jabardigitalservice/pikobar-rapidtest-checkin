@@ -9,6 +9,7 @@ import 'package:rapid_test/blocs/offline/list_participants_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
@@ -404,11 +405,11 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
   }
 
   void _initialize() async {
-    _page = await Preferences.getDataInt('participantPage') != null
-        ? await Preferences.getDataInt('participantPage')
+    _page = await Preferences.getDataInt(kParticipantPage) != null
+        ? await Preferences.getDataInt(kParticipantPage)
         : 1;
-    maxDataLength = await Preferences.getDataInt('TotalCount') != null
-        ? await Preferences.getDataInt('TotalCount')
+    maxDataLength = await Preferences.getDataInt(kTotalCount) != null
+        ? await Preferences.getDataInt(kTotalCount)
         : 0;
   }
 
@@ -421,7 +422,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
       _page = (records.length / 20).round() + 1;
     }
     print(_page);
-    await Preferences.setDataInt('participantPage',_page);
+    await Preferences.setDataInt(kParticipantPage, _page);
   }
 
   void _onSearchChanged() {
@@ -461,7 +462,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
     _listParticipantBloc.add(ListParticipantOfflineLoad(
         eventCode: widget.kodeKegiatanModel.data.eventCode));
     _page = 1;
-    await Preferences.setDataInt('participantPage',1);
+    await Preferences.setDataInt(kParticipantPage, 1);
   }
 
   void updateSearchQuery(String newQuery) {

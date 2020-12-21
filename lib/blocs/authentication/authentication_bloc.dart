@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
 import 'package:rapid_test/model/UserModel.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
@@ -64,9 +65,9 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapUserLoggedOutToState(
       UserLoggedOut event) async* {
-    await Preferences.clearData('activityCode');
+    await Preferences.clearData(kActivityCode);
     await _authenticationRepository.deleteTokens();
-    await Preferences.clearData('IsFromLogin');
+    await Preferences.clearData(kIsFromLogin);
     yield AuthenticationNotAuthenticated();
   }
 }

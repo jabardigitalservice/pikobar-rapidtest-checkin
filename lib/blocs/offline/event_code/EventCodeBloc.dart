@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
@@ -22,8 +23,8 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
     //   yield EventCodeLoading();
 
     //   try {
-    //     String isLogin = await  Preferences.getDataString('activityCode');
-    //     String location = await Preferences.getDataString('location');
+    //     String isLogin = await  Preferences.getDataString(kactivityCode);
+    //     String location = await Preferences.getDataString(klocation);
     //     if (isLogin != null) {
     //       yield EventCodeLoaded(
     //           location: location);
@@ -39,7 +40,7 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
     //   yield EventCodeLoading();
 
     //   try {
-    //     await Preferences.clearData('activityCode');
+    //     await Preferences.clearData(kactivityCode);
     //     yield EventCodeUnauthenticated();
     //   } catch (e) {
     //     yield EventCodeFailure(error: e.toString());
@@ -52,12 +53,12 @@ class EventCodeBloc extends Bloc<EventCodeEvent, EventCodeState> {
       try {
         int _page = 1;
         if (event.isFromLogin != null) {
-          await Preferences.setDataBool('IsFromLogin', event.isFromLogin);
+          await Preferences.setDataBool(kIsFromLogin, event.isFromLogin);
         }
-        await Preferences.setDataString('activityCode', event.eventCode);
-        await Preferences.setDataString('location', event.location);
-        String location = await Preferences.getDataString('location');
-        String activityCode = await Preferences.getDataString('activityCode');
+        await Preferences.setDataString(kActivityCode, event.eventCode);
+        await Preferences.setDataString(kLocation, event.location);
+        String location = await Preferences.getDataString(kLocation);
+        String activityCode = await Preferences.getDataString(kActivityCode);
         List<Map<String, dynamic>> checkData =
             await repository.selectParticipant();
         print("jumlah data " + checkData.length.toString());

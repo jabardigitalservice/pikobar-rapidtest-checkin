@@ -1,4 +1,5 @@
 import 'package:rapid_test/constants/EndPointPath.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:dio/dio.dart';
@@ -13,7 +14,7 @@ class EventListRepository {
       );
       final data = response.data;
       EventListModel record = EventListModel.fromJson(data);
-      await Preferences.setDataInt('TotalCount', record.meta.total);
+      await Preferences.setDataInt(kTotalCount, record.meta.total);
       return record;
     } catch (e) {
       throw Exception(e);

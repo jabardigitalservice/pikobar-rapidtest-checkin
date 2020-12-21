@@ -12,6 +12,7 @@ import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
@@ -44,7 +45,7 @@ class _ActivityOfflinePageState extends State<ActivityOfflinePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        await Preferences.clearData('activityCode');
+        await Preferences.clearData(kActivityCode);
         Navigator.pop(context);
       },
       child: Scaffold(

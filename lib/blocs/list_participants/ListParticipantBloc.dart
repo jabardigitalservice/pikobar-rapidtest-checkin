@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/ListParticipantRepository.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
@@ -27,7 +28,7 @@ class ListParticipantBloc
         listParticipantModel = await repository.getListOfParticipant(
             event.eventCode, event.keyword, event.page);
 
-        int maxDatalength = await Preferences.getDataInt('TotalCount');
+        int maxDatalength = await Preferences.getDataInt(kTotalCount);
         yield ListParticipantLoaded(
             listParticipantModel: listParticipantModel.data,
             maxData: maxDatalength);
@@ -41,7 +42,7 @@ class ListParticipantBloc
             state as ListParticipantLoaded;
         listParticipantModel = await repository.getListOfParticipant(
             event.eventCode, event.keyword, event.page);
-        int maxDatalength = await Preferences.getDataInt('TotalCount');
+        int maxDatalength = await Preferences.getDataInt(kTotalCount);
         yield ListParticipantLoaded(
             listParticipantModel: listParticipantLoaded.listParticipantModel +
                 listParticipantModel.data,

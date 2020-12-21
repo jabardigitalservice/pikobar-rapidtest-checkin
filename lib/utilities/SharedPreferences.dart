@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Helper shared preference
+/// Call this function to set/get/clear data from Shared Preferences
 class Preferences {
   static Future<void> setDataInt(String title, int value) async {
     final prefs = await SharedPreferences.getInstance();

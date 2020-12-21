@@ -10,6 +10,7 @@ import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
@@ -492,11 +493,11 @@ class _EventListPageState extends State<EventListPage>
   }
 
   void _initialize() async {
-    _page = await Preferences.getDataInt('participantPage') != null
-        ? await Preferences.getDataInt('participantPage')
+    _page = await Preferences.getDataInt(kParticipantPage) != null
+        ? await Preferences.getDataInt(kParticipantPage)
         : 1;
-    maxDataLength = await Preferences.getDataInt('TotalCount') != null
-        ? await Preferences.getDataInt('TotalCount')
+    maxDataLength = await Preferences.getDataInt(kTotalCount) != null
+        ? await Preferences.getDataInt(kTotalCount)
         : 0;
   }
 
@@ -509,7 +510,7 @@ class _EventListPageState extends State<EventListPage>
       _page = (records.length / 15).round() + 1;
     }
     print(_page);
-    await Preferences.setDataInt('participantPage',_page);
+    await Preferences.setDataInt(kParticipantPage,_page);
   }
 
   void _scrollListener() {
@@ -560,7 +561,7 @@ class _EventListPageState extends State<EventListPage>
       page: 1,
     ));
     _page = 1;
-    await Preferences.setDataInt('participantPage',1);
+    await Preferences.setDataInt(kParticipantPage,1);
   }
 
   void updateSearchQuery(String newQuery) {

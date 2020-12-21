@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/model/ListParticipantOfflineModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
@@ -24,8 +25,8 @@ class CheckinOfflineBloc
     if (event is CheckinOfflineLoad) {
       yield CheckinOfflineLoading();
       try {
-        String location = await Preferences.getDataString('location');
-        String eventCode = await Preferences.getDataString('activityCode');
+        String location = await Preferences.getDataString(kLocation);
+        String eventCode = await Preferences.getDataString(kActivityCode);
         List<ListParticipantOfflineModel> getList =
             await repository.getParticipant();
         final data = CheckinOfflineModel(
@@ -56,7 +57,7 @@ class CheckinOfflineBloc
       try {
         List<ListParticipantOfflineModel> getList =
             await repository.getParticipant();
-        String eventCode = await Preferences.getDataString('activityCode');
+        String eventCode = await Preferences.getDataString(kActivityCode);
         var getName = getList
             .where(
                 (element) => element.registrationCode == event.registrationCode)

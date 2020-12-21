@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-import 'package:rapid_test/model/CheckinOfflineModel.dart';
 
 abstract class SendCheckinDataState extends Equatable {
   const SendCheckinDataState([List props = const <dynamic>[]]);
@@ -34,13 +33,10 @@ class SendCheckinDataSuccess extends SendCheckinDataState {
   List<Object> get props => [message];
 }
 
-
-
-
-class  SendCheckinDataFailure extends  SendCheckinDataState {
+class SendCheckinDataFailure extends SendCheckinDataState {
   final String error;
 
-   SendCheckinDataFailure({@required this.error}) : super([error]);
+  SendCheckinDataFailure({@required this.error}) : super([error]);
 
   @override
   String toString() => ' SendCheckinData { error: $error }';
@@ -48,5 +44,3 @@ class  SendCheckinDataFailure extends  SendCheckinDataState {
   @override
   List<Object> get props => [error];
 }
-
-

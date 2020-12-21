@@ -39,7 +39,7 @@ class Dictionary {
   static String scanQRPermission =
       'Untuk scan QR Code izinkan mengakses kamera';
 
-  // placeholder / hint text / field tex
+  // placeholder / hint text / field text
   static String username = 'Username';
   static String usernamePlaceholder = 'Masukan Username';
   static String password = 'Password';

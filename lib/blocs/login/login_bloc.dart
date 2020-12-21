@@ -4,6 +4,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
@@ -40,9 +41,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginSubmitted(LoginSubmitted event) async* {
     yield LoginLoading();
     try {
-      await Preferences.clearData('activityCode');
-      await Preferences.setDataBool('IsFromLogin', true);
-      await Preferences.setDataString('location', event.location);
+      await Preferences.clearData(kActivityCode);
+      await Preferences.setDataBool(kIsFromLogin, true);
+      await Preferences.setDataString(kLocation, event.location);
       final token = await _authenticationRepository.loginUser(
           event.username, event.password);
       if (token != null) {
@@ -54,9 +55,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         yield LoginSuccess();
         yield LoginInitial();
         // } else {
-        //   await Preferences.clearData('activityCode');
+        //   await Preferences.clearData(kActivityCode);
         //   await _authenticationRepository.deleteTokens();
-        //   await Preferences.clearData('IsFromLogin');
+        //   await Preferences.clearData(kIsFromLogin);
         //   yield LoginFailure(
         //       error:
         //           'Hak akses ditolak, silahkan hubungi admin untuk meminta hak akses');
