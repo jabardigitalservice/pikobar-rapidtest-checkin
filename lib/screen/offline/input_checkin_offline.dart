@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rapid_test/blocs/offline/checkin_offline/Bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
@@ -103,7 +104,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        buildTextField(
+                        BuildTextField(
                             title: Dictionary.registrationCode,
                             controller: _codeActivity,
                             hintText: Dictionary.registrationCodePlaceholder,
@@ -113,7 +114,7 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                         SizedBox(
                           height: 10,
                         ),
-                        buildTextField(
+                        BuildTextField(
                             title: Dictionary.labCode,
                             controller: _codeSampleController,
                             validation: Validations.kodeSampleValidation,
@@ -278,100 +279,6 @@ class _InputCheckinOfflineState extends State<InputCheckinOffline> {
                 ),
               ),
             ));
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines,
-      bool qrIcon = false}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 14.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: TextFormField(
-                  maxLines: maxLines != null ? maxLines : 1,
-                  style: isEdit
-                      ? TextStyle(
-                          color: Colors.black,
-                        )
-                      : TextStyle(color: Color(0xffBDBDBD)),
-                  enabled: isEdit,
-                  validator: validation,
-                  textCapitalization: TextCapitalization.characters,
-                  controller: controller,
-                  decoration: InputDecoration(
-                      hintText: hintText,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                      disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                              color: Color(0xffE0E0E0), width: 1.5))),
-                  keyboardType: textInputType != null
-                      ? textInputType
-                      : TextInputType.text,
-                ),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              qrIcon
-                  ? Container(
-                      height: 60,
-                      width: 60,
-                      child: RaisedButton(
-                        elevation: 0,
-                        color: Colors.white,
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xffE0E0E0), width: 1.5)),
-                        onPressed: () async {
-                          var barcode = await BarcodeScanner.scan();
-                          if (barcode.rawContent != '') {
-                            setState(() {
-                              controller.text = barcode.rawContent;
-                            });
-                          }
-                        },
-                        child: Icon(
-                          FontAwesomeIcons.qrcode,
-                          color: ColorBase.green,
-                        ),
-                      ),
-                    )
-                  : Container()
-            ],
-          )
-        ],
-      ),
-    );
   }
 
   @override

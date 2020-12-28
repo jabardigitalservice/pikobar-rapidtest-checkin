@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/blocs/offline/event_code/Bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
@@ -114,7 +115,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  buildTextField(
+                  BuildTextField(
                     title: Dictionary.activityCode,
                     controller: _codeActivity,
                     hintText: Dictionary.activityCodePlaceholder,
@@ -124,7 +125,7 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
                   SizedBox(
                     height: 10,
                   ),
-                  buildTextField(
+                  BuildTextField(
                     title: Dictionary.location,
                     controller: _location,
                     hintText: Dictionary.locationPlaceholder,
@@ -184,63 +185,6 @@ class _InputActivityCodeOfflineState extends State<InputActivityCodeOffline> {
           );
         }
       },
-    );
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 18.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            maxLines: maxLines != null ? maxLines : 1,
-            style: isEdit
-                ? TextStyle(
-                    color: Colors.black,
-                  )
-                : TextStyle(color: Color(0xffBDBDBD)),
-            enabled: isEdit,
-            validator: validation,
-            textCapitalization: TextCapitalization.characters,
-            controller: controller,
-            decoration: InputDecoration(
-                hintText: hintText,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5))),
-            keyboardType:
-                textInputType != null ? textInputType : TextInputType.text,
-          )
-        ],
-      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/login/login_bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
@@ -103,24 +104,27 @@ class _State extends State<LoginForm> {
               padding: EdgeInsets.all(20),
               child: ListView(
                 children: <Widget>[
-                  buildTextField(
+                  BuildTextField(
                     title: Dictionary.username,
                     controller: nameController,
                     hintText: Dictionary.usernamePlaceholder,
+                    textCapitalization: TextCapitalization.none,
+                    textInputType: TextInputType.emailAddress,
                     isEdit: true,
                     validation: Validations.usernameValidation,
                   ),
                   SizedBox(height: 15),
-                  buildTextField(
+                  BuildTextField(
                     title: Dictionary.password,
                     controller: passwordController,
                     hintText: Dictionary.passwordPlaceholder,
+                    textCapitalization: TextCapitalization.none,
                     isEdit: true,
                     obsecureText: true,
                     validation: Validations.passwordValidation,
                   ),
                   SizedBox(height: 15),
-                  buildTextField(
+                  BuildTextField(
                     title: Dictionary.location,
                     controller: _location,
                     hintText: Dictionary.locationPlaceholder,
@@ -196,66 +200,6 @@ class _State extends State<LoginForm> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines,
-      TextCapitalization textCapitalization = TextCapitalization.none,
-      bool obsecureText = false}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 18.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            maxLines: maxLines != null ? maxLines : 1,
-            style: isEdit
-                ? TextStyle(
-                    color: Colors.black,
-                  )
-                : TextStyle(color: Color(0xffBDBDBD)),
-            enabled: isEdit,
-            validator: validation,
-            obscureText: obsecureText,
-            textCapitalization: textCapitalization,
-            controller: controller,
-            decoration: InputDecoration(
-                hintText: hintText,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5))),
-            keyboardType:
-                textInputType != null ? textInputType : TextInputType.text,
-          )
-        ],
       ),
     );
   }
