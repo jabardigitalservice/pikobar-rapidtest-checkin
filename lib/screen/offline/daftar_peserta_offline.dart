@@ -133,7 +133,7 @@ class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
                                   }
                                 },
                                 child: Text(
-                                  'Lihatt',
+                                  'Lihat',
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ),

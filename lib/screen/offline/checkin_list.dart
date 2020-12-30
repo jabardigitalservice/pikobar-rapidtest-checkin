@@ -338,8 +338,10 @@ class _CheckinListState extends State<CheckinList> {
           alignment: Alignment.centerLeft,
         ),
         Container(
-          child: Text(unixTimeStampToDateTime(
-                  listCheckinOfflineLoaded.checkinOfflineModel[i].createdAt) ??
+          child: Text(unixTimeStampToDateTime(DateTime.parse(
+                      listCheckinOfflineLoaded.checkinOfflineModel[i].createdAt)
+                  .add(Duration(hours: 7))
+                  .toString()) ??
               ''),
           width: 200,
           height: 52,
