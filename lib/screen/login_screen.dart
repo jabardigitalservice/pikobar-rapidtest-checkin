@@ -67,7 +67,9 @@ class _State extends State<LoginForm> {
           showDialog(
               context: context,
               builder: (BuildContext context) => DialogTextOnly(
-                    description: split.last.toString(),
+                    description: split.last.toString().contains('Unauthorized')
+                        ? Dictionary.unauthorized
+                        : split.last.toString(),
                     buttonText: Dictionary.ok,
                     onOkPressed: () {
                       Navigator.of(context).pop(); // To close the dialog
