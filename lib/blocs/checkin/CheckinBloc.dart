@@ -28,21 +28,37 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
     if (event is CheckinLoad) {
       yield CheckinLoading();
 
+      /// Checking for connection status
       if (await ConnectivityWrapper.instance.isConnected) {
+        /// ------ Online -------
+        /// get offline data
         var checkinOfflineData = await offlineRepository.getCheckinList();
+
+        /// Checking offline data  not null
         if (checkinOfflineData.length != 0) {
+          /// ------ Offline Data  Available ------
+          /// get raw offline data
           var getOfflineData = await offlineRepository.select();
+
+          /// send offline data  to API
           await offlineRepository.checkin(getOfflineData);
         }
         try {
+          /// get [location] form shared preference
           String location = await Preferences.getDataString(kLocation);
+
+          /// send data to API
           CheckinModel checkinModel = await repository.checkNomorPendaftaran(
               event.nomorPendaftaran,
               event.eventCode,
               event.labCodeSample,
               location);
+
+          /// get offline data
           List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
+
+          /// update offline data
           var getData = getList
               .where((element) =>
                   element.registrationCode == event.nomorPendaftaran)
@@ -61,11 +77,20 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
           yield CheckinFailure(error: e.toString());
         }
       } else {
+        /// ------ Offline -------
+
         try {
+          /// get [location] form shared preference
           String location = await Preferences.getDataString(kLocation);
+
+          /// get [eventCode] form shared preference
           String eventCode = await Preferences.getDataString(kActivityCode);
+
+          /// get offline data
           List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
+
+          /// save data to local storage
           final data = CheckinOfflineModel(
               eventCode: eventCode,
               labCodeSample: event.labCodeSample,
@@ -73,6 +98,8 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
               createdAt: DateTime.now().add(Duration(hours: -7)).toString(),
               registrationCode: event.nomorPendaftaran);
           await offlineRepository.insert(data);
+
+          /// update offline data
           var getData = getList
               .where((element) =>
                   element.registrationCode == event.nomorPendaftaran)
