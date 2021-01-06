@@ -29,7 +29,8 @@ class LoggingInterceptors extends InterceptorsWrapper {
           AuthenticationRepository();
 
       /// get refresh token status from shared preference
-      bool isGetRefreshToken = await Preferences.getDataBool(kIsRefresh);
+      bool isGetRefreshToken =
+          await Preferences.getDataBool(kIsRefresh) ?? false;
       print('Mengambil refresh token : $isGetRefreshToken');
 
       /// check refresh token status
