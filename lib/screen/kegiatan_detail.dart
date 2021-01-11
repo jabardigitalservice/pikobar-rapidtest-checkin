@@ -196,6 +196,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                 BlocListener<AuthenticationBloc, AuthenticationState>(
                     listener: (context, state) {
                   if (state is AuthenticationNotAuthenticated) {
+                    print('dari kegiatan detail');
                     Navigator.of(context).pop();
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => LoginScreen()));
@@ -257,7 +258,7 @@ class _KegiatanPageState extends State<KegiatanPage> {
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Text(Dictionary.time),
+                                Text(Dictionary.date),
                                 Expanded(
                                   child: Text(
                                       checkingSameDate(
@@ -269,14 +270,31 @@ class _KegiatanPageState extends State<KegiatanPage> {
                                               DateTime.parse(kodeKegiatanModel
                                                       .kodeKegiatan.data.endAt)
                                                   .toLocal())
-                                          ? unixTimeStampToDateTime(kodeKegiatanModel
-                                                  .kodeKegiatan.data.startAt) +
-                                              ' - ' +
-                                              unixTimeStampToHour(
-                                                  kodeKegiatanModel.kodeKegiatan
-                                                      .data.endAt) +
-                                              Dictionary.wib
+                                          ? unixTimeStampToDateWithoutHour(
+                                              kodeKegiatanModel
+                                                  .kodeKegiatan.data.startAt)
                                           : "${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.startAt)} - ${unixTimeStampToDateWithoutHour(kodeKegiatanModel.kodeKegiatan.data.endAt)}",
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(Dictionary.time),
+                                Expanded(
+                                  child: Text(
+                                      unixTimeStampToHour(kodeKegiatanModel
+                                              .kodeKegiatan.data.startAt) +
+                                          ' - ' +
+                                          unixTimeStampToHour(kodeKegiatanModel
+                                              .kodeKegiatan.data.endAt) +
+                                          Dictionary.wib,
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold)),

@@ -140,6 +140,7 @@ class _EventListPageState extends State<EventListPage>
             BlocListener<AuthenticationBloc, AuthenticationState>(
               listener: (context, state) {
                 if (state is AuthenticationNotAuthenticated) {
+                  print('dari event list');
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 }
@@ -510,7 +511,7 @@ class _EventListPageState extends State<EventListPage>
       _page = (records.length / 15).round() + 1;
     }
     print(_page);
-    await Preferences.setDataInt(kParticipantPage,_page);
+    await Preferences.setDataInt(kParticipantPage, _page);
   }
 
   void _scrollListener() {
@@ -561,7 +562,7 @@ class _EventListPageState extends State<EventListPage>
       page: 1,
     ));
     _page = 1;
-    await Preferences.setDataInt(kParticipantPage,1);
+    await Preferences.setDataInt(kParticipantPage, 1);
   }
 
   void updateSearchQuery(String newQuery) {

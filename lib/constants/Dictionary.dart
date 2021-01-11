@@ -30,12 +30,15 @@ class Dictionary {
   static String errorConnection = 'Periksa kembali koneksi Internet';
   static String errorIOConnection = 'Koneksi ke server bermasalah';
   static String eventExpired = 'Event Sudah Berakhir';
+  static String unauthorized = 'Username/Password Tidak Sesuai';
 
   // Toast Messages
   static String pleaseWait = 'Tunggu Sebentar';
   static String checkinSuccess = ' berhasil checkin';
   static String checkinSuccessOffline = ' Berhasil checkin';
   static String offlineMode = 'Offline Mode';
+  static String offlineModeListParticipant =
+      'Data dibawah merupakan data offline';
   static String scanQRPermission =
       'Untuk scan QR Code izinkan mengakses kamera';
 
