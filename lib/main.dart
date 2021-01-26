@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_list.dart';
@@ -55,7 +56,7 @@ class _MyAppState extends State<MyApp> {
     initializeDateFormatting();
     return ConnectivityAppWrapper(
       app: MaterialApp(
-        title: 'PIKOBAR Tes Masif Checkin',
+        title: Dictionary.pikobarTestMasif,
         theme: ThemeData(
             primaryColor: ColorBase.green,
             primaryColorBrightness: Brightness.dark,

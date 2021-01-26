@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'Bloc.dart';
 
@@ -27,14 +28,13 @@ class SendCheckinDataBloc
         endData = await repository.select();
 
         yield SendCheckinDataSuccess(
-            message:
-                'Data berhasil terkirim ${startData.length - endData.length}/${startData.length}');
+            message: Dictionary.bulkCheckinMessage +
+                '${startData.length - endData.length}/${startData.length}');
       } catch (e) {
         List<Map<String, dynamic>> endDataError = await repository.select();
-        print(e.toString());
         yield SendCheckinDataFailure(
-            error:
-                'Data berhasil terkirim ${startData.length - endDataError.length}/${startData.length}');
+            error: Dictionary.bulkCheckinMessage +
+                '${startData.length - endDataError.length}/${startData.length}');
       }
     }
   }

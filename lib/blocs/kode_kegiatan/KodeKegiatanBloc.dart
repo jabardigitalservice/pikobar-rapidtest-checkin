@@ -69,7 +69,6 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
             kActivityCode, kodeKegiatanModel.data.eventCode);
         List<Map<String, dynamic>> checkData =
             await offlineRepository.selectParticipant();
-        print("jumlah data " + checkData.length.toString());
         if (checkData.length != 0) {
           await offlineRepository.deleteTableParticipant();
         }
@@ -80,7 +79,6 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
             _page++;
             await offlineRepository.getListOfParticipant(
                 eventCode, _page.toString());
-            print(_page);
           }
         }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/CheckinModel.dart';
 import 'package:rapid_test/model/CheckinOfflineModel.dart';
@@ -89,30 +90,39 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
           /// get offline data
           List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
-
-          /// save data to local storage
-          final data = CheckinOfflineModel(
-              eventCode: eventCode,
-              labCodeSample: event.labCodeSample,
-              location: location,
-              createdAt: DateTime.now().add(Duration(hours: -7)).toString(),
-              registrationCode: event.nomorPendaftaran);
-          await offlineRepository.insert(data);
-
-          /// update offline data
-          var getData = getList
+          var getLabCode = getList
               .where((element) =>
-                  element.registrationCode == event.nomorPendaftaran)
+                  element.labCode.toString().toLowerCase() ==
+                  event.labCodeSample.toString().toLowerCase())
               .toList();
+          if (getLabCode.length == 0) {
+            /// save data to local storage
+            final data = CheckinOfflineModel(
+                eventCode: eventCode,
+                labCodeSample: event.labCodeSample,
+                location: location,
+                createdAt: DateTime.now().add(Duration(hours: -7)).toString(),
+                registrationCode: event.nomorPendaftaran);
+            await offlineRepository.insert(data);
 
-          await offlineRepository.updateListParticipant(
-              ListParticipantOfflineModel(
-                  id: getData[0].id,
-                  attendedAt: DateTime.now().toString(),
-                  labCode: event.labCodeSample,
-                  name: getData[0].name,
-                  registrationCode: getData[0].registrationCode));
-          yield CheckinLoaded(name: getData[0].name);
+            /// update offline data
+            var getData = getList
+                .where((element) =>
+                    element.registrationCode == event.nomorPendaftaran)
+                .toList();
+
+            await offlineRepository.updateListParticipant(
+                ListParticipantOfflineModel(
+                    id: getData[0].id,
+                    attendedAt: DateTime.now().toString(),
+                    labCode: event.labCodeSample,
+                    name: getData[0].name,
+                    registrationCode: getData[0].registrationCode));
+            yield CheckinLoaded(name: getData[0].name);
+          } else {
+            yield CheckinFailure(
+                error: Dictionary.labCodeAlreadyUsed + '${getLabCode[0].name}');
+          }
         } catch (e) {
           yield CheckinFailure(error: e.toString());
         }
@@ -137,30 +147,18 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
                   element.registrationCode == event.registrationCode)
               .toList();
           if (getName.isEmpty) {
-            yield CheckinFailure(
-                error: 'Kode registrasi tidak ditemukan dalam event ini');
+            yield CheckinFailure(error: Dictionary.numberRegistrationNotFound);
           } else {
             if (getName[0].attendedAt != null) {
               yield CheckinFailure(
-                  error:
-                      'Kode registrasi telah checkin pada ${unixTimeStampToDateTime(getName[0].attendedAt)}');
+                  error: Dictionary.numberRegistrationAlreadyCheckin +
+                      '${unixTimeStampToDateTime(getName[0].attendedAt)}');
             } else {
-              var getLabCode = getList
-                  .where((element) =>
-                      element.labCode.toString().toLowerCase() ==
-                      event.labCode.toString().toLowerCase())
-                  .toList();
-              if (getLabCode.length == 0) {
-                yield GetNameLoaded(
-                    name: getName[0].name,
-                    registrationCode: event.registrationCode,
-                    eventCode: eventCode,
-                    labCode: event.labCode);
-              } else {
-                yield CheckinFailure(
-                    error:
-                        'Kode lab telah digunakan oleh ${getLabCode[0].name}');
-              }
+              yield GetNameLoaded(
+                  name: getName[0].name,
+                  registrationCode: event.registrationCode,
+                  eventCode: eventCode,
+                  labCode: event.labCode);
             }
           }
         }

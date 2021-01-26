@@ -36,14 +36,12 @@ class ListParticipantOfflineBloc
     if (event is ListParticipantSearchOffline) {
       yield ListParticipantOfflineLoading();
       try {
-        print(event.keyword);
         List<ListParticipantOfflineModel> getList =
             await repository.getParticipant();
         var getSearch = getList
-            .where((element) => element.name.toString().toLowerCase()
-                .contains(event.keyword))
+            .where((element) =>
+                element.name.toString().toLowerCase().contains(event.keyword))
             .toList();
-        print(getSearch);
         yield ListParticipantOfflineLoaded(
             listParticipantOfflineModel: getSearch);
       } catch (e) {
