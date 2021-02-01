@@ -1,10 +1,11 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/login/login_bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
@@ -25,7 +26,7 @@ class LoginScreen extends StatelessWidget {
             _kegiatanDetailRepository),
         child: Scaffold(
           appBar: AppBar(
-            title: Text('Login Screen'),
+            title: Text(Dictionary.loginScreen),
           ),
           body: LoginForm(),
         ));
@@ -62,11 +63,14 @@ class _State extends State<LoginForm> {
     return BlocListener<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailure) {
+          var split = state.error.split('Exception:');
           showDialog(
               context: context,
               builder: (BuildContext context) => DialogTextOnly(
-                    description: state.error.toString(),
-                    buttonText: "OK",
+                    description: split.last.toString().contains('Unauthorized')
+                        ? Dictionary.unauthorized
+                        : split.last.toString(),
+                    buttonText: Dictionary.ok,
                     onOkPressed: () {
                       Navigator.of(context).pop(); // To close the dialog
                     },
@@ -84,7 +88,7 @@ class _State extends State<LoginForm> {
                   CircularProgressIndicator(),
                   Container(
                     margin: EdgeInsets.only(left: 15.0),
-                    child: Text('Tunggu Sebentar'),
+                    child: Text(Dictionary.pleaseWait),
                   )
                 ],
               ),
@@ -102,27 +106,30 @@ class _State extends State<LoginForm> {
               padding: EdgeInsets.all(20),
               child: ListView(
                 children: <Widget>[
-                  buildTextField(
-                    title: 'Username',
+                  BuildTextField(
+                    title: Dictionary.username,
                     controller: nameController,
-                    hintText: 'Masukan Username',
+                    hintText: Dictionary.usernamePlaceholder,
+                    textCapitalization: TextCapitalization.none,
+                    textInputType: TextInputType.emailAddress,
                     isEdit: true,
                     validation: Validations.usernameValidation,
                   ),
                   SizedBox(height: 15),
-                  buildTextField(
-                    title: 'Password',
+                  BuildTextField(
+                    title: Dictionary.password,
                     controller: passwordController,
-                    hintText: 'Masukan Password',
+                    hintText: Dictionary.passwordPlaceholder,
+                    textCapitalization: TextCapitalization.none,
                     isEdit: true,
                     obsecureText: true,
                     validation: Validations.passwordValidation,
                   ),
                   SizedBox(height: 15),
-                  buildTextField(
-                    title: 'Lokasi',
+                  BuildTextField(
+                    title: Dictionary.location,
                     controller: _location,
-                    hintText: 'Masukan lokasi',
+                    hintText: Dictionary.locationPlaceholder,
                     isEdit: true,
                     textCapitalization: TextCapitalization.characters,
                     validation: Validations.locationValidation,
@@ -139,7 +146,7 @@ class _State extends State<LoginForm> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'Login',
+                        Dictionary.login,
                         style: TextStyle(
                             fontFamily: FontsFamily.productSans,
                             fontWeight: FontWeight.bold,
@@ -157,7 +164,7 @@ class _State extends State<LoginForm> {
                   SizedBox(
                     height: 20,
                   ),
-                  Center(child: Text('Atau')),
+                  Center(child: Text(Dictionary.or)),
                   SizedBox(
                     height: 20,
                   ),
@@ -169,74 +176,32 @@ class _State extends State<LoginForm> {
                                 builder: (context) => MyHomePage()));
                       },
                       child: Text(
-                        'Input Kode Kegiatan',
+                        Dictionary.inputActivityCode,
                         style: TextStyle(color: Colors.blue),
-                      ))
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  // Center(child: Text('Atau')),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  // FlatButton(
+                  //     onPressed: () {
+                  //       Navigator.push(
+                  //           context,
+                  //           MaterialPageRoute(
+                  //               builder: (context) => InputActivityCodeOffline()));
+                  //     },
+                  //     child: Text(
+                  //       'Offline Mode',
+                  //       style: TextStyle(color: Colors.blue),
+                  //     ))
                 ],
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines,
-      TextCapitalization textCapitalization = TextCapitalization.none,
-      bool obsecureText = false}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 18.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            maxLines: maxLines != null ? maxLines : 1,
-            style: isEdit
-                ? TextStyle(
-                    color: Colors.black,
-                  )
-                : TextStyle(color: Color(0xffBDBDBD)),
-            enabled: isEdit,
-            validator: validation,
-            obscureText: obsecureText,
-            textCapitalization: textCapitalization,
-            controller: controller,
-            decoration: InputDecoration(
-                hintText: hintText,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5))),
-            keyboardType:
-                textInputType != null ? textInputType : TextInputType.text,
-          )
-        ],
       ),
     );
   }

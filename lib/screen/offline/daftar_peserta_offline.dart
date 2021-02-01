@@ -4,36 +4,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
-import 'package:rapid_test/blocs/list_participants/Bloc.dart';
 import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
+import 'package:rapid_test/blocs/offline/list_participants_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
-import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
-import 'package:rapid_test/repositories/ListParticipantRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/login_screen.dart';
+import 'package:rapid_test/screen/offline/checkin_list.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 
-import 'offline/checkin_list.dart';
-
-class DaftarPesertaPage extends StatefulWidget {
+class DaftarPesertaOfflinePage extends StatefulWidget {
   final KodeKegiatanModel kodeKegiatanModel;
-  DaftarPesertaPage({this.kodeKegiatanModel});
+  DaftarPesertaOfflinePage({this.kodeKegiatanModel});
   @override
-  _DaftarPesertaPageState createState() => _DaftarPesertaPageState();
+  _DaftarPesertaOfflinePageState createState() =>
+      _DaftarPesertaOfflinePageState();
 }
 
-class _DaftarPesertaPageState extends State<DaftarPesertaPage>
+class _DaftarPesertaOfflinePageState extends State<DaftarPesertaOfflinePage>
     with TickerProviderStateMixin {
-  final ListParticipantRepository _listParticipantRepository =
-      ListParticipantRepository();
-  ListParticipantBloc _listParticipantBloc;
+  final OfflineRepository _offlineRepository = OfflineRepository();
+  ListParticipantOfflineBloc _listParticipantBloc;
   TextEditingController _searchController = TextEditingController();
   String searchQuery;
   ScrollController _scrollController = ScrollController();
@@ -49,7 +46,6 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
   ListCheckinOfflineBloc _listCheckin;
-  OfflineRepository _offlineRepository = OfflineRepository();
   ListCheckinOfflineLoaded listCheckinOfflineLoaded;
   int lengthDataOffline = 0;
 
@@ -63,10 +59,6 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
     //   _searchController.addListener((() {
     //   _onSearchChanged();
     // }));
-
-    _scrollController.addListener(() {
-      _scrollListener();
-    });
     super.initState();
   }
   // void onScroll() {
@@ -86,20 +78,17 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
     return Scaffold(
       appBar: CustomAppBar.bottomSearchAppBar(
           searchController: _searchController,
-          title: Dictionary.listParticipant,
-          hintText: Dictionary.searchListParticipant,
+          title: 'Daftar Peserta',
+          hintText: 'Cari Daftar Peserta',
           onSubmitted: updateSearchQuery,
           context: context),
       body: MultiBlocProvider(
         providers: [
-          BlocProvider<ListParticipantBloc>(
+          BlocProvider<ListParticipantOfflineBloc>(
             create: (BuildContext context) => _listParticipantBloc =
-                ListParticipantBloc(repository: _listParticipantRepository)
-                  ..add(ListParticipantLoad(
-                      eventCode: widget.kodeKegiatanModel.data.eventCode,
-                      page: _page,
-                      keyword: '',
-                      isFirstLoad: true)),
+                ListParticipantOfflineBloc(repository: _offlineRepository)
+                  ..add(ListParticipantOfflineLoad(
+                      eventCode: widget.kodeKegiatanModel.data.eventCode)),
           ),
           BlocProvider<AuthenticationBloc>(
               create: (BuildContext context) => _authenticationBloc =
@@ -144,7 +133,7 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                   }
                                 },
                                 child: Text(
-                                  Dictionary.check,
+                                  'Lihat',
                                   style: TextStyle(fontSize: 12),
                                 ),
                               ),
@@ -158,9 +147,9 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                 }
               },
             ),
-            BlocListener<ListParticipantBloc, ListParticipantState>(
-                listener: (context, state) {
-              if (state is ListParticipantFailure) {
+            BlocListener<ListParticipantOfflineBloc,
+                ListParticipantOfflineState>(listener: (context, state) {
+              if (state is ListParticipantOfflineFailure) {
                 if (state.error.toString().contains('Token Expired')) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
@@ -170,14 +159,13 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                       barrierDismissible: false,
                       builder: (BuildContext context) => DialogTextOnly(
                             description: split.last.toString(),
-                            buttonText: Dictionary.ok,
+                            buttonText: "OK",
                             onOkPressed: () {
                               Navigator.of(context).pop();
-                              _listParticipantBloc.add(ListParticipantLoad(
-                                  eventCode:
-                                      widget.kodeKegiatanModel.data.eventCode,
-                                  page: 1,
-                                  keyword: '')); // To close the dialog
+                              _listParticipantBloc.add(
+                                  ListParticipantOfflineLoad(
+                                      eventCode: widget.kodeKegiatanModel.data
+                                          .eventCode)); // To close the dialog
                             },
                           ));
                 }
@@ -213,12 +201,13 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
               }
             })
           ],
-          child: BlocBuilder<ListParticipantBloc, ListParticipantState>(
+          child: BlocBuilder<ListParticipantOfflineBloc,
+              ListParticipantOfflineState>(
             builder: (
               BuildContext context,
-              ListParticipantState state,
+              ListParticipantOfflineState state,
             ) {
-              if (state is ListParticipantLoaded) {
+              if (state is ListParticipantOfflineLoaded) {
                 // List<DataParticipant> invitationsList;
 
                 // /// Checking search field
@@ -238,12 +227,11 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                 //   invitationsList =
                 //       listParticipantLoaded.listParticipantModel;
                 // }
-                _updatePage(state.listParticipantModel);
-                maxDataLength = state.maxData;
+
                 return SafeArea(
-                    child: state.listParticipantModel.length == 0
+                    child: state.listParticipantOfflineModel.length == 0
                         ? Center(
-                            child: Text(Dictionary.emptyDataParticipant),
+                            child: Text('Tidak ada data daftar peserta'),
                           )
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -255,42 +243,15 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                   color: ColorBase.green,
                                   onRefresh: () {
                                     _listParticipantBloc.add(
-                                        ListParticipantLoad(
+                                        ListParticipantOfflineLoad(
                                             eventCode: widget.kodeKegiatanModel
-                                                .data.eventCode,
-                                            page: 1,
-                                            keyword: _searchController.text));
+                                                .data.eventCode));
                                   },
                                   child: ListView.builder(
                                     controller: _scrollController,
-                                    itemCount:
-                                        state.listParticipantModel.length + 1,
+                                    itemCount: state
+                                        .listParticipantOfflineModel.length,
                                     itemBuilder: (context, i) {
-                                      if (i ==
-                                          state.listParticipantModel.length) {
-                                        if (state.listParticipantModel.length >
-                                                15 &&
-                                            maxDataLength !=
-                                                state.listParticipantModel
-                                                    .length) {
-                                          return Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 20.0, bottom: 20.0),
-                                            child: Column(
-                                              children: <Widget>[
-                                                CupertinoActivityIndicator(),
-                                                SizedBox(
-                                                  height: 5.0,
-                                                ),
-                                                Text(Dictionary
-                                                    .dataParticipantLoading),
-                                              ],
-                                            ),
-                                          );
-                                        } else {
-                                          return Container();
-                                        }
-                                      }
                                       return Container(
                                         margin: EdgeInsets.only(
                                             bottom: 10,
@@ -302,7 +263,9 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                         decoration: BoxDecoration(
                                             borderRadius:
                                                 BorderRadius.circular(12),
-                                            color: state.listParticipantModel[i]
+                                            color: state
+                                                        .listParticipantOfflineModel[
+                                                            i]
                                                         .attendedAt ==
                                                     null
                                                 ? Colors.white
@@ -321,14 +284,15 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(state
-                                                      .listParticipantModel[i]
+                                                      .listParticipantOfflineModel[
+                                                          i]
                                                       .name),
                                                   Text(
-                                                      state.listParticipantModel[i]
+                                                      state.listParticipantOfflineModel[i]
                                                                   .attendedAt ==
                                                               null
-                                                          ? Dictionary.absent
-                                                          : Dictionary.present),
+                                                          ? 'Tidak Hadir'
+                                                          : 'Hadir'),
                                                 ],
                                               ),
                                               SizedBox(
@@ -350,20 +314,19 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    Dictionary
-                                                        .numberRegistration,
+                                                    'Nomor Registrasi: ',
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
                                                       state
-                                                                  .listParticipantModel[
+                                                                  .listParticipantOfflineModel[
                                                                       i]
                                                                   .registrationCode ==
                                                               null
                                                           ? ''
                                                           : state
-                                                              .listParticipantModel[
+                                                              .listParticipantOfflineModel[
                                                                   i]
                                                               .registrationCode,
                                                       style: TextStyle(
@@ -376,21 +339,21 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    Dictionary.labCodeInput,
+                                                    'Kode Sampel: ',
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
                                                       state
-                                                                  .listParticipantModel[
+                                                                  .listParticipantOfflineModel[
                                                                       i]
-                                                                  .labCodeSample ==
+                                                                  .labCode ==
                                                               null
                                                           ? ''
                                                           : state
-                                                              .listParticipantModel[
+                                                              .listParticipantOfflineModel[
                                                                   i]
-                                                              .labCodeSample,
+                                                              .labCode,
                                                       style: TextStyle(
                                                           fontSize: 12)),
                                                 ],
@@ -401,20 +364,20 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
                                                         .spaceBetween,
                                                 children: <Widget>[
                                                   Text(
-                                                    Dictionary.checkinDate,
+                                                    'Tanggal Checkin: ',
                                                     style:
                                                         TextStyle(fontSize: 12),
                                                   ),
                                                   Text(
                                                       state
-                                                                  .listParticipantModel[
+                                                                  .listParticipantOfflineModel[
                                                                       i]
                                                                   .attendedAt ==
                                                               null
                                                           ? ''
                                                           : unixTimeStampToDateTime(
                                                               state
-                                                                  .listParticipantModel[
+                                                                  .listParticipantOfflineModel[
                                                                       i]
                                                                   .attendedAt),
                                                       style: TextStyle(
@@ -462,27 +425,13 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
     await Preferences.setDataInt(kParticipantPage, _page);
   }
 
-  void _scrollListener() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      _listParticipantBloc.add(ListParticipantLoadMore(
-        eventCode: widget.kodeKegiatanModel.data.eventCode,
-        page: _page,
-        keyword: _searchController.text,
-      ));
-      // }
-    }
-  }
-
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _hasChange = true;
-      _listParticipantBloc.add(ListParticipantLoad(
-        eventCode: widget.kodeKegiatanModel.data.eventCode,
-        page: 1,
-        keyword: _searchController.text,
-      ));
+      print('masuk');
+      _listParticipantBloc
+          .add(ListParticipantSearchOffline(keyword: _searchController.text));
     });
   }
 
@@ -510,11 +459,8 @@ class _DaftarPesertaPageState extends State<DaftarPesertaPage>
   }
 
   Future<void> _refresh() async {
-    _listParticipantBloc.add(ListParticipantLoad(
-      eventCode: widget.kodeKegiatanModel.data.eventCode,
-      page: 1,
-      keyword: '',
-    ));
+    _listParticipantBloc.add(ListParticipantOfflineLoad(
+        eventCode: widget.kodeKegiatanModel.data.eventCode));
     _page = 1;
     await Preferences.setDataInt(kParticipantPage, 1);
   }

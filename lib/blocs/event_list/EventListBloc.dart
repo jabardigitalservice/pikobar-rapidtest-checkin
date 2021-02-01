@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
@@ -24,7 +25,7 @@ class EventListBloc extends Bloc<EventListEvent, EventListState> {
       try {
         eventListModel = await repository.getListOfEvent(event.page);
 
-        int maxDatalength = await Preferences.getTotalCount();
+        int maxDatalength = await Preferences.getDataInt(kTotalCount);
         yield EventListLoaded(
             eventListModel: eventListModel.data, maxData: maxDatalength);
       } catch (e) {
@@ -35,7 +36,7 @@ class EventListBloc extends Bloc<EventListEvent, EventListState> {
       try {
         EventListLoaded eventListLoaded = state as EventListLoaded;
         eventListModel = await repository.getListOfEvent(event.page);
-        int maxDatalength = await Preferences.getTotalCount();
+        int maxDatalength = await Preferences.getDataInt(kTotalCount);
         yield EventListLoaded(
             eventListModel:
                 eventListLoaded.eventListModel + eventListModel.data,

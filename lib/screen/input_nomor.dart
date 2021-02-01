@@ -1,22 +1,25 @@
 import 'package:barcode_scan/barcode_scan.dart';
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/checkin/Bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 import 'login_screen.dart';
 
 class InputNomor extends StatefulWidget {
-  KodeKegiatanModel kodeKegiatanModel;
+  final KodeKegiatanModel kodeKegiatanModel;
   InputNomor({this.kodeKegiatanModel});
   @override
   _InputNomorState createState() => _InputNomorState();
@@ -32,16 +35,18 @@ class _InputNomorState extends State<InputNomor> {
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Input Nomor Pendaftaran")),
+        appBar: AppBar(title: Text(Dictionary.inputRegistrationCOde)),
         body: MultiBlocProvider(
           providers: [
             BlocProvider<CheckinBloc>(
-              create: (BuildContext context) => _checkinBloc =
-                  CheckinBloc(repository: _kegiatanDetailRepository),
+              create: (BuildContext context) => _checkinBloc = CheckinBloc(
+                  repository: _kegiatanDetailRepository,
+                  offlineRepository: _offlineRepository),
             ),
             BlocProvider<AuthenticationBloc>(
                 create: (BuildContext context) => _authenticationBloc =
@@ -55,12 +60,13 @@ class _InputNomorState extends State<InputNomor> {
                     if (state.error.toString().contains('Token Expired')) {
                       _authenticationBloc.add(UserLoggedOut());
                     } else {
+                      var split = state.error.split('Exception:');
                       showDialog(
                           context: context,
                           barrierDismissible: false,
                           builder: (BuildContext context) => DialogTextOnly(
-                                description: state.error.toString(),
-                                buttonText: "OK",
+                                description: split.last.toString(),
+                                buttonText: Dictionary.ok,
                                 onOkPressed: () {
                                   Navigator.of(context)
                                       .pop(); // To close the dialog
@@ -77,7 +83,7 @@ class _InputNomorState extends State<InputNomor> {
                             CircularProgressIndicator(),
                             Container(
                               margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
+                              child: Text(Dictionary.pleaseWait),
                             )
                           ],
                         ),
@@ -86,12 +92,12 @@ class _InputNomorState extends State<InputNomor> {
                   } else if (state is CheckinLoaded) {
                     CheckinLoaded checkinLoaded = state as CheckinLoaded;
                     showDialog(
+                        barrierDismissible: false,
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
-                              description:
-                                  checkinLoaded.checkinModel.data.name +
-                                      ' berhasil checkin',
-                              buttonText: "OK",
+                              description: checkinLoaded.name +
+                                  Dictionary.checkinSuccess,
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 _codeActivity.text = '';
                                 _codeSampleController.text = '';
@@ -129,67 +135,92 @@ class _InputNomorState extends State<InputNomor> {
                 BuildContext context,
                 CheckinState state,
               ) {
-                return Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        buildTextField(
-                            title: 'Nomor Pendaftaran',
-                            controller: _codeActivity,
-                            hintText: 'Masukan nomor pendaftaran',
-                            isEdit: true,
-                            validation: Validations.kodeValidation,
-                            textInputType: TextInputType.text),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        buildTextField(
-                            title: 'Kode Sampel',
-                            controller: _codeSampleController,
-                            validation: Validations.kodeSampleValidation,
-                            hintText: 'Masukan atau scan kode sampel',
-                            isEdit: true,
-                            qrIcon: true,
-                            textInputType: TextInputType.text),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        Container(
+                return Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      ConnectivityWidgetWrapper(
+                        stacked: false,
+                        offlineWidget: Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 40.0,
-                          child: RaisedButton(
-                            splashColor: Colors.lightGreenAccent,
-                            padding: EdgeInsets.all(0.0),
-                            color: ColorBase.green,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
-                            ),
+                          height: 50,
+                          color: Colors.red,
+                          child: Center(
                             child: Text(
-                              'Checkin',
+                              Dictionary.offlineMode,
                               style: TextStyle(
-                                  fontFamily: FontsFamily.productSans,
+                                  color: Colors.white,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
-                                  color: Colors.white),
+                                  fontSize: 18),
                             ),
-                            onPressed: () {
-                              if (_formKey.currentState.validate()) {
-                                FocusScope.of(context).unfocus();
-                                _checkinBloc.add(GetNameLoad(
-                                    registrationCode: _codeActivity.text,
-                                    eventCode:
-                                        widget.kodeKegiatanModel.data.eventCode,
-                                    labCode: _codeSampleController.text));
-                              }
-                            },
                           ),
-                        )
-                      ],
-                    ),
+                        ),
+                        child: Container(),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              BuildTextField(
+                                  title: Dictionary.registrationCode,
+                                  controller: _codeActivity,
+                                  hintText:
+                                      Dictionary.registrationCodePlaceholder,
+                                  isEdit: true,
+                                  validation: Validations.kodeValidation,
+                                  textInputType: TextInputType.text),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              BuildTextField(
+                                  title: Dictionary.labCode,
+                                  controller: _codeSampleController,
+                                  validation: Validations.kodeSampleValidation,
+                                  hintText: Dictionary.labCodePlaceholder,
+                                  isEdit: true,
+                                  qrIcon: true,
+                                  textInputType: TextInputType.text),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width,
+                                height: 40.0,
+                                child: RaisedButton(
+                                  splashColor: Colors.lightGreenAccent,
+                                  padding: EdgeInsets.all(0.0),
+                                  color: ColorBase.green,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Text(
+                                    Dictionary.checkin,
+                                    style: TextStyle(
+                                        fontFamily: FontsFamily.productSans,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12.0,
+                                        color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    if (_formKey.currentState.validate()) {
+                                      FocusScope.of(context).unfocus();
+                                      _checkinBloc.add(GetNameLoad(
+                                          registrationCode: _codeActivity.text,
+                                          eventCode: widget
+                                              .kodeKegiatanModel.data.eventCode,
+                                          labCode: _codeSampleController.text));
+                                    }
+                                  },
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
                   ),
                 );
               },
@@ -200,6 +231,7 @@ class _InputNomorState extends State<InputNomor> {
 
   _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
+        barrierDismissible: false,
         context: context,
         builder: (BuildContext context) => Dialog(
               shape: RoundedRectangleBorder(
@@ -215,7 +247,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Nama : '),
+                          Text(Dictionary.name),
                           Expanded(
                               child: Text(name,
                                   style:
@@ -228,7 +260,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('No Registrasi Anda : '),
+                          Text(Dictionary.yourRegistrationCode),
                           Expanded(
                               child: Text(registrationCode,
                                   style:
@@ -241,7 +273,7 @@ class _InputNomorState extends State<InputNomor> {
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text('Kode Sample : '),
+                          Text(Dictionary.labCodeInput),
                           Expanded(
                               child: Text(labCode,
                                   style:
@@ -251,8 +283,7 @@ class _InputNomorState extends State<InputNomor> {
                       SizedBox(
                         height: 10,
                       ),
-                      Text(
-                          'Pastikan data sudah benar sebelum menekan tombol submit'),
+                      Text(Dictionary.warningBeforeCheckin),
                       SizedBox(
                         height: 10,
                       ),
@@ -270,7 +301,7 @@ class _InputNomorState extends State<InputNomor> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Cancel',
+                                Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -293,7 +324,7 @@ class _InputNomorState extends State<InputNomor> {
                                 borderRadius: BorderRadius.circular(8.0),
                               ),
                               child: Text(
-                                'Submit',
+                                Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
@@ -315,100 +346,6 @@ class _InputNomorState extends State<InputNomor> {
                 ),
               ),
             ));
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines,
-      bool qrIcon = false}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 14.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: TextFormField(
-                  maxLines: maxLines != null ? maxLines : 1,
-                  style: isEdit
-                      ? TextStyle(
-                          color: Colors.black,
-                        )
-                      : TextStyle(color: Color(0xffBDBDBD)),
-                  enabled: isEdit,
-                  validator: validation,
-                  textCapitalization: TextCapitalization.characters,
-                  controller: controller,
-                  decoration: InputDecoration(
-                      hintText: hintText,
-                      enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                      disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide:
-                              BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                              color: Color(0xffE0E0E0), width: 1.5))),
-                  keyboardType: textInputType != null
-                      ? textInputType
-                      : TextInputType.text,
-                ),
-              ),
-              SizedBox(
-                width: 5,
-              ),
-              qrIcon
-                  ? Container(
-                      height: 60,
-                      width: 60,
-                      child: RaisedButton(
-                        elevation: 0,
-                        color: Colors.white,
-                        shape: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: BorderSide(
-                                color: Color(0xffE0E0E0), width: 1.5)),
-                        onPressed: () async {
-                          var barcode = await BarcodeScanner.scan();
-                          if (barcode.rawContent != '') {
-                            setState(() {
-                              controller.text = barcode.rawContent;
-                            });
-                          }
-                        },
-                        child: Icon(
-                          FontAwesomeIcons.qrcode,
-                          color: ColorBase.green,
-                        ),
-                      ),
-                    )
-                  : Container()
-            ],
-          )
-        ],
-      ),
-    );
   }
 
   @override

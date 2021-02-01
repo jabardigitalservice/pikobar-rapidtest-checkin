@@ -4,15 +4,16 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:rapid_test/blocs/account_profile/account_profile_bloc.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
+import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
-import 'package:rapid_test/constants/Dimens.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/Validations.dart';
-import 'package:countdown_flutter/countdown_flutter.dart';
 
 import 'login_screen.dart';
 
@@ -30,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
       AuthenticationRepository();
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   // init bloc
   AccountProfileBloc _accountProfileBloc;
@@ -47,7 +49,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Tes Masif Checkin")),
+        appBar: AppBar(title: Text(Dictionary.testMasifCheckin)),
         body: MultiBlocProvider(
           providers: [
             // bloc get account user
@@ -59,8 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
             // bloc kegiatan
             BlocProvider<KodeKegiatanBloc>(
-              create: (BuildContext context) => _kodeKegiatanBloc =
-                  KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+              create: (BuildContext context) =>
+                  _kodeKegiatanBloc = KodeKegiatanBloc(
+                      repository: _kegiatanDetailRepository,
+                      offlineRepository: _offlineRepository)
                     ..add(AppStart()),
             ),
 
@@ -86,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           context: context,
                           builder: (BuildContext context) => DialogTextOnly(
                               description: state.error.toString(),
-                              buttonText: "OK",
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context)
                                     .pop(); // To close the dialog
@@ -102,22 +106,19 @@ class _MyHomePageState extends State<MyHomePage> {
                             CircularProgressIndicator(),
                             Container(
                               margin: EdgeInsets.only(left: 15.0),
-                              child: Text('Tunggu Sebentar'),
+                              child: Text(Dictionary.pleaseWait),
                             )
                           ],
                         ),
                       ),
                     );
-                  } else if (state is KodeKegiatanLoaded) {
-                    KodeKegiatanLoaded kodeKegiatanLoaded =
-                        state as KodeKegiatanLoaded;
+                  } else if (state is KodeKegiatanSuccessMovePage) {
+                    Scaffold.of(context).hideCurrentSnackBar();
+
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => KegiatanPage(
-                                  kodeKegiatanModel:
-                                      kodeKegiatanLoaded.kodeKegiatan,
-                                )));
+                            builder: (context) => KegiatanPage()));
                   } else {
                     Scaffold.of(context).hideCurrentSnackBar();
                   }
@@ -136,7 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
         if (state is InitialKodeKegiatanState ||
             state is KodeKegiatanLoading ||
             state is KodeKegiatanFailure ||
-            state is KodeKegiatanLoaded ||
+            state is KodeKegiatanSuccessMovePage ||
             state is KodeKegiatanUnauthenticated) {
           return Form(
             key: _formKey,
@@ -146,20 +147,20 @@ class _MyHomePageState extends State<MyHomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  buildTextField(
-                    title: 'Kode Kegiatan',
+                  BuildTextField(
+                    title: Dictionary.activityCode,
                     controller: _codeActivity,
-                    hintText: 'Masukan kode kegiatan',
+                    hintText: Dictionary.activityCodePlaceholder,
                     isEdit: true,
                     validation: Validations.kodeValidation,
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  buildTextField(
-                    title: 'Lokasi',
+                  BuildTextField(
+                    title: Dictionary.location,
                     controller: _location,
-                    hintText: 'Masukan lokasi',
+                    hintText: Dictionary.locationPlaceholder,
                     isEdit: true,
                     validation: Validations.locationValidation,
                   ),
@@ -177,7 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       child: Text(
-                        'Submit',
+                        Dictionary.submit,
                         style: TextStyle(
                             fontFamily: FontsFamily.productSans,
                             fontWeight: FontWeight.bold,
@@ -187,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         if (_formKey.currentState.validate()) {
                           FocusScope.of(context).unfocus();
-                          _kodeKegiatanBloc.add(KodeKegiatanLoad(
+                          _kodeKegiatanBloc.add(KodeKegiatanMovePage(
                               kodeKegiatan: _codeActivity.text,
                               location: _location.text,
                               isFromLogin: false));
@@ -207,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: Center(
                         child: Text(
-                          'Kembali Ke Login',
+                          Dictionary.backToLogin,
                           style: TextStyle(color: Colors.blue),
                         ),
                       ))
@@ -217,63 +218,6 @@ class _MyHomePageState extends State<MyHomePage> {
           );
         }
       },
-    );
-  }
-
-  Widget buildTextField(
-      {String title,
-      TextEditingController controller,
-      String hintText,
-      validation,
-      TextInputType textInputType,
-      TextStyle textStyle,
-      bool isEdit,
-      int maxLines}) {
-    return Container(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Text(
-                title,
-                style: TextStyle(fontSize: 18.0, color: Color(0xff828282)),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          TextFormField(
-            maxLines: maxLines != null ? maxLines : 1,
-            style: isEdit
-                ? TextStyle(
-                    color: Colors.black,
-                  )
-                : TextStyle(color: Color(0xffBDBDBD)),
-            enabled: isEdit,
-            validator: validation,
-            textCapitalization: TextCapitalization.characters,
-            controller: controller,
-            decoration: InputDecoration(
-                hintText: hintText,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5)),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide:
-                        BorderSide(color: Color(0xffE0E0E0), width: 1.5))),
-            keyboardType:
-                textInputType != null ? textInputType : TextInputType.text,
-          )
-        ],
-      ),
     );
   }
 }

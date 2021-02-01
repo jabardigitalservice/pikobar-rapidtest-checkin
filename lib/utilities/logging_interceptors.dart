@@ -3,42 +3,61 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:rapid_test/constants/ErrorException.dart';
-import 'package:rapid_test/constants/route_paths.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
-import 'package:rapid_test/model/TokenModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/utilities/http.dart';
-import 'package:rapid_test/utilities/navigation_service.dart';
 import 'package:rapid_test/utilities/secure_store.dart';
+
+import 'SharedPreferences.dart';
 
 class LoggingInterceptors extends InterceptorsWrapper {
   @override
   Future<FutureOr> onRequest(RequestOptions options) async {
     KegiatanDetailRepository kegiatanDetailRepository =
         KegiatanDetailRepository();
+
+    /// get data login from shared preference
     bool isFromLogin = await kegiatanDetailRepository.getIsFromLogin();
     print(isFromLogin);
+
+    /// check user is login
     if (isFromLogin) {
+      ///--- user from login----
       AuthenticationRepository authenticationRepository =
           AuthenticationRepository();
-      bool isGetRefreshToken = await authenticationRepository.getisRefresh();
+
+      /// get refresh token status from shared preference
+      bool isGetRefreshToken =
+          await Preferences.getDataBool(kIsRefresh) ?? false;
       print('Mengambil refresh token : $isGetRefreshToken');
+
+      /// check refresh token status
       if (isGetRefreshToken) {
+        ///--- bypass refresh token ---
         dio.interceptors.requestLock.lock();
+
+        /// read token from secure storage
         String token = await SecureStore().readValue(key: kAccessTokenKey);
         if (token != null) {
+          /// add token to header
           options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
         }
         dio.interceptors.requestLock.unlock();
       } else {
+        ///--- refresh token execute ---
         dio.interceptors.requestLock.lock();
 
+        /// read token from secure storage
         bool hasToken = await authenticationRepository.hasTokens();
 
         print('Sudah login :$hasToken');
         if (hasToken) {
+          ///--- token available ---
+          /// check token expire time
           if (await authenticationRepository.isTokenExpired()) {
+            ///--- token expired ---
             print('expired');
             dio.interceptors.requestLock.unlock();
 
@@ -50,8 +69,10 @@ class LoggingInterceptors extends InterceptorsWrapper {
           }
         }
 
+        /// read token from secure storage
         String token = await SecureStore().readValue(key: kAccessTokenKey);
         if (token != null) {
+          /// add token to header
           options.headers[HttpHeaders.authorizationHeader] = 'Bearer ' + token;
         }
         dio.interceptors.requestLock.unlock();
@@ -86,7 +107,7 @@ class LoggingInterceptors extends InterceptorsWrapper {
     print("<-- End error");
     AuthenticationRepository authenticationRepository =
         AuthenticationRepository();
-    authenticationRepository.setisRefresh(false);
+    await Preferences.setDataBool(kIsRefresh, false);
 
     // if (dioError.response?.statusCode == 401) {
     // dio.interceptors.requestLock.lock();

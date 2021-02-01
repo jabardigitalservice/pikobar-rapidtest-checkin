@@ -9,9 +9,12 @@ import 'package:rapid_test/blocs/event_list/Bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
+import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/kegiatan_detail.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
@@ -46,7 +49,7 @@ class _EventListPageState extends State<EventListPage>
   KodeKegiatanBloc _kodeKegiatanBloc;
   final KegiatanDetailRepository _kegiatanDetailRepository =
       KegiatanDetailRepository();
-
+  final OfflineRepository _offlineRepository = OfflineRepository();
 
   @override
   void initState() {
@@ -99,8 +102,10 @@ class _EventListPageState extends State<EventListPage>
               create: (BuildContext context) => _authenticationBloc =
                   AuthenticationBloc(_authenticationRepository)),
           BlocProvider<KodeKegiatanBloc>(
-            create: (BuildContext context) => _kodeKegiatanBloc =
-                KodeKegiatanBloc(repository: _kegiatanDetailRepository)
+            create: (BuildContext context) =>
+                _kodeKegiatanBloc = KodeKegiatanBloc(
+                    repository: _kegiatanDetailRepository,
+                    offlineRepository: _offlineRepository)
                   ..add(AppStart()),
           ),
         ],
@@ -112,11 +117,12 @@ class _EventListPageState extends State<EventListPage>
                   if (state.error.toString().contains('Token Expired')) {
                     _authenticationBloc.add(UserLoggedOut());
                   } else {
+                    var split = state.error.split('Exception:');
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
-                              description: state.error.toString(),
-                              buttonText: "OK",
+                              description: split.last.toString(),
+                              buttonText: Dictionary.ok,
                               onOkPressed: () {
                                 Navigator.of(context).pop();
                                 _eventListBloc.add(EventListLoad(
@@ -134,6 +140,7 @@ class _EventListPageState extends State<EventListPage>
             BlocListener<AuthenticationBloc, AuthenticationState>(
               listener: (context, state) {
                 if (state is AuthenticationNotAuthenticated) {
+                  print('dari event list');
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 }
@@ -145,11 +152,12 @@ class _EventListPageState extends State<EventListPage>
                 if (state.error.toString().contains('Token Expired')) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
+                  var split = state.error.split('Exception:');
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
-                          description: state.error.toString(),
-                          buttonText: "OK",
+                          description: split.last.toString(),
+                          buttonText: Dictionary.ok,
                           onOkPressed: () {
                             Navigator.of(context).pop(); // To close the dialog
                           }));
@@ -164,23 +172,17 @@ class _EventListPageState extends State<EventListPage>
                         CircularProgressIndicator(),
                         Container(
                           margin: EdgeInsets.only(left: 15.0),
-                          child: Text('Tunggu Sebentar'),
+                          child: Text(Dictionary.pleaseWait),
                         )
                       ],
                     ),
                   ),
                 );
-              } else if (state is KodeKegiatanLoaded) {
+              } else if (state is KodeKegiatanSuccessMovePage) {
                 Scaffold.of(context).hideCurrentSnackBar();
-                KodeKegiatanLoaded kodeKegiatanLoaded =
-                    state as KodeKegiatanLoaded;
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => KegiatanPage(
-                              kodeKegiatanModel:
-                                  kodeKegiatanLoaded.kodeKegiatan,
-                            )));
+
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => KegiatanPage()));
               } else {
                 Scaffold.of(context).hideCurrentSnackBar();
               }
@@ -212,7 +214,7 @@ class _EventListPageState extends State<EventListPage>
     return SafeArea(
         child: listEvent.length == 0
             ? Center(
-                child: Text('Tidak ada data daftar peserta'),
+                child: Text(Dictionary.emptyDataParticipant),
               )
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,7 +245,7 @@ class _EventListPageState extends State<EventListPage>
                                     SizedBox(
                                       height: 5.0,
                                     ),
-                                    Text('Sedang mengambil data ...'),
+                                    Text(Dictionary.dataParticipantLoading),
                                   ],
                                 ),
                               );
@@ -260,11 +262,16 @@ class _EventListPageState extends State<EventListPage>
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(12),
-                                color: unixTimeStampToDateWithoutHour(DateTime.now().toString()) ==
+                                color: unixTimeStampToDateWithoutHour(
+                                            DateTime.now().toString()) ==
                                         unixTimeStampToDateWithoutHour(
                                             listEvent[i].endAt)
                                     ? Colors.white
-                                    : (DateTime.now().difference(DateTime.parse(listEvent[i].endAt).toLocal()).isNegative)
+                                    : (DateTime.now()
+                                            .difference(
+                                                DateTime.parse(listEvent[i].endAt)
+                                                    .toLocal())
+                                            .isNegative)
                                         ? Colors.white
                                         : Colors.grey[300],
                                 border: Border.all(
@@ -274,7 +281,9 @@ class _EventListPageState extends State<EventListPage>
                                                 listEvent[i].endAt)
                                         ? Theme.of(context).primaryColor
                                         : (DateTime.now()
-                                                .difference(DateTime.parse(listEvent[i].endAt).toLocal())
+                                                .difference(DateTime.parse(
+                                                        listEvent[i].endAt)
+                                                    .toLocal())
                                                 .isNegative)
                                             ? Theme.of(context).primaryColor
                                             : Colors.grey,
@@ -320,7 +329,7 @@ class _EventListPageState extends State<EventListPage>
                                                 unixTimeStampToDateWithoutHour(
                                                     listEvent[i].endAt)) {
                                               _kodeKegiatanBloc.add(
-                                                  KodeKegiatanLoad(
+                                                  KodeKegiatanMovePage(
                                                       kodeKegiatan: listEvent[i]
                                                           .eventCode,
                                                       isFromLogin: true));
@@ -331,7 +340,7 @@ class _EventListPageState extends State<EventListPage>
                                                       .toLocal())
                                                   .isNegative) {
                                                 _kodeKegiatanBloc.add(
-                                                    KodeKegiatanLoad(
+                                                    KodeKegiatanMovePage(
                                                         kodeKegiatan:
                                                             listEvent[i]
                                                                 .eventCode,
@@ -343,8 +352,10 @@ class _EventListPageState extends State<EventListPage>
                                                             context) =>
                                                         DialogTextOnly(
                                                             description:
-                                                                'Event Sudah Berakhir',
-                                                            buttonText: "OK",
+                                                                Dictionary
+                                                                    .eventExpired,
+                                                            buttonText:
+                                                                Dictionary.ok,
                                                             onOkPressed: () {
                                                               Navigator.of(
                                                                       context)
@@ -373,7 +384,7 @@ class _EventListPageState extends State<EventListPage>
                                                       .primaryColor
                                                   : Colors.grey,
                                           child: Text(
-                                            'Pilih',
+                                            Dictionary.choose,
                                             style:
                                                 TextStyle(color: Colors.white),
                                           ),
@@ -411,7 +422,7 @@ class _EventListPageState extends State<EventListPage>
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        'Tanggal: ',
+                                        Dictionary.date,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Expanded(
@@ -436,7 +447,7 @@ class _EventListPageState extends State<EventListPage>
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Text(
-                                        'Waktu: ',
+                                        Dictionary.time,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Text(
@@ -445,7 +456,7 @@ class _EventListPageState extends State<EventListPage>
                                               ' - ' +
                                               unixTimeStampToHour(
                                                   listEvent[i].endAt) +
-                                              ' WIB',
+                                              Dictionary.wib,
                                           style: TextStyle(fontSize: 12)),
                                     ],
                                   ),
@@ -454,7 +465,7 @@ class _EventListPageState extends State<EventListPage>
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       Text(
-                                        'Jumlah Peserta: ',
+                                        Dictionary.totalParticipant,
                                         style: TextStyle(fontSize: 12),
                                       ),
                                       Text(
@@ -483,11 +494,11 @@ class _EventListPageState extends State<EventListPage>
   }
 
   void _initialize() async {
-    _page = await Preferences.getParticipantPage() != null
-        ? await Preferences.getParticipantPage()
+    _page = await Preferences.getDataInt(kParticipantPage) != null
+        ? await Preferences.getDataInt(kParticipantPage)
         : 1;
-    maxDataLength = await Preferences.getTotalCount() != null
-        ? await Preferences.getTotalCount()
+    maxDataLength = await Preferences.getDataInt(kTotalCount) != null
+        ? await Preferences.getDataInt(kTotalCount)
         : 0;
   }
 
@@ -500,7 +511,7 @@ class _EventListPageState extends State<EventListPage>
       _page = (records.length / 15).round() + 1;
     }
     print(_page);
-    await Preferences.setParticipantPage(_page);
+    await Preferences.setDataInt(kParticipantPage, _page);
   }
 
   void _scrollListener() {
@@ -551,7 +562,7 @@ class _EventListPageState extends State<EventListPage>
       page: 1,
     ));
     _page = 1;
-    await Preferences.setParticipantPage(1);
+    await Preferences.setDataInt(kParticipantPage, 1);
   }
 
   void updateSearchQuery(String newQuery) {

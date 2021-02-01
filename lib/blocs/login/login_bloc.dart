@@ -4,8 +4,10 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
@@ -15,8 +17,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final AuthenticationRepository _authenticationRepository;
   final KegiatanDetailRepository kegiatanDetailrepository;
 
-  LoginBloc(AuthenticationBloc authenticationBloc,
-      AuthenticationRepository authenticationRepository,this.kegiatanDetailrepository)
+  LoginBloc(
+      AuthenticationBloc authenticationBloc,
+      AuthenticationRepository authenticationRepository,
+      this.kegiatanDetailrepository)
       : assert(authenticationBloc != null),
         assert(authenticationRepository != null),
         _authenticationBloc = authenticationBloc,
@@ -37,17 +41,27 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Stream<LoginState> _mapLoginSubmitted(LoginSubmitted event) async* {
     yield LoginLoading();
     try {
-      await _authenticationRepository.clearActivityCode();
-      await kegiatanDetailrepository.setIsFromLogin(true);
-       await kegiatanDetailrepository.setLocation(event.location);
+      await Preferences.clearData(kActivityCode);
+      await Preferences.setDataBool(kIsFromLogin, true);
+      await Preferences.setDataString(kLocation, event.location);
       final token = await _authenticationRepository.loginUser(
           event.username, event.password);
       if (token != null) {
+        // bool isGranted = await _authenticationRepository.isAccessGranted();
+        // if (isGranted) {
         // push new authentication event
         _authenticationBloc.add(UserLoggedIn(accessToken: token.accessToken));
 
         yield LoginSuccess();
         yield LoginInitial();
+        // } else {
+        //   await Preferences.clearData(kActivityCode);
+        //   await _authenticationRepository.deleteTokens();
+        //   await Preferences.clearData(kIsFromLogin);
+        //   yield LoginFailure(
+        //       error:
+        //           'Hak akses ditolak, silahkan hubungi admin untuk meminta hak akses');
+        // }
       } else {
         yield LoginFailure(error: 'Something very weird just happened');
       }

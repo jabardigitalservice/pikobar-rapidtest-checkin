@@ -1,14 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:rapid_test/config/FlavorConfig.dart';
 import 'package:rapid_test/constants/EndPointPath.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/constants/storageKeys.dart';
+import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/TokenModel.dart';
 import 'package:rapid_test/model/UserModel.dart';
+import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/http.dart';
 import 'package:rapid_test/utilities/secure_store.dart';
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum TokenType { ACCESS_TOKEN, REFRESH_TOKEN }
 
@@ -46,7 +48,7 @@ class AuthenticationRepository {
 
   Future<TokenModel> refreshToken() async {
     print('--- Mengambil Access Token Yang Baru ---');
-    setisRefresh(true);
+    await Preferences.setDataBool(kIsRefresh, true);
     dio.interceptors.requestLock.unlock();
     // get refresh token
     String refreshToken = await SecureStore().readValue(key: kRefreshTokenKey);
@@ -70,7 +72,7 @@ class AuthenticationRepository {
           .writeValue(key: kAccessTokenKey, value: record.accessToken);
       await SecureStore()
           .writeValue(key: kRefreshTokenKey, value: record.refreshToken);
-      setisRefresh(false);
+      await Preferences.setDataBool(kIsRefresh, false);
       return record;
     } catch (e) {
       throw Exception(e);
@@ -93,20 +95,6 @@ class AuthenticationRepository {
     return;
   }
 
-  Future<void> clearActivityCode() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('activityCode');
-  }
-
-  Future<void> clearIsFromLogin() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    prefs.remove('IsFromLogin');
-  }
-
   Future<bool> hasTokens() async {
     await Future.delayed(Duration(seconds: 1));
 
@@ -121,7 +109,7 @@ class AuthenticationRepository {
     var arrToken = token.split('.');
     String payloadToken =
         utf8.decode(base64.decode(base64.normalize(arrToken[1])));
-    print(jsonDecode(payloadToken));
+    print(jsonDecode(payloadToken)['aud']);
     return jsonDecode(payloadToken);
   }
 
@@ -162,19 +150,17 @@ class AuthenticationRepository {
     });
   }
 
-  Future<void> setisRefresh(bool isRefresh) async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-    await prefs.setBool('isRefresh', isRefresh);
-    return;
-  }
-
-  Future<bool> getisRefresh() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-
-    return prefs.getBool('isRefresh') ?? false;
+  Future<bool> isAccessGranted() async {
+    print('--- Mengecek Hak Akses ----');
+    return await decodeToken(TokenType.ACCESS_TOKEN)
+        .then((value) => value['aud'].toString().contains(Environment.audKey))
+        .then((isGranted) async {
+      print('Hak Akses : $isGranted');
+      if (isGranted) {
+        return true;
+      } else {
+        return false;
+      }
+    });
   }
 }

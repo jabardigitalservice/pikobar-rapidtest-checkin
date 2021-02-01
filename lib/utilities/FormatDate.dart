@@ -1,25 +1,25 @@
 import 'package:intl/intl.dart';
 
+/// ex: Kamis, 31 Desember 2020 12:00
 String unixTimeStampToDateTime(String date) {
   var format = DateFormat('EEEE, dd MMMM yyyy HH:mm', 'id');
-  var dateTimeString =
-      format.format(DateTime.parse(date).toLocal());
+  var dateTimeString = format.format(DateTime.parse(date).toLocal());
 
   return dateTimeString;
 }
 
+/// ex: Kamis, 31 Desember 2020
 String unixTimeStampToDateWithoutHour(String date) {
   var format = DateFormat('EEEE, dd MMMM yyyy', 'id');
-  var dateTimeString =
-      format.format(DateTime.parse(date).toLocal());
+  var dateTimeString = format.format(DateTime.parse(date).toLocal());
 
   return dateTimeString;
 }
 
+/// ex: 12:00
 String unixTimeStampToHour(String date) {
   var format = DateFormat('HH:mm', 'id');
-  var dateTimeString =
-      format.format(DateTime.parse(date).toLocal());
+  var dateTimeString = format.format(DateTime.parse(date).toLocal());
 
   return dateTimeString;
 }

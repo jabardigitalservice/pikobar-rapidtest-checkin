@@ -1,5 +1,5 @@
 name: rapid_test
-description: A new Flutter project.
+description: Tes Masif Checkin
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -11,7 +11,7 @@ description: A new Flutter project.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.1+3
+version: 1.4.6+20
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -19,7 +19,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -40,7 +39,11 @@ dependencies:
   flutter_secure_storage: ^3.3.3
   no_context_navigation: ^1.0.2
   countdown_flutter: ^0.1.2
-  
+  sqflite: ^1.3.0
+  horizontal_data_table: ^1.0.6+3
+  http: ^0.12.2
+  connectivity_wrapper: ^1.0.4
+  flutter_sticky_header: ^0.5.0
 
 dev_dependencies:
   flutter_test:
@@ -51,7 +54,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

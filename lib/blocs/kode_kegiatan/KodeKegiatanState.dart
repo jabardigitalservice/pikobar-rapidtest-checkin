@@ -58,6 +58,21 @@ class KodeKegiatanLoaded extends KodeKegiatanState {
   List<Object> get props => [kodeKegiatan, kodeKegiatanPref, location];
 }
 
+class KodeKegiatanSuccessMovePage extends KodeKegiatanState {
+ final String kodeKegiatanPref;
+  final String location;
+ KodeKegiatanSuccessMovePage({ this.kodeKegiatanPref, this.location})
+      : super([ kodeKegiatanPref, location]);
+
+  @override
+  String toString() {
+    return 'State KodeKegiatanSuccessMovePage';
+  }
+
+  @override
+  List<Object> get props => [];
+}
+
 class KodeKegiatanFailure extends KodeKegiatanState {
   final String error;
 

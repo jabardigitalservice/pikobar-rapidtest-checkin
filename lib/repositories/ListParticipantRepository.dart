@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:rapid_test/constants/EndPointPath.dart';
-import 'package:rapid_test/constants/ErrorException.dart';
+import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:rapid_test/utilities/http.dart';
 
@@ -12,7 +11,7 @@ class ListParticipantRepository {
     await Future.delayed(Duration(seconds: 1));
     String kodePerf;
     if (kode == null || kode == '') {
-      kodePerf = await getActivityCode();
+      kodePerf = await Preferences.getDataString(kActivityCode);
     }
     try {
       Response response = await dio.post(
@@ -24,7 +23,7 @@ class ListParticipantRepository {
           }));
       final data = response.data;
       ListParticipantModel record = ListParticipantModel.fromJson(data);
-      await Preferences.setTotalCount(record.meta.total);
+      await Preferences.setDataInt(kTotalCount, record.meta.total);
       print(data);
       return record;
     } catch (e) {
@@ -32,11 +31,4 @@ class ListParticipantRepository {
     }
   }
 
-  Future<String> getActivityCode() async {
-    // obtain shared preferences
-    final prefs = await SharedPreferences.getInstance();
-    // set value
-
-    return prefs.getString('activityCode');
-  }
 }

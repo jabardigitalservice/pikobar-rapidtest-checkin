@@ -94,7 +94,7 @@ class Meta {
   int from;
   int lastPage;
   String path;
-  String perPage;
+  var perPage;
   int to;
   int total;
 
