@@ -3,11 +3,19 @@ import 'dart:ui' show Color;
 class ColorBase {
   static final blue = Color(0xFF00AADE);
   static final green = Color(0xFF009D57);
+  static final green800 = Color(0xFF008444);
+  static final green900 = Color(0xFF006430);
   static final grey = Color(0xFFFAFAFA);
   static final pink = Color(0xFFD71149);
   static final bubbleChatBlue = Color(0xFFD5E9F4);
   static final darkRed = Color(0xFFD23C3C);
-  static final announcementBackgroundColor = Color(0xFFF9EFD0);
+  static final announcementBackgroundColor = Color(0xFFFFF3CC);
+  static final lightGrey = Color(0xffE3E7ED);
+  static final strongBlue = Color(0xff1565C0);
+  static final green2 = Color(0xff27AE60);
+  static final yellow700 = Color(0xffFFA600);
+  static final menuBorderColor = Color(0xFFE0E0E0);
+  static final disableText = Color(0xffBDBDBD);
 
   static final gradientBlue = [Color(0xFF00AADE), Color(0xFF0669B1)];
   static final gradientBlueToPurple = [Color(0xFF005C97), Color(0xFF363795)];
@@ -23,5 +31,6 @@ class ColorBase {
   static final yellow = Color(0xfffdcc3b);
   static final orange = Color(0xffe8b638);
 
-  static final healthStatusColors = '{"healthy": "009d57","odp": "fff45a","pdp": "ffc831","confirmed": "ff0000"}';
+  static final healthStatusColors =
+      '{"healthy": "009d57","odp": "fff45a","pdp": "ffc831","confirmed": "ff0000"}';
 }
