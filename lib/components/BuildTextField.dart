@@ -30,7 +30,8 @@ class BuildTextField extends StatefulWidget {
   /// * [textStyle] type from class TextStyle.
   /// * [isEdit] type bool.
   BuildTextField(
-      {this.title,
+      {Key key,
+      this.title,
       this.hintText,
       this.controller,
       this.validation,
@@ -42,7 +43,8 @@ class BuildTextField extends StatefulWidget {
       this.textCapitalization = TextCapitalization.characters,
       this.obsecureText = false,
       this.descriptionText,
-      this.roundedBorder});
+      this.roundedBorder})
+      : super(key: key);
 
   @override
   _BuildTextFieldState createState() => _BuildTextFieldState();
