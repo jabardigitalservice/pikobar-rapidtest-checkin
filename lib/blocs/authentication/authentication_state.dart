@@ -16,7 +16,7 @@ class AuthenticationNotAuthenticated extends AuthenticationState {}
 class AuthenticationAuthenticated extends AuthenticationState {
   final accessToken;
 
-  AuthenticationAuthenticated({@required this.accessToken});
+  const AuthenticationAuthenticated({@required this.accessToken});
 
   @override
   List<Object> get props => [accessToken];
@@ -25,7 +25,7 @@ class AuthenticationAuthenticated extends AuthenticationState {
 class AuthenticationFailure extends AuthenticationState {
   final String message;
 
-  AuthenticationFailure({@required this.message});
+  const AuthenticationFailure({@required this.message});
 
   @override
   List<Object> get props => [message];

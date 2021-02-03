@@ -6,7 +6,7 @@ abstract class CheckinEvent extends Equatable {
 
 class CheckinLoad extends CheckinEvent {
   final String nomorPendaftaran,eventCode,labCodeSample;
-  CheckinLoad({this.nomorPendaftaran,this.eventCode,this.labCodeSample});
+  const CheckinLoad({this.nomorPendaftaran,this.eventCode,this.labCodeSample});
 
   @override
   String toString() {
@@ -19,7 +19,7 @@ class CheckinLoad extends CheckinEvent {
 
 class GetNameLoad extends CheckinEvent {
   final String registrationCode, labCode, eventCode;
-  GetNameLoad({this.registrationCode, this.labCode, this.eventCode});
+  const GetNameLoad({this.registrationCode, this.labCode, this.eventCode});
 
   @override
   String toString() {

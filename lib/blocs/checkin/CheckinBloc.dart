@@ -33,37 +33,38 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
       if (await ConnectivityWrapper.instance.isConnected) {
         /// ------ Online -------
         /// get offline data
-        var checkinOfflineData = await offlineRepository.getCheckinList();
+        final List<CheckinOfflineModel> checkinOfflineData = await offlineRepository.getCheckinList();
 
         /// Checking offline data  not null
         if (checkinOfflineData.length != 0) {
           /// ------ Offline Data  Available ------
           /// get raw offline data
-          var getOfflineData = await offlineRepository.select();
+          final List<Map<String, dynamic>> getOfflineData = await offlineRepository.select();
 
           /// send offline data  to API
           await offlineRepository.checkin(getOfflineData);
         }
         try {
           /// get [location] form shared preference
-          String location = await Preferences.getDataString(kLocation);
+          final String location = await Preferences.getDataString(kLocation);
 
           /// send data to API
-          CheckinModel checkinModel = await repository.checkNomorPendaftaran(
+          final CheckinModel checkinModel = await repository.checkNomorPendaftaran(
               event.nomorPendaftaran,
               event.eventCode,
               event.labCodeSample,
               location);
 
           /// get offline data
-          List<ListParticipantOfflineModel> getList =
+          final List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
 
           /// update offline data
-          var getData = getList
+          final List<ListParticipantOfflineModel> getData = getList
               .where((element) =>
                   element.registrationCode == event.nomorPendaftaran)
               .toList();
+
           await offlineRepository.updateListParticipant(
               ListParticipantOfflineModel(
                   id: getData[0].id,
@@ -71,42 +72,47 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
                   labCode: event.labCodeSample,
                   name: getData[0].name,
                   registrationCode: getData[0].registrationCode));
+
           yield CheckinLoaded(
             name: checkinModel.data.name,
           );
         } catch (e) {
           yield CheckinFailure(error: e.toString());
         }
-      } else {
-        /// ------ Offline -------
 
+      } else {
+
+        /// ------ Offline -------
         try {
           /// get [location] form shared preference
-          String location = await Preferences.getDataString(kLocation);
+          final String location = await Preferences.getDataString(kLocation);
 
           /// get [eventCode] form shared preference
-          String eventCode = await Preferences.getDataString(kActivityCode);
+          final String eventCode = await Preferences.getDataString(kActivityCode);
 
           /// get offline data
-          List<ListParticipantOfflineModel> getList =
+          final List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
-          var getLabCode = getList
+
+          final List<ListParticipantOfflineModel> getLabCode = getList
               .where((element) =>
                   element.labCode.toString().toLowerCase() ==
                   event.labCodeSample.toString().toLowerCase())
               .toList();
+
           if (getLabCode.length == 0) {
             /// save data to local storage
-            final data = CheckinOfflineModel(
+            final CheckinOfflineModel data = CheckinOfflineModel(
                 eventCode: eventCode,
                 labCodeSample: event.labCodeSample,
                 location: location,
                 createdAt: DateTime.now().add(Duration(hours: -7)).toString(),
                 registrationCode: event.nomorPendaftaran);
+
             await offlineRepository.insert(data);
 
             /// update offline data
-            var getData = getList
+            List<ListParticipantOfflineModel> getData = getList
                 .where((element) =>
                     element.registrationCode == event.nomorPendaftaran)
                 .toList();
@@ -118,6 +124,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
                     labCode: event.labCodeSample,
                     name: getData[0].name,
                     registrationCode: getData[0].registrationCode));
+
             yield CheckinLoaded(name: getData[0].name);
           } else {
             yield CheckinFailure(
@@ -132,20 +139,27 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
       yield CheckinLoading();
       try {
         if (await ConnectivityWrapper.instance.isConnected) {
-          var getName = await repository.getName(event.registrationCode);
+
+          final Map<String, dynamic> getName = await repository.getName(event.registrationCode);
+
           yield GetNameLoaded(
               name: getName['data']['name'],
               registrationCode: event.registrationCode,
               eventCode: event.eventCode,
               labCode: event.labCode);
+
         } else {
-          List<ListParticipantOfflineModel> getList =
+
+          final List<ListParticipantOfflineModel> getList =
               await offlineRepository.getParticipant();
-          String eventCode = await Preferences.getDataString(kActivityCode);
-          var getName = getList
+
+          final String eventCode = await Preferences.getDataString(kActivityCode);
+
+          final List<ListParticipantOfflineModel> getName = getList
               .where((element) =>
                   element.registrationCode == event.registrationCode)
               .toList();
+
           if (getName.isEmpty) {
             yield CheckinFailure(error: Dictionary.numberRegistrationNotFound);
           } else {

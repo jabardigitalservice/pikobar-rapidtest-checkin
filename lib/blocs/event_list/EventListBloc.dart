@@ -25,7 +25,8 @@ class EventListBloc extends Bloc<EventListEvent, EventListState> {
       try {
         eventListModel = await repository.getListOfEvent(event.page);
 
-        int maxDatalength = await Preferences.getDataInt(kTotalCount);
+        final int maxDatalength = await Preferences.getDataInt(kTotalCount);
+
         yield EventListLoaded(
             eventListModel: eventListModel.data, maxData: maxDatalength);
       } catch (e) {
@@ -34,9 +35,12 @@ class EventListBloc extends Bloc<EventListEvent, EventListState> {
     }
     if (event is EventListLoadMore) {
       try {
-        EventListLoaded eventListLoaded = state as EventListLoaded;
+        final EventListLoaded eventListLoaded = state as EventListLoaded;
+
         eventListModel = await repository.getListOfEvent(event.page);
-        int maxDatalength = await Preferences.getDataInt(kTotalCount);
+
+        final int maxDatalength = await Preferences.getDataInt(kTotalCount);
+
         yield EventListLoaded(
             eventListModel:
                 eventListLoaded.eventListModel + eventListModel.data,

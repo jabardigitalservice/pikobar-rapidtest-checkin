@@ -14,7 +14,7 @@ class AccountProfileLoading extends AccountProfileState {}
 class AccountProfileLoaded extends AccountProfileState {
   final UserModel user;
 
-  AccountProfileLoaded({@required this.user});
+  const AccountProfileLoaded({@required this.user});
 
   @override
   List<Object> get props => [user];
@@ -23,7 +23,7 @@ class AccountProfileLoaded extends AccountProfileState {
 class AccountProfileFailure extends AccountProfileState {
   final String message;
 
-  AccountProfileFailure({@required this.message});
+  const AccountProfileFailure({@required this.message});
 
   @override
   List<Object> get props => [message];

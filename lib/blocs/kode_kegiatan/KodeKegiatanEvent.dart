@@ -7,7 +7,8 @@ abstract class KodeKegiatanEvent extends Equatable {
 class KodeKegiatanLoad extends KodeKegiatanEvent {
   final String kodeKegiatan, location;
   final bool isFromLogin;
-  KodeKegiatanLoad({this.kodeKegiatan, this.location, this.isFromLogin});
+
+  const KodeKegiatanLoad({this.kodeKegiatan, this.location, this.isFromLogin});
 
   @override
   String toString() {
@@ -21,7 +22,8 @@ class KodeKegiatanLoad extends KodeKegiatanEvent {
 class KodeKegiatanMovePage extends KodeKegiatanEvent {
   final String kodeKegiatan, location;
   final bool isFromLogin;
-  KodeKegiatanMovePage({this.kodeKegiatan, this.location, this.isFromLogin});
+
+  const KodeKegiatanMovePage({this.kodeKegiatan, this.location, this.isFromLogin});
 
   @override
   String toString() {

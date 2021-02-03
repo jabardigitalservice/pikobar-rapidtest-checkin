@@ -45,7 +45,7 @@ class AuthenticationBloc
     yield AuthenticationLoading(); // to display splash screen
     try {
       // get access token
-      String accessToken = await SecureStore().readValue(key: kAccessTokenKey);
+      final String accessToken = await SecureStore().readValue(key: kAccessTokenKey);
 
       if (accessToken != null) {
         yield AuthenticationAuthenticated(accessToken: accessToken);

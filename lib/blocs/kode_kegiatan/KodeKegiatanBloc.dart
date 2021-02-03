@@ -27,8 +27,9 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
       yield KodeKegiatanLoading();
 
       try {
-        String isLogin = await Preferences.getDataString(kActivityCode);
-        String location = await Preferences.getDataString(kLocation);
+        final String isLogin = await Preferences.getDataString(kActivityCode);
+        final String location = await Preferences.getDataString(kLocation);
+
         if (isLogin != null) {
           yield KodeKegiatanSuccessMovePage(
               kodeKegiatanPref: isLogin, location: location);
@@ -56,24 +57,31 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
 
       try {
         int _page = 1;
+
         if (event.isFromLogin != null) {
           await Preferences.setDataBool(kIsFromLogin, event.isFromLogin);
           if (event.location != null) {
             await Preferences.setDataString(kLocation, event.location);
           }
         }
-        String eventCode = await Preferences.getDataString(kActivityCode);
-        KodeKegiatanModel kodeKegiatanModel =
+
+        final String eventCode = await Preferences.getDataString(kActivityCode);
+        final KodeKegiatanModel kodeKegiatanModel =
             await repository.checkKodeKegiatan(eventCode);
+
         await Preferences.setDataString(
             kActivityCode, kodeKegiatanModel.data.eventCode);
-        List<Map<String, dynamic>> checkData =
+
+        final List<Map<String, dynamic>> checkData =
             await offlineRepository.selectParticipant();
+
         if (checkData.length != 0) {
           await offlineRepository.deleteTableParticipant();
         }
-        ListParticipantModel tempData = await offlineRepository
+
+        final ListParticipantModel tempData = await offlineRepository
             .getListOfParticipant(eventCode, _page.toString());
+
         if (tempData.meta.lastPage > 1) {
           for (var i = 1; i < tempData.meta.lastPage; i++) {
             _page++;
@@ -82,8 +90,9 @@ class KodeKegiatanBloc extends Bloc<KodeKegiatanEvent, KodeKegiatanState> {
           }
         }
 
-        String location = await Preferences.getDataString(kLocation);
-        String isLogin = await Preferences.getDataString(kActivityCode);
+        final String location = await Preferences.getDataString(kLocation);
+        final String isLogin = await Preferences.getDataString(kActivityCode);
+
         yield KodeKegiatanLoaded(
             kodeKegiatan: kodeKegiatanModel,
             kodeKegiatanPref: isLogin,

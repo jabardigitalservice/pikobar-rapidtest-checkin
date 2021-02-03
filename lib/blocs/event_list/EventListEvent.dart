@@ -9,7 +9,7 @@ class EventListLoad extends EventListEvent {
   final int page;
   final bool isFirstLoad;
 
-  EventListLoad({ this.page,this.isFirstLoad=false});
+  const EventListLoad({ this.page,this.isFirstLoad=false});
 
   @override
   String toString() {
@@ -24,7 +24,7 @@ class EventListLoadMore extends EventListEvent {
   final int page;
   final bool isFirstLoad;
 
-  EventListLoadMore({ this.page,this.isFirstLoad=false});
+  const EventListLoadMore({ this.page,this.isFirstLoad=false});
 
   @override
   String toString() {
@@ -39,7 +39,7 @@ class EventListSearch extends EventListEvent {
   final String eventCode, keyword;
   final int page;
 
-  EventListSearch({this.eventCode, this.keyword, this.page});
+  const EventListSearch({this.eventCode, this.keyword, this.page});
 
   @override
   String toString() {
