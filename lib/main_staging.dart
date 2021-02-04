@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -38,8 +36,9 @@ void main() {
 
   runApp(
     BlocProvider<AuthenticationBloc>(
-      create: (context) {
-        final authenticationRepository = AuthenticationRepository();
+      create: (BuildContext context) {
+        AuthenticationRepository authenticationRepository =
+            AuthenticationRepository();
         return AuthenticationBloc(authenticationRepository)..add(AppLoaded());
       },
       child: MyApp(),
@@ -48,6 +47,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
   // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
@@ -64,11 +64,11 @@ class _MyAppState extends State<MyApp> {
             primaryColor: Colors.blue,
             primaryColorBrightness: Brightness.dark,
             fontFamily: FontsFamily.sourceSansPro),
-        debugShowCheckedModeBanner: false,
+        debugShowCheckedModeBanner: true,
         navigatorKey: NavigationService.navigationKey,
         onGenerateRoute: router.generateRoute,
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (context, state) {
+            builder: (BuildContext context, AuthenticationState state) {
           if (state is AuthenticationAuthenticated) {
             // show home page
             return EventListPage();

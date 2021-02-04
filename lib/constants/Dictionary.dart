@@ -31,6 +31,7 @@ class Dictionary {
   static String choose = 'Pilih';
   static String check = 'Lihat';
   static String send = 'Kirim';
+  static String delete = 'Hapus';
 
 // Error messages
   static String errorConnection = 'Periksa kembali koneksi Internet';
@@ -42,6 +43,19 @@ class Dictionary {
   static String numberRegistrationAlreadyCheckin =
       'Kode registrasi telah checkin pada ';
   static String labCodeAlreadyUsed = 'Kode lab telah digunakan oleh';
+  static String alreadyCheckinMessage =
+      ' Nomor Pendaftar sudah digunakan untuk checkin pada event ini.';
+  static String alreadyCheckinMessageOffline = 'Kode registrasi telah checkin';
+  static String exeption = 'Exception:';
+  static String unauthorizedText = 'Unauthorized';
+
+  //Validation
+  static String eventCodeValidation = 'Kode kegiatan harus diisi';
+  static String locationValidation = 'Lokasi harus diisi';
+  static String labCodeValidation = 'Kode sampel harus diisi';
+  static String usernameValidation = 'Username harus diisi';
+  static String passwordValidation = 'Password harus diisi';
+  static String registrationCodeValidation = 'Nomor pendaftaran harus diisi';
 
   // Toast Messages
   static String pleaseWait = 'Tunggu Sebentar';

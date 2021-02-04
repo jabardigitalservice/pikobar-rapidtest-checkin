@@ -7,7 +7,6 @@ import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_list.dart';
-import 'package:rapid_test/screen/home.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/utilities/http.dart';
 import 'package:rapid_test/utilities/logging_interceptors.dart';
@@ -35,8 +34,9 @@ void main() {
   dio.interceptors.add(LoggingInterceptors());
   runApp(
     BlocProvider<AuthenticationBloc>(
-      create: (context) {
-        final authenticationRepository = AuthenticationRepository();
+      create: (BuildContext context) {
+        AuthenticationRepository authenticationRepository =
+            AuthenticationRepository();
         return AuthenticationBloc(authenticationRepository)..add(AppLoaded());
       },
       child: MyApp(),
@@ -45,6 +45,7 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
   // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
         navigatorKey: NavigationService.navigationKey,
         onGenerateRoute: router.generateRoute,
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (context, state) {
+            builder: (BuildContext context, AuthenticationState state) {
           if (state is AuthenticationAuthenticated) {
             // show home page
             return EventListPage();

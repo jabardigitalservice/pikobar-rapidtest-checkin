@@ -4,8 +4,10 @@ enum Flavor { STAGING, PRODUCTION }
 
 class FlavorValues {
   FlavorValues(
-      {@required this.baseUrl,@required this.clientId,@required this.loginUrl});
-  final String baseUrl,clientId,loginUrl;
+      {@required this.baseUrl,
+      @required this.clientId,
+      @required this.loginUrl});
+  final String baseUrl, clientId, loginUrl;
   //Add other flavor specific values, e.g database name
 }
 
@@ -17,9 +19,7 @@ class FlavorConfig {
   static FlavorConfig _instance;
 
   factory FlavorConfig(
-      {@required Flavor flavor,
-      Color color = Colors.blue,
-      @required FlavorValues values}) {
+      {@required Flavor flavor, Color color, @required FlavorValues values}) {
     _instance ??= FlavorConfig._internal(
         flavor, StringUtils.enumName(flavor.toString()), color, values);
     return _instance;
