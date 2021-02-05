@@ -82,19 +82,18 @@ class _EventListPageState extends State<EventListPage>
       body: MultiBlocProvider(
         providers: [
           BlocProvider<EventListBloc>(
-              create: (BuildContext context) => _eventListBloc =
+              create: (context) => _eventListBloc =
                   EventListBloc(repository: _eventListRepository)
                     ..add(EventListLoad(
                         page: _page, isFirstLoad: true, keyword: ''))),
           BlocProvider<AuthenticationBloc>(
-              create: (BuildContext context) => _authenticationBloc =
+              create: (context) => _authenticationBloc =
                   AuthenticationBloc(_authenticationRepository)),
           BlocProvider<KodeKegiatanBloc>(
-            create: (BuildContext context) =>
-                _kodeKegiatanBloc = KodeKegiatanBloc(
-                    repository: _kegiatanDetailRepository,
-                    offlineRepository: _offlineRepository)
-                  ..add(AppStart()),
+            create: (context) => _kodeKegiatanBloc = KodeKegiatanBloc(
+                repository: _kegiatanDetailRepository,
+                offlineRepository: _offlineRepository)
+              ..add(AppStart()),
           ),
         ],
         child: MultiBlocListener(
