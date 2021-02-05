@@ -78,7 +78,7 @@ class EmptyData extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Text(desc == null ? '' : desc,
+              child: Text(desc ?? '',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontFamily: FontsFamily.lato, fontSize: 12)),
             )
