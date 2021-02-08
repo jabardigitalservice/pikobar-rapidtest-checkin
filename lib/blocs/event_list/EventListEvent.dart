@@ -5,11 +5,10 @@ abstract class EventListEvent extends Equatable {
 }
 
 class EventListLoad extends EventListEvent {
-  
   final int page;
   final bool isFirstLoad;
-
-  EventListLoad({ this.page,this.isFirstLoad=false});
+  final String keyword;
+  const EventListLoad({this.page, this.isFirstLoad = false, this.keyword});
 
   @override
   String toString() {
@@ -17,14 +16,15 @@ class EventListLoad extends EventListEvent {
   }
 
   @override
-  List<Object> get props =>[page,isFirstLoad];
+  List<Object> get props => [page, isFirstLoad, keyword];
 }
 
 class EventListLoadMore extends EventListEvent {
   final int page;
   final bool isFirstLoad;
+  final String keyword;
 
-  EventListLoadMore({ this.page,this.isFirstLoad=false});
+  const EventListLoadMore({this.page, this.isFirstLoad = false, this.keyword});
 
   @override
   String toString() {
@@ -32,14 +32,14 @@ class EventListLoadMore extends EventListEvent {
   }
 
   @override
-  List<Object> get props => [page,isFirstLoad];
+  List<Object> get props => [page, isFirstLoad, keyword];
 }
 
 class EventListSearch extends EventListEvent {
   final String eventCode, keyword;
   final int page;
 
-  EventListSearch({this.eventCode, this.keyword, this.page});
+  const EventListSearch({this.eventCode, this.keyword, this.page});
 
   @override
   String toString() {

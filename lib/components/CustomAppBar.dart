@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/FontsFamily.dart';
 
 class CustomAppBar {
   static AppBar defaultAppBar(
       {Widget leading,
       @required String title,
       List<Widget> actions,
-      PreferredSizeWidget bottom}) {
+      PreferredSizeWidget bottom,
+      double padding}) {
     return AppBar(
-      backgroundColor: ColorBase.green,
+      backgroundColor: Colors.white,
+      elevation: 0,
+      titleSpacing: 0,
       leading: leading,
-      title: setTitleAppBar(title),
+      title: Padding(
+        padding: EdgeInsets.only(left: padding ?? 0.0),
+        child: setTitleAppBar(title),
+      ),
       actions: actions,
       bottom: bottom,
     );
@@ -46,7 +53,7 @@ class CustomAppBar {
                     hintText: 'Ketikkan kata kunci ...',
                     counterText: "",
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.all(5.0))),
+                    contentPadding: const EdgeInsets.all(5.0))),
           ),
         ]),
       ),
@@ -57,27 +64,46 @@ class CustomAppBar {
   static AppBar bottomSearchAppBar(
       {@required TextEditingController searchController,
       @required String title,
-      @required String hintText,
+      String hintText,
       ValueChanged<String> onChanged,
       ValueChanged<String> onSubmitted,
       BuildContext context,
-      r}) {
+      bool customBackButton = false}) {
     return AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        elevation: 0,
+        titleSpacing: customBackButton ? 0 : 15.0,
+        leading: customBackButton
+            ? Padding(
+                padding: const EdgeInsets.only(left: 5.0),
+                child: GestureDetector(
+                  onTap: () => Navigator.of(context).pop(),
+                  child: Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black,
+                    size: 20,
+                  ),
+                ),
+              )
+            : null,
+        backgroundColor: Colors.white,
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(60.0),
+          preferredSize: const Size.fromHeight(60.0),
           child: buildSearchField(
               searchController, hintText, onChanged, onSubmitted),
         ),
-        title: CustomAppBar.setTitleAppBar(title));
+        title: Padding(
+          padding: const EdgeInsets.only(left: 5.0),
+          child: CustomAppBar.setTitleAppBar(title),
+        ));
   }
 
   static Text setTitleAppBar(String title) {
     return Text(title,
         style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.w600,
-        ),
+            fontFamily: FontsFamily.roboto,
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            color: Colors.black),
         maxLines: 1,
         overflow: TextOverflow.ellipsis);
   }
@@ -88,27 +114,32 @@ class CustomAppBar {
       ValueChanged<String> onChanged,
       ValueChanged<String> onSubmitted) {
     return Container(
-      margin: EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
+      margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
       height: 40.0,
       decoration: BoxDecoration(
-          color: Color(0xffFAFAFA),
+          color: ColorBase.grey,
           shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(8.0)),
+          border: Border.all(color: Colors.grey[400]),
+          borderRadius: BorderRadius.circular(6.0)),
       child: TextField(
           controller: searchController,
           autofocus: false,
           decoration: InputDecoration(
               prefixIcon: Icon(
                 Icons.search,
-                color: Color(0xff828282),
+                color: Colors.grey[600],
+                size: 35,
               ),
               hintText: hintText,
               border: InputBorder.none,
               hintStyle: TextStyle(
                   color: Color(0xff828282), fontSize: 12, height: 2.2),
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
-          style: TextStyle(color: Colors.black, fontSize: 16.0),
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
+          style: TextStyle(
+              color: Colors.black,
+              fontSize: 16.0,
+              fontFamily: FontsFamily.roboto),
           onChanged: onChanged,
           onSubmitted: onSubmitted),
     );

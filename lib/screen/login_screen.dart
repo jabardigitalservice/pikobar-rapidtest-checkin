@@ -11,7 +11,7 @@ import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_list.dart';
-import 'package:rapid_test/screen/home.dart';
+import 'package:rapid_test/screen/input_event_code.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -286,8 +286,10 @@ class _State extends State<LoginForm> {
                   color: Colors.black),
             ),
             onPressed: () {
-              Navigator.pushReplacement(context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()));
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => InputEventCodePage()));
             },
           ),
         ),

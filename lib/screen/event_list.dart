@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,10 +8,14 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/event_list/Bloc.dart';
 import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
+import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/components/EmptyData.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
+import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/constants/SharedPreferenceKey.dart';
+import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/EventListModel.dart';
 import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
@@ -23,6 +28,7 @@ import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'login_screen.dart';
 
 class EventListPage extends StatefulWidget {
+  EventListPage({Key key}) : super(key: key);
   @override
   _EventListPageState createState() => _EventListPageState();
 }
@@ -58,66 +64,50 @@ class _EventListPageState extends State<EventListPage>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    //   _searchController.addListener((() {
-    //   _onSearchChanged();
-    // }));
 
     _scrollController.addListener(() {
       _scrollListener();
     });
     super.initState();
   }
-  // void onScroll() {
-  //   double maxScroll = _scrollController.position.maxScrollExtent;
-  //   double currentScroll = _scrollController.position.pixels;
-  //   if (currentScroll == maxScroll) {
-  //     _listParticipantBloc.add(ListParticipantLoadMore(
-  //         eventCode: widget.kodeKegiatanModel.data.eventCode,
-  //         page: 2,
-  //         keyword: ''));
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
-    // _scrollController.addListener(onScroll);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Daftar Event"),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.exit_to_app),
-              onPressed: () {
-                _authenticationBloc.add(UserLoggedOut());
-              })
-        ],
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar.defaultAppBar(
+        padding: 20,
+        title: Dictionary.eventList,
       ),
       body: MultiBlocProvider(
         providers: [
           BlocProvider<EventListBloc>(
-              create: (BuildContext context) => _eventListBloc =
+              create: (context) => _eventListBloc =
                   EventListBloc(repository: _eventListRepository)
-                    ..add(EventListLoad(page: _page, isFirstLoad: true))),
+                    ..add(EventListLoad(
+                        page: _page, isFirstLoad: true, keyword: ''))),
           BlocProvider<AuthenticationBloc>(
-              create: (BuildContext context) => _authenticationBloc =
+              create: (context) => _authenticationBloc =
                   AuthenticationBloc(_authenticationRepository)),
           BlocProvider<KodeKegiatanBloc>(
-            create: (BuildContext context) =>
-                _kodeKegiatanBloc = KodeKegiatanBloc(
-                    repository: _kegiatanDetailRepository,
-                    offlineRepository: _offlineRepository)
-                  ..add(AppStart()),
+            create: (context) => _kodeKegiatanBloc = KodeKegiatanBloc(
+                repository: _kegiatanDetailRepository,
+                offlineRepository: _offlineRepository)
+              ..add(AppStart()),
           ),
         ],
         child: MultiBlocListener(
           listeners: [
             BlocListener<EventListBloc, EventListState>(
-              listener: (context, state) {
+              listener: (BuildContext context, EventListState state) {
                 if (state is EventListFailure) {
-                  if (state.error.toString().contains('Token Expired')) {
+                  if (state.error
+                      .toString()
+                      .contains(Dictionary.tokenExpired)) {
                     _authenticationBloc.add(UserLoggedOut());
                   } else {
-                    var split = state.error.split('Exception:');
+                    final List<String> split =
+                        state.error.split(Dictionary.exeption);
                     showDialog(
                         context: context,
                         builder: (BuildContext context) => DialogTextOnly(
@@ -126,8 +116,8 @@ class _EventListPageState extends State<EventListPage>
                               onOkPressed: () {
                                 Navigator.of(context).pop();
                                 _eventListBloc.add(EventListLoad(
-                                  page: 1,
-                                )); // To close the dialog
+                                    page: 1,
+                                    keyword: '')); // To close the dialog
                               },
                             ));
                   }
@@ -138,21 +128,22 @@ class _EventListPageState extends State<EventListPage>
               },
             ),
             BlocListener<AuthenticationBloc, AuthenticationState>(
-              listener: (context, state) {
+              listener: (BuildContext context, AuthenticationState state) {
                 if (state is AuthenticationNotAuthenticated) {
-                  print('dari event list');
+                  Navigator.of(context).pop();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
                 }
               },
             ),
             BlocListener<KodeKegiatanBloc, KodeKegiatanState>(
-                listener: (context, state) {
+                listener: (BuildContext context, KodeKegiatanState state) {
               if (state is KodeKegiatanFailure) {
-                if (state.error.toString().contains('Token Expired')) {
+                if (state.error.toString().contains(Dictionary.tokenExpired)) {
                   _authenticationBloc.add(UserLoggedOut());
                 } else {
-                  var split = state.error.split('Exception:');
+                  final List<String> split =
+                      state.error.split(Dictionary.exeption);
                   showDialog(
                       context: context,
                       builder: (BuildContext context) => DialogTextOnly(
@@ -171,7 +162,7 @@ class _EventListPageState extends State<EventListPage>
                       children: <Widget>[
                         CircularProgressIndicator(),
                         Container(
-                          margin: EdgeInsets.only(left: 15.0),
+                          margin: const EdgeInsets.only(left: 15.0),
                           child: Text(Dictionary.pleaseWait),
                         )
                       ],
@@ -212,279 +203,324 @@ class _EventListPageState extends State<EventListPage>
 
   Widget buildContent(List<ListEvent> listEvent) {
     return SafeArea(
-        child: listEvent.length == 0
-            ? Center(
-                child: Text(Dictionary.emptyDataParticipant),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Expanded(
-                    child: LiquidPullToRefresh(
-                      showChildOpacityTransition: false,
-                      height: 50,
-                      color: ColorBase.green,
-                      onRefresh: () {
-                        _eventListBloc.add(EventListLoad(
-                          page: 1,
-                        ));
-                      },
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: listEvent.length + 1,
-                        itemBuilder: (context, i) {
-                          if (i == listEvent.length) {
-                            if (listEvent.length > 10 &&
-                                maxDataLength != listEvent.length) {
-                              return Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 20.0, bottom: 20.0),
-                                child: Column(
-                                  children: <Widget>[
-                                    CupertinoActivityIndicator(),
-                                    SizedBox(
-                                      height: 5.0,
-                                    ),
-                                    Text(Dictionary.dataParticipantLoading),
-                                  ],
-                                ),
-                              );
-                            } else {
-                              return Container();
-                            }
-                          }
-                          return Container(
-                            margin: EdgeInsets.only(
-                                bottom: 10,
-                                top: i == 0 ? 20 : 0,
-                                left: 20,
-                                right: 20),
-                            width: MediaQuery.of(context).size.width,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: unixTimeStampToDateWithoutHour(
-                                            DateTime.now().toString()) ==
-                                        unixTimeStampToDateWithoutHour(
-                                            listEvent[i].endAt)
-                                    ? Colors.white
-                                    : (DateTime.now()
-                                            .difference(
-                                                DateTime.parse(listEvent[i].endAt)
-                                                    .toLocal())
-                                            .isNegative)
-                                        ? Colors.white
-                                        : Colors.grey[300],
-                                border: Border.all(
-                                    color: unixTimeStampToDateWithoutHour(
-                                                DateTime.now().toString()) ==
-                                            unixTimeStampToDateWithoutHour(
-                                                listEvent[i].endAt)
-                                        ? Theme.of(context).primaryColor
-                                        : (DateTime.now()
-                                                .difference(DateTime.parse(
-                                                        listEvent[i].endAt)
-                                                    .toLocal())
-                                                .isNegative)
-                                            ? Theme.of(context).primaryColor
-                                            : Colors.grey,
-                                    width: 1)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(20.0),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    listEvent[i].hostName,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 14),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Container(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.5,
-                                          child: Text(listEvent[i].eventName)),
-                                      Container(
-                                        width:
-                                            MediaQuery.of(context).size.width *
-                                                0.2,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.04,
-                                        child: RaisedButton(
-                                          onPressed: () {
-                                            if (unixTimeStampToDateWithoutHour(
-                                                    DateTime.now()
-                                                        .toString()) ==
-                                                unixTimeStampToDateWithoutHour(
-                                                    listEvent[i].endAt)) {
-                                              _kodeKegiatanBloc.add(
-                                                  KodeKegiatanMovePage(
-                                                      kodeKegiatan: listEvent[i]
-                                                          .eventCode,
-                                                      isFromLogin: true));
-                                            } else {
-                                              if (DateTime.now()
-                                                  .difference(DateTime.parse(
-                                                          listEvent[i].endAt)
-                                                      .toLocal())
-                                                  .isNegative) {
-                                                _kodeKegiatanBloc.add(
-                                                    KodeKegiatanMovePage(
-                                                        kodeKegiatan:
-                                                            listEvent[i]
-                                                                .eventCode,
-                                                        isFromLogin: true));
-                                              } else {
-                                                showDialog(
-                                                    context: context,
-                                                    builder: (BuildContext
-                                                            context) =>
-                                                        DialogTextOnly(
-                                                            description:
-                                                                Dictionary
-                                                                    .eventExpired,
-                                                            buttonText:
-                                                                Dictionary.ok,
-                                                            onOkPressed: () {
-                                                              Navigator.of(
-                                                                      context)
-                                                                  .pop(); // To close the dialog
-                                                            }));
-                                              }
-                                            }
-                                          },
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                          color: unixTimeStampToDateWithoutHour(
-                                                      DateTime.now()
-                                                          .toString()) ==
-                                                  unixTimeStampToDateWithoutHour(
-                                                      listEvent[i].endAt)
-                                              ? Theme.of(context).primaryColor
-                                              : (DateTime.now()
-                                                      .difference(
-                                                          DateTime.parse(
-                                                                  listEvent[i]
-                                                                      .endAt)
-                                                              .toLocal())
-                                                      .isNegative)
-                                                  ? Theme.of(context)
-                                                      .primaryColor
-                                                  : Colors.grey,
-                                          child: Text(
-                                            Dictionary.choose,
-                                            style:
-                                                TextStyle(color: Colors.white),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  SizedBox(
-                                    height: 1,
-                                    child: Container(
-                                      color: unixTimeStampToDateWithoutHour(
-                                                  DateTime.now().toString()) ==
-                                              unixTimeStampToDateWithoutHour(
-                                                  listEvent[i].endAt)
-                                          ? Theme.of(context).primaryColor
-                                          : (DateTime.now()
-                                                  .difference(DateTime.parse(
-                                                          listEvent[i].endAt)
-                                                      .toLocal())
-                                                  .isNegative)
-                                              ? Theme.of(context).primaryColor
-                                              : Colors.grey,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    height: 5,
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Text(
-                                        Dictionary.date,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Expanded(
-                                        child: Text(
-                                            checkingSameDate(
-                                                    DateTime.parse(listEvent[i]
-                                                            .startAt)
-                                                        .toLocal(),
-                                                    DateTime.parse(
-                                                            listEvent[i].endAt)
-                                                        .toLocal())
-                                                ? unixTimeStampToDateWithoutHour(
-                                                    listEvent[i].startAt)
-                                                : "${unixTimeStampToDateWithoutHour(listEvent[i].startAt)} - ${unixTimeStampToDateWithoutHour(listEvent[i].endAt)}",
-                                            textAlign: TextAlign.right,
-                                            style: TextStyle(fontSize: 12)),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        Dictionary.time,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                          unixTimeStampToHour(
-                                                  listEvent[i].startAt) +
-                                              ' - ' +
-                                              unixTimeStampToHour(
-                                                  listEvent[i].endAt) +
-                                              Dictionary.wib,
-                                          style: TextStyle(fontSize: 12)),
-                                    ],
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                      Text(
-                                        Dictionary.totalParticipant,
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                          listEvent[i]
-                                              .invitationsCount
-                                              .toString(),
-                                          style: TextStyle(fontSize: 12)),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+      child: ConnectivityWidgetWrapper(
+          stacked: false,
+          offlineWidget: EmptyData(
+            message: Dictionary.errorConnection,
+            desc: Dictionary.errorConnectionDesc,
+            image: "${Environment.imageAssets}not_found.png",
+          ),
+          child: listEvent.length == 0
+              ? Center(
+                  child: Text(Dictionary.emptyDataParticipant),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: LiquidPullToRefresh(
+                        showChildOpacityTransition: false,
+                        height: 50,
+                        color: ColorBase.green,
+                        onRefresh: () async {
+                          _eventListBloc.add(EventListLoad(
+                              page: 1, keyword: _searchController.text));
                         },
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          itemCount: listEvent.length + 1,
+                          itemBuilder: (context, i) {
+                            if (i == listEvent.length) {
+                              if (listEvent.length > 10 &&
+                                  maxDataLength != listEvent.length) {
+                                return buildLoading();
+                              } else {
+                                return Container();
+                              }
+                            }
+                            return buildItem(listEvent, i);
+                          },
+                        ),
                       ),
                     ),
+                  ],
+                )),
+    );
+  }
+
+  Widget buildLoading() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+      child: Column(
+        children: <Widget>[
+          CupertinoActivityIndicator(),
+          const SizedBox(
+            height: 5.0,
+          ),
+          Text(
+            Dictionary.dataParticipantLoading,
+            style: TextStyle(fontFamily: FontsFamily.roboto),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildWelcomeHeader() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 0, top: 10, left: 20, right: 20),
+      width: MediaQuery.of(context).size.width,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: ColorBase.lightGrey, width: 1)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    Dictionary.welome,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: FontsFamily.roboto,
+                        color: Colors.blue[900],
+                        fontWeight: FontWeight.w600),
                   ),
+                  const SizedBox(
+                    height: 5,
+                  ),
+                  Text(
+                    Dictionary.welcomeTextEventList,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black.withOpacity(0.6),
+                        fontFamily: FontsFamily.roboto,
+                        fontWeight: FontWeight.w500),
+                  )
                 ],
-              ));
+              ),
+            ),
+            const SizedBox(
+              width: 15,
+            ),
+            Image.asset(
+              '${Environment.iconAssets}tes_masif.png',
+              height: MediaQuery.of(context).size.height * 0.10,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildItem(List<ListEvent> listEvent, int i) {
+    return Column(
+      children: [
+        i == 0 ? buildWelcomeHeader() : Container(),
+        GestureDetector(
+          onTap: () async {
+            if (unixTimeStampToDateWithoutHour(DateTime.now().toString()) ==
+                    unixTimeStampToDateWithoutHour(listEvent[i].endAt) ||
+                DateTime.now()
+                    .difference(DateTime.parse(listEvent[i].endAt).toLocal())
+                    .isNegative) {
+              if (await ConnectivityWrapper.instance.isConnected) {
+                _kodeKegiatanBloc.add(KodeKegiatanMovePage(
+                    kodeKegiatan: listEvent[i].eventCode, isFromLogin: true));
+              } else {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => DialogTextOnly(
+                        description: Dictionary.errorConnection,
+                        buttonText: Dictionary.ok,
+                        onOkPressed: () {
+                          Navigator.of(context).pop(); // To close the dialog
+                        }));
+              }
+            } else {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) => DialogTextOnly(
+                      description: Dictionary.eventExpired,
+                      buttonText: Dictionary.ok,
+                      onOkPressed: () {
+                        Navigator.of(context).pop(); // To close the dialog
+                      }));
+            }
+          },
+          child: Container(
+            margin: EdgeInsets.only(
+                bottom: 10, top: i == 0 ? 10 : 0, left: 20, right: 20),
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: ColorBase.lightGrey, width: 1)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                      left: 15.0, right: 15, top: 15, bottom: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        listEvent[i].hostName,
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontFamily: FontsFamily.roboto,
+                            fontSize: 16),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  Dictionary.time,
+                                  style: TextStyle(
+                                      color: Colors.black.withOpacity(0.6),
+                                      fontFamily: FontsFamily.roboto,
+                                      fontSize: 10),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  checkingSameDate(
+                                          DateTime.parse(listEvent[i].startAt)
+                                              .toLocal(),
+                                          DateTime.parse(listEvent[i].endAt)
+                                              .toLocal())
+                                      ? unixTimeStampToDateWithoutHour(
+                                          listEvent[i].startAt)
+                                      : "${unixTimeStampToDateWithoutHour(listEvent[i].startAt)} - ${unixTimeStampToDateWithoutHour(listEvent[i].endAt)}",
+                                  style: TextStyle(
+                                      color: Colors.black.withOpacity(0.8),
+                                      fontFamily: FontsFamily.roboto,
+                                      fontSize: 12),
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  unixTimeStampToHour(listEvent[i].startAt) +
+                                      ' - ' +
+                                      unixTimeStampToHour(listEvent[i].endAt) +
+                                      Dictionary.wib,
+                                  style: TextStyle(
+                                      color: Colors.black.withOpacity(0.8),
+                                      fontFamily: FontsFamily.roboto,
+                                      fontSize: 12),
+                                )
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                Dictionary.totalParticipant,
+                                style: TextStyle(
+                                    color: Colors.black.withOpacity(0.6),
+                                    fontFamily: FontsFamily.roboto,
+                                    fontSize: 10),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                listEvent[i].invitationsCount.toString() +
+                                    Dictionary.people,
+                                style: TextStyle(
+                                    color: Colors.black.withOpacity(0.8),
+                                    fontFamily: FontsFamily.roboto,
+                                    fontSize: 12),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 1,
+                  child: Container(
+                    color: ColorBase.lightGrey,
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          listEvent[i].eventName,
+                          style: TextStyle(
+                              color: ColorBase.strongBlue,
+                              fontWeight: FontWeight.w600,
+                              fontFamily: FontsFamily.roboto,
+                              fontSize: 12),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: unixTimeStampToDateWithoutHour(
+                                        DateTime.now().toString()) ==
+                                    unixTimeStampToDateWithoutHour(
+                                        listEvent[i].endAt)
+                                ? ColorBase.yellow700
+                                : (DateTime.now()
+                                        .difference(
+                                            DateTime.parse(listEvent[i].endAt)
+                                                .toLocal())
+                                        .isNegative)
+                                    ? ColorBase.yellow700
+                                    : ColorBase.green2),
+                        child: Text(
+                          unixTimeStampToDateWithoutHour(
+                                      DateTime.now().toString()) ==
+                                  unixTimeStampToDateWithoutHour(
+                                      listEvent[i].endAt)
+                              ? Dictionary.eventOnProgress
+                              : (DateTime.now()
+                                      .difference(
+                                          DateTime.parse(listEvent[i].endAt)
+                                              .toLocal())
+                                      .isNegative)
+                                  ? Dictionary.eventOnProgress
+                                  : Dictionary.eventDone,
+                          style: TextStyle(
+                              fontFamily: FontsFamily.roboto,
+                              fontSize: 12,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 
   bool checkingSameDate(DateTime startAt, endAt) {
@@ -517,9 +553,8 @@ class _EventListPageState extends State<EventListPage>
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      _eventListBloc.add(EventListLoadMore(
-        page: _page,
-      ));
+      _eventListBloc
+          .add(EventListLoadMore(page: _page, keyword: _searchController.text));
       // }
     }
   }
@@ -528,9 +563,8 @@ class _EventListPageState extends State<EventListPage>
     if (_debounce?.isActive ?? false) _debounce.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _hasChange = true;
-      _eventListBloc.add(EventListLoad(
-        page: 1,
-      ));
+      _eventListBloc
+          .add(EventListLoad(page: 1, keyword: _searchController.text));
     });
   }
 
@@ -558,14 +592,21 @@ class _EventListPageState extends State<EventListPage>
   }
 
   Future<void> _refresh() async {
-    _eventListBloc.add(EventListLoad(
-      page: 1,
-    ));
+    _eventListBloc.add(EventListLoad(page: 1, keyword: ''));
     _page = 1;
     await Preferences.setDataInt(kParticipantPage, 1);
   }
 
   void updateSearchQuery(String newQuery) {
     _onSearchChanged();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _kodeKegiatanBloc.close();
+    _authenticationBloc.close();
+    _eventListBloc.close();
+    super.dispose();
   }
 }

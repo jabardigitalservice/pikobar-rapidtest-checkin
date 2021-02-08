@@ -34,7 +34,9 @@ class Dictionary {
   static String delete = 'Hapus';
 
 // Error messages
-  static String errorConnection = 'Periksa kembali koneksi Internet';
+  static String errorConnection = 'Oops! Internet Terputus';
+  static String errorConnectionDesc =
+      'Sepertinya internet kamu terputus, silahkan \ncek kembali koneksi internet kamu';
   static String errorIOConnection = 'Koneksi ke server bermasalah';
   static String eventExpired = 'Event Sudah Berakhir';
   static String unauthorized = 'Username/Password Tidak Sesuai';
@@ -48,6 +50,7 @@ class Dictionary {
   static String alreadyCheckinMessageOffline = 'Kode registrasi telah checkin';
   static String exeption = 'Exception:';
   static String unauthorizedText = 'Unauthorized';
+  static String tokenExpired = Dictionary.tokenExpired;
 
   //Validation
   static String eventCodeValidation = 'Kode kegiatan harus diisi';
