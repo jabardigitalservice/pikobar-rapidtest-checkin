@@ -12,7 +12,7 @@ import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/kegiatan_detail.dart';
+import 'package:rapid_test/screen/event_detail_screen.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 import 'login_screen.dart';
@@ -114,7 +114,7 @@ class _InputEventCodePageState extends State<InputEventCodePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => KegiatanPage()));
+                              builder: (context) => EventDetailPage()));
                     } else {
                       Scaffold.of(context).hideCurrentSnackBar();
                     }

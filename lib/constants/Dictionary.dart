@@ -50,7 +50,7 @@ class Dictionary {
   static String alreadyCheckinMessageOffline = 'Kode registrasi telah checkin';
   static String exeption = 'Exception:';
   static String unauthorizedText = 'Unauthorized';
-  static String tokenExpired = Dictionary.tokenExpired;
+  static String tokenExpired = 'Token Expired';
 
   //Validation
   static String eventCodeValidation = 'Kode kegiatan harus diisi';
@@ -85,6 +85,7 @@ class Dictionary {
   static String activityCode = 'Kode Kegiatan';
   static String activityCodePlaceholder = 'Masukan kode kegiatan';
   static String searchListParticipant = 'Cari Daftar Peserta';
+  static String searchListEvent = 'Cari Daftar Kegiatan';
   static String createdAt = 'Created At';
   static String usernameDescription = 'Masukan username yang telah terdaftar';
   static String locationDescription = 'Masukan lokasi anda';

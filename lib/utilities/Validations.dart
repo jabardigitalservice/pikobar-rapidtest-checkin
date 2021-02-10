@@ -1,73 +1,33 @@
-
+import 'package:rapid_test/constants/Dictionary.dart';
 
 class Validations {
-  
-  static String kodeValidation(String val) {
-   
-
-    if (val.isEmpty) return 'Kode kegiatan harus diisi';
-
-    // if (val.length < 4) return Dictionary.errorMinimumName;
-
-    // if (val.length > 255) return Dictionary.errorMaximumName;
-
-    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
-
+  static String eventCodeValidation(String val) {
+    if (val.isEmpty) return Dictionary.eventCodeValidation;
     return null;
   }
 
-   static String locationValidation(String val) {
-   
-
-    if (val.isEmpty) return 'Lokasi harus diisi';
-
-    // if (val.length < 4) return Dictionary.errorMinimumName;
-
-    // if (val.length > 255) return Dictionary.errorMaximumName;
-
-    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
-
+  static String locationValidation(String val) {
+    if (val.isEmpty) return Dictionary.locationValidation;
     return null;
   }
 
-  static String kodeSampleValidation(String val) {
-   
-
-    if (val.isEmpty) return 'Kode sampel harus diisi';
-
-    // if (val.length < 4) return Dictionary.errorMinimumName;
-
-    // if (val.length > 255) return Dictionary.errorMaximumName;
-
-    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
-
+  static String sampleCodeValidation(String val) {
+    if (val.isEmpty) return Dictionary.labCodeValidation;
     return null;
   }
 
   static String usernameValidation(String val) {
-   
-
-    if (val.isEmpty) return 'Username harus diisi';
-
-    // if (val.length < 4) return Dictionary.errorMinimumName;
-
-    // if (val.length > 255) return Dictionary.errorMaximumName;
-
-    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
-
+    if (val.isEmpty) return Dictionary.usernameValidation;
     return null;
   }
+
   static String passwordValidation(String val) {
-   
+    if (val.isEmpty) return Dictionary.passwordValidation;
+    return null;
+  }
 
-    if (val.isEmpty) return 'Password harus diisi';
-
-    // if (val.length < 4) return Dictionary.errorMinimumName;
-
-    // if (val.length > 255) return Dictionary.errorMaximumName;
-
-    // if (!regex.hasMatch(val)) return Dictionary.errorInvalidName;
-
+  static String registrationCodeValidation(String val) {
+    if (val.isEmpty) return Dictionary.registrationCodeValidation;
     return null;
   }
 }

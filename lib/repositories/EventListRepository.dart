@@ -6,14 +6,14 @@ import 'package:dio/dio.dart';
 import 'package:rapid_test/utilities/http.dart';
 
 class EventListRepository {
-  Future<dynamic> getListOfEvent(int page) async {
+  Future<dynamic> getListOfEvent(int page, String keyword) async {
     await Future.delayed(Duration(seconds: 1));
     try {
       Response response = await dio.get(
-        '${EndPointPath.baseUrl}/rdt/events?per_page=20&page=${page.toString()}&sort_by=created_at&sort_order=desc&status=published',
+        '${EndPointPath.baseUrl}/rdt/events?per_page=20&page=${page.toString()}&sort_by=created_at&sort_order=desc&search=$keyword&status=published',
       );
-      final data = response.data;
-      EventListModel record = EventListModel.fromJson(data);
+      final dynamic data = response.data;
+      final EventListModel record = EventListModel.fromJson(data);
       await Preferences.setDataInt(kTotalCount, record.meta.total);
       return record;
     } catch (e) {
