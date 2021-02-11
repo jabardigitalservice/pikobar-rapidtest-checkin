@@ -29,6 +29,8 @@ import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class EventDetailPage extends StatefulWidget {
+  EventDetailPage({Key key}) : super(key: key);
+
   @override
   _EventDetailPageState createState() => _EventDetailPageState();
 }
@@ -660,7 +662,6 @@ class _EventDetailPageState extends State<EventDetailPage> {
           onTap: () async {
             var permissionService = Permission.camera;
             if (await permissionService.status.isGranted) {
-              // barcodeScan(kodeKegiatanModel);
               Navigator.push(
                   context,
                   MaterialPageRoute(
