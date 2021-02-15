@@ -61,7 +61,7 @@ class _State extends State<LoginForm> {
             var split = state.error.split(Dictionary.exeption);
             showDialog(
                 context: context,
-                builder: (BuildContext context) => DialogTextOnly(
+                builder: (context) => DialogTextOnly(
                       description: split.last
                               .toString()
                               .contains(Dictionary.unauthorizedText)

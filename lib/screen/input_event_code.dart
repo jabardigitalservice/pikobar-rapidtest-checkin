@@ -84,7 +84,7 @@ class _InputEventCodePageState extends State<InputEventCodePage> {
                       } else {
                         showDialog(
                             context: context,
-                            builder: (BuildContext context) => DialogTextOnly(
+                            builder: (context) => DialogTextOnly(
                                 description: state.error.toString(),
                                 buttonText: Dictionary.ok,
                                 onOkPressed: () {

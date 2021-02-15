@@ -112,7 +112,7 @@ class _EventListPageState extends State<EventListPage>
                         state.error.split(Dictionary.exeption);
                     showDialog(
                         context: context,
-                        builder: (BuildContext context) => DialogTextOnly(
+                        builder: (context) => DialogTextOnly(
                               description: split.last.toString(),
                               buttonText: Dictionary.ok,
                               onOkPressed: () {
@@ -148,7 +148,7 @@ class _EventListPageState extends State<EventListPage>
                       state.error.split(Dictionary.exeption);
                   showDialog(
                       context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
+                      builder: (context) => DialogTextOnly(
                           description: split.last.toString(),
                           buttonText: Dictionary.ok,
                           onOkPressed: () {
@@ -231,7 +231,7 @@ class _EventListPageState extends State<EventListPage>
                         child: ListView.builder(
                           controller: _scrollController,
                           itemCount: listEvent.length + 1,
-                          itemBuilder: (context, i) {
+                          itemBuilder: (BuildContext context, int i) {
                             if (i == listEvent.length) {
                               if (listEvent.length > 10 &&
                                   maxDataLength != listEvent.length) {
@@ -335,7 +335,7 @@ class _EventListPageState extends State<EventListPage>
               } else {
                 showDialog(
                     context: context,
-                    builder: (BuildContext context) => DialogTextOnly(
+                    builder: (context) => DialogTextOnly(
                         description: Dictionary.errorConnection,
                         buttonText: Dictionary.ok,
                         onOkPressed: () {
@@ -345,7 +345,7 @@ class _EventListPageState extends State<EventListPage>
             } else {
               showDialog(
                   context: context,
-                  builder: (BuildContext context) => DialogTextOnly(
+                  builder: (context) => DialogTextOnly(
                       description: Dictionary.eventExpired,
                       buttonText: Dictionary.ok,
                       onOkPressed: () {

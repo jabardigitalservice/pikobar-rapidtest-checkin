@@ -5,23 +5,19 @@ abstract class ListParticipantOfflineEvent extends Equatable {
 }
 
 class ListParticipantOfflineLoad extends ListParticipantOfflineEvent {
-  final String eventCode;
-
-  ListParticipantOfflineLoad({this.eventCode});
-
   @override
   String toString() {
     return 'Event ListParticipantOfflineLoad';
   }
 
   @override
-  List<Object> get props => [eventCode];
+  List<Object> get props => [];
 }
 
 class ListParticipantSearchOffline extends ListParticipantOfflineEvent {
   final String keyword;
 
-  ListParticipantSearchOffline({ this.keyword});
+  const ListParticipantSearchOffline({this.keyword});
 
   @override
   String toString() {
@@ -29,7 +25,5 @@ class ListParticipantSearchOffline extends ListParticipantOfflineEvent {
   }
 
   @override
-  List<Object> get props => [ keyword];
+  List<Object> get props => [keyword];
 }
-
-
