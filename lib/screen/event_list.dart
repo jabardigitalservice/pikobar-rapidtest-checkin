@@ -21,7 +21,7 @@ import 'package:rapid_test/repositories/EventListRepository.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
-import 'package:rapid_test/screen/kegiatan_detail.dart';
+import 'package:rapid_test/screen/event_detail_screen.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 
@@ -75,10 +75,12 @@ class _EventListPageState extends State<EventListPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomAppBar.defaultAppBar(
-        padding: 20,
-        title: Dictionary.eventList,
-      ),
+      appBar: CustomAppBar.bottomSearchAppBar(
+          searchController: _searchController,
+          title: Dictionary.eventList,
+          hintText: Dictionary.searchListEvent,
+          onSubmitted: updateSearchQuery,
+          context: context),
       body: MultiBlocProvider(
         providers: [
           BlocProvider<EventListBloc>(
@@ -173,7 +175,7 @@ class _EventListPageState extends State<EventListPage>
                 Scaffold.of(context).hideCurrentSnackBar();
 
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => KegiatanPage()));
+                    MaterialPageRoute(builder: (context) => EventDetailPage()));
               } else {
                 Scaffold.of(context).hideCurrentSnackBar();
               }
