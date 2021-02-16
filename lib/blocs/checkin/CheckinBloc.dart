@@ -132,10 +132,10 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
     if (event is GetNameLoad) {
       yield CheckinLoading();
       try {
-        List<ListParticipantOfflineModel> getList =
+        final List<ListParticipantOfflineModel> getList =
             await offlineRepository.getParticipant();
-        String eventCode = await Preferences.getDataString(kActivityCode);
-        var getName = getList
+        final String eventCode = await Preferences.getDataString(kActivityCode);
+        final List<ListParticipantOfflineModel> getName = getList
             .where(
                 (element) => element.registrationCode == event.registrationCode)
             .toList();
@@ -148,7 +148,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
                     '${unixTimeStampToDateTime(getName[0].attendedAt)}');
           } else {
             if (await ConnectivityWrapper.instance.isConnected) {
-              var getNameOnline =
+              final Map<String, dynamic> getNameOnline =
                   await repository.getName(event.registrationCode);
               yield GetNameLoaded(
                   name: getNameOnline['data']['name'],
