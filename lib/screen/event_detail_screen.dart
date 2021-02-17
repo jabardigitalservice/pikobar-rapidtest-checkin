@@ -133,7 +133,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (BuildContext context) => DialogTextOnly(
+                        builder: (context) => DialogTextOnly(
                               description: split.last.toString(),
                               buttonText: Dictionary.ok,
                               onOkPressed: () {
@@ -171,7 +171,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   showDialog(
                       barrierDismissible: false,
                       context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
+                      builder: (context) => DialogTextOnly(
                             description: state.name + Dictionary.checkinSuccess,
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
@@ -202,7 +202,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     showDialog(
                         barrierDismissible: false,
                         context: context,
-                        builder: (BuildContext context) => DialogTextOnly(
+                        builder: (context) => DialogTextOnly(
                               description: split.last.toString(),
                               buttonText: Dictionary.ok,
                               onOkPressed: () {
@@ -305,7 +305,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
       showDialog(
           barrierDismissible: false,
           context: context,
-          builder: (BuildContext context) => Dialog(
+          builder: (context) => Dialog(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 child: Padding(
@@ -385,7 +385,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
   _buildConfirmDialog(String registrationCode, labCode, eventCode, name) {
     showDialog(
         context: context,
-        builder: (BuildContext context) => Dialog(
+        builder: (context) => Dialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               child: Container(
@@ -671,7 +671,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
             } else {
               showDialog(
                   context: context,
-                  builder: (BuildContext context) => DialogRequestPermission(
+                  builder: (context) => DialogRequestPermission(
                         image: Image.asset(
                           '${Environment.iconAssets}map_pin.png',
                           fit: BoxFit.contain,

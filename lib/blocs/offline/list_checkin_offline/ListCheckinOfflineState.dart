@@ -23,7 +23,7 @@ class ListCheckinOfflineLoading extends ListCheckinOfflineState {
 
 class ListCheckinOfflineLoaded extends ListCheckinOfflineState {
   final List<CheckinOfflineModel> checkinOfflineModel;
-  ListCheckinOfflineLoaded({this.checkinOfflineModel});
+  const ListCheckinOfflineLoaded({this.checkinOfflineModel});
 
   @override
   String toString() {
@@ -34,13 +34,20 @@ class ListCheckinOfflineLoaded extends ListCheckinOfflineState {
   List<Object> get props => [checkinOfflineModel];
 }
 
+class ListCheckinOfflineDeleted extends ListCheckinOfflineState {
+  @override
+  String toString() {
+    return 'State ListCheckinOfflineDeleted';
+  }
 
+  @override
+  List<Object> get props => [];
+}
 
-
-class  ListCheckinOfflineFailure extends  ListCheckinOfflineState {
+class ListCheckinOfflineFailure extends ListCheckinOfflineState {
   final String error;
 
-   ListCheckinOfflineFailure({@required this.error}) : super([error]);
+  ListCheckinOfflineFailure({@required this.error}) : super([error]);
 
   @override
   String toString() => ' ListCheckinOffline { error: $error }';
@@ -48,5 +55,3 @@ class  ListCheckinOfflineFailure extends  ListCheckinOfflineState {
   @override
   List<Object> get props => [error];
 }
-
-
