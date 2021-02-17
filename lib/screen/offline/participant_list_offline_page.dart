@@ -12,16 +12,13 @@ import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
-import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/model/KodeKegiatanModel.dart';
-import 'package:rapid_test/model/ListParticipantModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/screen/offline/checkin_list.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
-import 'package:rapid_test/utilities/SharedPreferences.dart';
 
 class ParticipantListOfflinePage extends StatefulWidget {
   final KodeKegiatanModel kodeKegiatanModel;
@@ -32,21 +29,17 @@ class ParticipantListOfflinePage extends StatefulWidget {
       _ParticipantListOfflinePageState();
 }
 
-class _ParticipantListOfflinePageState extends State<ParticipantListOfflinePage>
-    with TickerProviderStateMixin {
+class _ParticipantListOfflinePageState
+    extends State<ParticipantListOfflinePage> {
   final OfflineRepository _offlineRepository = OfflineRepository();
   ListParticipantOfflineBloc _listParticipantBloc;
   TextEditingController _searchController = TextEditingController();
   String searchQuery;
   ScrollController _scrollController = ScrollController();
   int maxDataLength;
-  int _page = 1;
   Timer _debounce;
-  bool _hasChange = false;
-  bool _isSearch = false;
-  AnimationController _animationController;
-  var containerWidth = 40.0;
-  final FocusNode _nodeOne = FocusNode();
+  double containerWidth = 40.0;
+
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
@@ -54,12 +47,6 @@ class _ParticipantListOfflinePageState extends State<ParticipantListOfflinePage>
 
   @override
   void initState() {
-    _initialize();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
     super.initState();
   }
 
@@ -606,20 +593,9 @@ class _ParticipantListOfflinePageState extends State<ParticipantListOfflinePage>
     );
   }
 
-  void _initialize() async {
-    _page = await Preferences.getDataInt(kParticipantPage) != null
-        ? await Preferences.getDataInt(kParticipantPage)
-        : 1;
-    maxDataLength = await Preferences.getDataInt(kTotalCount) != null
-        ? await Preferences.getDataInt(kTotalCount)
-        : 0;
-  }
-
   void _onSearchChanged() {
     if (_debounce?.isActive ?? false) _debounce.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _hasChange = true;
-      print('masuk');
       _listParticipantBloc
           .add(ListParticipantSearchOffline(keyword: _searchController.text));
     });
