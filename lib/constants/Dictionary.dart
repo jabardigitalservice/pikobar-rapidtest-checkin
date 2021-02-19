@@ -128,6 +128,8 @@ class Dictionary {
   static String checkinDate = 'Tanggal Checkin : ';
   static String listParticipantDescription =
       'Berikut adalah daftar peserta \ntes masif di ';
+  static String pleaseSendOfflineData =
+      ', harap mengirimkan data terlebih dahulu';
 
   // Scan QR Screen
   static String scanQrInfo =
@@ -136,4 +138,7 @@ class Dictionary {
 // Input Sample Number Screen
   static String sampleNumberInfo =
       'Anda telah terdaftar di aplikasi pendaftaran tes masif, \nsilahkan masukan nomer sampel yang telah tersedia.';
+
+  // offline checkin
+  static String confirmDelete = 'Apakah anda yakin akan menghapus ';
 }

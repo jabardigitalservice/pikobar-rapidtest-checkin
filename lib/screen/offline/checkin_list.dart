@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/send_checkin_data/Bloc.dart';
+import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
+import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 
 class CheckinList extends StatefulWidget {
+  CheckinList({Key key}) : super(key: key);
   @override
   _CheckinListState createState() => _CheckinListState();
 }
@@ -32,40 +36,50 @@ class _CheckinListState extends State<CheckinList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(Dictionary.testMasifOffline),
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context, lengthDataOffline);
-            }),
-        actions: [
-          IconButton(
-              icon: (Icon(Icons.send)),
-              onPressed: () {
-                _buildConfirmDialog();
-              })
-        ],
-      ),
+      backgroundColor: Colors.white,
+      appBar: CustomAppBar.defaultAppBar(
+          title: Dictionary.testMasifOffline,
+          actions: [
+            IconButton(
+                icon: (Icon(
+                  Icons.send,
+                  color: Colors.black,
+                )),
+                onPressed: () {
+                  _buildConfirmDialog();
+                })
+          ],
+          leading: Padding(
+            padding: const EdgeInsets.only(left: 5.0),
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context, lengthDataOffline),
+              child: Icon(
+                Icons.arrow_back_ios,
+                color: Colors.black,
+                size: 20,
+              ),
+            ),
+          )),
       body: MultiBlocProvider(
         providers: [
           BlocProvider<ListCheckinOfflineBloc>(
-              create: (BuildContext context) => _listCheckin =
+              create: (context) => _listCheckin =
                   ListCheckinOfflineBloc(repository: _offlineRepository)
                     ..add(ListCheckinOfflineLoad())),
           BlocProvider<SendCheckinDataBloc>(
-              create: (BuildContext context) => _sendCheckinDataBloc =
+              create: (context) => _sendCheckinDataBloc =
                   SendCheckinDataBloc(repository: _offlineRepository)),
         ],
         child: MultiBlocListener(
           listeners: [
             BlocListener<SendCheckinDataBloc, SendCheckinDataState>(
-              listener: (context, state) {
+              listener: (BuildContext context, SendCheckinDataState state) {
                 if (state is SendCheckinDataFailure) {
-                  var split = state.error.split('Exception:');
+                  final List<String> split =
+                      state.error.split(Dictionary.exeption);
                   showDialog(
                       context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
+                      builder: (context) => DialogTextOnly(
                             description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
@@ -81,7 +95,7 @@ class _CheckinListState extends State<CheckinList> {
                   showDialog(
                       context: context,
                       barrierDismissible: false,
-                      builder: (BuildContext context) => Dialog(
+                      builder: (context) => Dialog(
                             child: Padding(
                               padding: const EdgeInsets.all(20.0),
                               child: Row(
@@ -102,7 +116,7 @@ class _CheckinListState extends State<CheckinList> {
                   Navigator.of(context).pop();
                   showDialog(
                       context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
+                      builder: (context) => DialogTextOnly(
                             description: state.message.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
@@ -118,12 +132,13 @@ class _CheckinListState extends State<CheckinList> {
               },
             ),
             BlocListener<ListCheckinOfflineBloc, ListCheckinOfflineState>(
-              listener: (context, state) {
+              listener: (BuildContext context, ListCheckinOfflineState state) {
                 if (state is ListCheckinOfflineFailure) {
-                  var split = state.error.split('Exception:');
+                  final List<String> split =
+                      state.error.split(Dictionary.exeption);
                   showDialog(
                       context: context,
-                      builder: (BuildContext context) => DialogTextOnly(
+                      builder: (context) => DialogTextOnly(
                             description: split.last.toString(),
                             buttonText: Dictionary.ok,
                             onOkPressed: () {
@@ -134,6 +149,9 @@ class _CheckinListState extends State<CheckinList> {
                           ));
 
                   Scaffold.of(context).hideCurrentSnackBar();
+                } else if (state is ListCheckinOfflineDeleted) {
+                  Navigator.of(context).pop();
+                  _listCheckin.add(ListCheckinOfflineLoad());
                 } else {
                   Scaffold.of(context).hideCurrentSnackBar();
                 }
@@ -146,7 +164,7 @@ class _CheckinListState extends State<CheckinList> {
               ListCheckinOfflineState state,
             ) {
               if (state is ListCheckinOfflineLoaded) {
-                listCheckinOfflineLoaded = state as ListCheckinOfflineLoaded;
+                listCheckinOfflineLoaded = state;
                 lengthDataOffline =
                     listCheckinOfflineLoaded.checkinOfflineModel.length;
                 return _getBodyWidget();
@@ -183,7 +201,7 @@ class _CheckinListState extends State<CheckinList> {
   List<Widget> _getTitleWidget() {
     return [
       FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: _getTitleItemWidget(
             Dictionary.activityCode +
                 (sortType == sortEvent ? (isAscending ? ' ↓' : ' ↑') : ''),
@@ -203,7 +221,7 @@ class _CheckinListState extends State<CheckinList> {
         },
       ),
       FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: _getTitleItemWidget(
             Dictionary.registrationCode +
                 (sortType == sortRegistration
@@ -225,7 +243,7 @@ class _CheckinListState extends State<CheckinList> {
         },
       ),
       FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: _getTitleItemWidget(
             Dictionary.labCode +
                 (sortType == sortlabCodeSample
@@ -247,7 +265,7 @@ class _CheckinListState extends State<CheckinList> {
         },
       ),
       FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: _getTitleItemWidget(
             Dictionary.location +
                 (sortType == sortlocation ? (isAscending ? ' ↓' : ' ↑') : ''),
@@ -267,7 +285,7 @@ class _CheckinListState extends State<CheckinList> {
         },
       ),
       FlatButton(
-        padding: EdgeInsets.all(0),
+        padding: const EdgeInsets.all(0),
         child: _getTitleItemWidget(
             Dictionary.createdAt +
                 (sortType == sortcreatedAt ? (isAscending ? ' ↓' : ' ↑') : ''),
@@ -294,20 +312,38 @@ class _CheckinListState extends State<CheckinList> {
       child: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
       width: width,
       height: 56,
-      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+      padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
       alignment: Alignment.centerLeft,
     );
   }
 
   Widget _generateFirstColumnRow(BuildContext context, int i) {
-    return Container(
-      child: Text((i + 1).toString() +
-          '. ' +
-          listCheckinOfflineLoaded.checkinOfflineModel[i].eventCode),
-      width: 150,
-      height: 52,
-      padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-      alignment: Alignment.centerLeft,
+    return Slidable(
+      actionPane: SlidableDrawerActionPane(),
+      actionExtentRatio: 0.5,
+      child: Container(
+        color: Colors.white,
+        child: Container(
+          child: Text((i + 1).toString() +
+              '. ' +
+              listCheckinOfflineLoaded.checkinOfflineModel[i].eventCode),
+          width: 150,
+          height: 52,
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
+          alignment: Alignment.centerLeft,
+        ),
+      ),
+      actions: <Widget>[
+        IconSlideAction(
+          caption: Dictionary.delete,
+          color: Colors.red,
+          icon: Icons.delete,
+          onTap: () {
+            _buildDeleteConfirmDialog(
+                listCheckinOfflineLoaded.checkinOfflineModel[i]);
+          },
+        ),
+      ],
     );
   }
 
@@ -319,7 +355,7 @@ class _CheckinListState extends State<CheckinList> {
               listCheckinOfflineLoaded.checkinOfflineModel[i].registrationCode),
           width: 150,
           height: 52,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.centerLeft,
         ),
         Container(
@@ -327,14 +363,14 @@ class _CheckinListState extends State<CheckinList> {
               listCheckinOfflineLoaded.checkinOfflineModel[i].labCodeSample),
           width: 100,
           height: 52,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.centerLeft,
         ),
         Container(
           child: Text(listCheckinOfflineLoaded.checkinOfflineModel[i].location),
           width: 150,
           height: 52,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.centerLeft,
         ),
         Container(
@@ -345,7 +381,7 @@ class _CheckinListState extends State<CheckinList> {
               ''),
           width: 200,
           height: 52,
-          padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
+          padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.centerLeft,
         ),
       ],
@@ -355,20 +391,20 @@ class _CheckinListState extends State<CheckinList> {
   _buildConfirmDialog() {
     showDialog(
         context: context,
-        builder: (BuildContext context) => Dialog(
+        builder: (context) => Dialog(
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.20,
                 child: Padding(
-                  padding: EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10.0),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
                       Text(
                           'Data yang akan dikirim sebanyak ${listCheckinOfflineLoaded.checkinOfflineModel.length} \nPastikan koneksi stabil sebelum mengirim data'),
-                      SizedBox(
+                      const SizedBox(
                         height: 10,
                       ),
                       Row(
@@ -379,7 +415,7 @@ class _CheckinListState extends State<CheckinList> {
                             height: MediaQuery.of(context).size.height * 0.04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0.0),
                               color: Colors.red,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -402,7 +438,7 @@ class _CheckinListState extends State<CheckinList> {
                             height: MediaQuery.of(context).size.height * 0.04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0.0),
                               color: ColorBase.green,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
@@ -417,6 +453,84 @@ class _CheckinListState extends State<CheckinList> {
                               ),
                               onPressed: () {
                                 _sendCheckinDataBloc.add(SendCheckinData());
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ));
+  }
+
+  _buildDeleteConfirmDialog(CheckinOfflineModel checkinOfflineModel) {
+    showDialog(
+        context: context,
+        builder: (context) => Dialog(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.20,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(Dictionary.confirmDelete +
+                          checkinOfflineModel.registrationCode),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: <Widget>[
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: RaisedButton(
+                              splashColor: Colors.lightGreenAccent,
+                              padding: const EdgeInsets.all(0.0),
+                              color: Colors.red,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                Dictionary.cancel,
+                                style: TextStyle(
+                                    fontFamily: FontsFamily.productSans,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                    color: Colors.white),
+                              ),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          Container(
+                            width: MediaQuery.of(context).size.width * 0.3,
+                            height: MediaQuery.of(context).size.height * 0.04,
+                            child: RaisedButton(
+                              splashColor: Colors.lightGreenAccent,
+                              padding: const EdgeInsets.all(0.0),
+                              color: ColorBase.green,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(
+                                Dictionary.send,
+                                style: TextStyle(
+                                    fontFamily: FontsFamily.productSans,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12.0,
+                                    color: Colors.white),
+                              ),
+                              onPressed: () {
+                                _listCheckin.add(ListCheckinOfflineDelete(
+                                    checkinOfflineModel));
                               },
                             ),
                           ),
