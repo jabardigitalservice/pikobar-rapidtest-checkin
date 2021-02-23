@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rapid_test/constants/Colors.dart';
+import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/Dimens.dart';
-
 
 class DialogRequestPermission extends StatelessWidget {
   final String title, description, buttonText;
@@ -11,13 +11,15 @@ class DialogRequestPermission extends StatelessWidget {
   final GestureTapCallback onCancelPressed;
 
   DialogRequestPermission(
-      {this.title,
+      {Key key,
+      this.title,
       @required this.description,
       this.buttonText,
       this.image,
       this.icon,
       @required this.onOkPressed,
-      this.onCancelPressed});
+      this.onCancelPressed})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,13 +47,13 @@ class DialogRequestPermission extends StatelessWidget {
 
   _bottomCard(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         top: Dimens.avatarRadius + Dimens.padding,
         bottom: Dimens.padding,
         left: Dimens.padding,
         right: Dimens.padding,
       ),
-      margin: EdgeInsets.only(top: Dimens.avatarRadius),
+      margin: const EdgeInsets.only(top: Dimens.avatarRadius),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.rectangle,
@@ -74,16 +76,18 @@ class DialogRequestPermission extends StatelessWidget {
               fontSize: 16.0,
             ),
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
               FlatButton(
-                onPressed: onCancelPressed != null ? onCancelPressed : () {
-                  Navigator.of(context).pop(); // To close the dialog
-                },
+                onPressed: onCancelPressed != null
+                    ? onCancelPressed
+                    : () {
+                        Navigator.of(context).pop(); // To close the dialog
+                      },
                 child: Text(
-                  'Nanti',
+                  Dictionary.later,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: Colors.grey[600]),
                 ),
@@ -91,7 +95,7 @@ class DialogRequestPermission extends StatelessWidget {
               FlatButton(
                 onPressed: onOkPressed,
                 child: Text(
-                  'Lanjut',
+                  Dictionary.next,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, color: ColorBase.green),
                 ),
