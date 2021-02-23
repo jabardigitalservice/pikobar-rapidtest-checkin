@@ -32,6 +32,8 @@ class Dictionary {
   static String check = 'Lihat';
   static String send = 'Kirim';
   static String delete = 'Hapus';
+  static String later = 'Nanti';
+  static String next = 'Lanjut';
 
 // Error messages
   static String errorConnection = 'Oops! Internet Terputus';
