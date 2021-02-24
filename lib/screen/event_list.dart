@@ -11,6 +11,7 @@ import 'package:rapid_test/blocs/kode_kegiatan/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
 import 'package:rapid_test/components/EmptyData.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
@@ -22,6 +23,7 @@ import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_detail_screen.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 
@@ -68,6 +70,7 @@ class _EventListPageState extends State<EventListPage>
     _scrollController.addListener(() {
       _scrollListener();
     });
+    AnalyticsHelper.setLogEvent(Analytics.listEventScreen);
     super.initState();
   }
 

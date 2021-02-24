@@ -11,6 +11,7 @@ import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogRequestPermission.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/ErrorException.dart';
@@ -24,6 +25,7 @@ import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/screen/offline/participant_list_offline_page.dart';
 import 'package:rapid_test/screen/participant_list_page.dart';
 import 'package:rapid_test/screen/qr_scanner.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 import 'package:rapid_test/utilities/Validations.dart';
@@ -52,6 +54,8 @@ class _EventDetailPageState extends State<EventDetailPage> {
   @override
   void initState() {
     getAcitivityCode();
+    AnalyticsHelper.setLogEvent(Analytics.detailEventScreen);
+
     super.initState();
   }
 

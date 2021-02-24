@@ -5,12 +5,14 @@ import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/send_checkin_data/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 
 class CheckinList extends StatefulWidget {
@@ -32,6 +34,12 @@ class _CheckinListState extends State<CheckinList> {
   int sortType = sortEvent;
   ListCheckinOfflineLoaded listCheckinOfflineLoaded;
   int lengthDataOffline = 0;
+  @override
+  void initState() {
+    AnalyticsHelper.setLogEvent(Analytics.listCheckinOfflineScreen);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

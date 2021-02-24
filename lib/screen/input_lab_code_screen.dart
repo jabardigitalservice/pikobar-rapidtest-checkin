@@ -6,6 +6,7 @@ import 'package:rapid_test/blocs/checkin/Bloc.dart';
 import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
@@ -13,6 +14,7 @@ import 'package:rapid_test/environment/environment/Environment.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 import 'login_screen.dart';
@@ -35,6 +37,12 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
   final OfflineRepository _offlineRepository = OfflineRepository();
+  @override
+  void initState() {
+    AnalyticsHelper.setLogEvent(Analytics.labCodeScreen);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,9 @@
+import 'dart:async';
+
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -32,16 +37,21 @@ void main() {
 
   // add interceptors
   dio.interceptors.add(LoggingInterceptors());
-  runApp(
-    BlocProvider<AuthenticationBloc>(
-      create: (BuildContext context) {
-        AuthenticationRepository authenticationRepository =
-            AuthenticationRepository();
-        return AuthenticationBloc(authenticationRepository)..add(AppLoaded());
-      },
-      child: MyApp(),
-    ),
-  );
+  runZonedGuarded(() {
+    runApp(
+      BlocProvider<AuthenticationBloc>(
+        create: (BuildContext context) {
+          AuthenticationRepository authenticationRepository =
+              AuthenticationRepository();
+          return AuthenticationBloc(authenticationRepository)..add(AppLoaded());
+        },
+        child: MyApp(),
+      ),
+    );
+  }, (error, stackTrace) {
+    print('runZonedGuarded: Caught error in my root zone.');
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }
 
 class MyApp extends StatefulWidget {
@@ -52,6 +62,27 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  Future<void> _initializeFlutterFire() async {
+    /// Wait for Firebase to initialize
+    await Firebase.initializeApp();
+
+    /// Else only enable it in non-debug builds.
+    /// You could additionally extend this to allow users to opt-in.
+    await FirebaseCrashlytics.instance
+        .setCrashlyticsCollectionEnabled(!kDebugMode);
+
+    /// Pass all uncaught errors to Crashlytics.
+    Function originalOnError = FlutterError.onError;
+    FlutterError.onError = (FlutterErrorDetails errorDetails) async {
+      await FirebaseCrashlytics.instance.recordFlutterError(errorDetails);
+
+      /// Forward to original handler.
+      originalOnError(errorDetails);
+    };
+
+    await Future.delayed(Duration(seconds: 1));
+  }
+
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting();
@@ -65,20 +96,42 @@ class _MyAppState extends State<MyApp> {
         debugShowCheckedModeBanner: false,
         navigatorKey: NavigationService.navigationKey,
         onGenerateRoute: router.generateRoute,
-        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
-            builder: (BuildContext context, AuthenticationState state) {
-          if (state is AuthenticationAuthenticated) {
-            // show home page
-            return EventListPage();
-          } else if (state is AuthenticationLoading) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            // otherwise show login page
-            return LoginScreen();
-          }
-        }),
+        home: FutureBuilder(
+          future: _initializeFlutterFire(),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.done:
+                if (snapshot.hasError) {
+                  return Scaffold(
+                    body: Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    ),
+                  );
+                }
+                return BlocBuilder<AuthenticationBloc, AuthenticationState>(
+                    builder: (BuildContext context, AuthenticationState state) {
+                  if (state is AuthenticationAuthenticated) {
+                    // show home page
+                    return EventListPage();
+                  } else if (state is AuthenticationLoading) {
+                    return Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else {
+                    // otherwise show login page
+                    return LoginScreen();
+                  }
+                });
+                break;
+              default:
+                return Scaffold(
+                  body: Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+            }
+          },
+        ),
       ),
     );
   }
