@@ -138,6 +138,7 @@ class _EventListPageState extends State<EventListPage>
                   Navigator.of(context).pop();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
+                  AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
                 }
               },
             ),
@@ -570,6 +571,7 @@ class _EventListPageState extends State<EventListPage>
       _hasChange = true;
       _eventListBloc
           .add(EventListLoad(page: 1, keyword: _searchController.text));
+      AnalyticsHelper.setLogEvent(Analytics.tappedSearchEvent);
     });
   }
 

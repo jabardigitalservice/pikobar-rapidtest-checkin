@@ -154,6 +154,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                   Navigator.of(context).pop();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
+                  AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
                 }
               })
             ],

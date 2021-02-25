@@ -75,6 +75,7 @@ class _InputEventCodePageState extends State<InputEventCodePage> {
                 if (state is AuthenticationNotAuthenticated) {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
+                  AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
                 }
               },
               child: BlocListener<KodeKegiatanBloc, KodeKegiatanState>(

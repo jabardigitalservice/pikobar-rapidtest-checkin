@@ -78,6 +78,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 ),
                 onPressed: () async {
                   _authenticationBloc.add(UserLoggedOut());
+                  AnalyticsHelper.setLogEvent(Analytics.tappedLogOut);
                 },
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
@@ -238,6 +239,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   Navigator.of(context).pop();
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => LoginScreen()));
+                  AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
                 }
               })
             ],

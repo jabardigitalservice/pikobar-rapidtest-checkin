@@ -17,4 +17,10 @@ class Analytics {
   static String checkinOfflinefailed = 'kirim_checkin_offline_gagal';
   static String savedCheckinToOffline = 'menyimpan_checkin_ke_offline';
   static String userTimeOut = 'user_time_out';
+  static String scanQR = 'scan_qr';
+  static String tappedInputRegistrationCode = 'tapped_tombol_input_nomor_pendaftaran';
+  static String tappedLogOut = 'tapped_log_out';
+
+
+
 }

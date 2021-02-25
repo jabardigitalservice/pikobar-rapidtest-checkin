@@ -183,6 +183,7 @@ class _ParticipantListPageState extends State<ParticipantListPage> {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
+                AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
               }
             })
           ],
@@ -604,6 +605,7 @@ class _ParticipantListPageState extends State<ParticipantListPage> {
         page: 1,
         keyword: _searchController.text,
       ));
+      AnalyticsHelper.setLogEvent(Analytics.tappedSearchParticipant);
     });
   }
 

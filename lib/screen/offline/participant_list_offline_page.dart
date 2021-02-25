@@ -165,6 +165,7 @@ class _ParticipantListOfflinePageState
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
+                AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
               }
             })
           ],
@@ -601,6 +602,7 @@ class _ParticipantListOfflinePageState
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _listParticipantBloc
           .add(ListParticipantSearchOffline(keyword: _searchController.text));
+      AnalyticsHelper.setLogEvent(Analytics.tappedSearchParticipant);
     });
   }
 

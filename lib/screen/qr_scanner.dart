@@ -68,6 +68,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       registrationCode: _codeActivity.text,
                       eventCode: widget.kodeKegiatanModel.data.eventCode,
                       labCode: ''));
+                  AnalyticsHelper.setLogEvent(
+                      Analytics.tappedInputRegistrationCode);
                 }
               },
               child: Padding(
@@ -186,6 +188,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
+                AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
               }
             })
           ],
@@ -294,6 +297,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   registrationCode: result,
                   eventCode: widget.kodeKegiatanModel.data.eventCode,
                   labCode: ''));
+              AnalyticsHelper.setLogEvent(Analytics.scanQR);
             },
           ),
         ),

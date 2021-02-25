@@ -94,6 +94,8 @@ class _CheckinListState extends State<CheckinList> {
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
                               _listCheckin.add(ListCheckinOfflineLoad());
+                              AnalyticsHelper.setLogEvent(
+                                  Analytics.checkinOfflinefailed);
                             },
                           ));
 
@@ -130,6 +132,8 @@ class _CheckinListState extends State<CheckinList> {
                             onOkPressed: () {
                               _listCheckin.add(ListCheckinOfflineLoad());
                               Navigator.of(context).pop();
+                              AnalyticsHelper.setLogEvent(
+                                  Analytics.checkinOfflineSuccess);
                             },
                           ));
 
@@ -461,6 +465,8 @@ class _CheckinListState extends State<CheckinList> {
                               ),
                               onPressed: () {
                                 _sendCheckinDataBloc.add(SendCheckinData());
+                                AnalyticsHelper.setLogEvent(
+                                    Analytics.tappedSendCheckinOffline);
                               },
                             ),
                           ),
@@ -539,6 +545,8 @@ class _CheckinListState extends State<CheckinList> {
                               onPressed: () {
                                 _listCheckin.add(ListCheckinOfflineDelete(
                                     checkinOfflineModel));
+                                AnalyticsHelper.setLogEvent(
+                                    Analytics.tappedDeleteCheckinOffline);
                               },
                             ),
                           ),
