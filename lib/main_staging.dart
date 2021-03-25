@@ -50,7 +50,6 @@ void main() {
       ),
     );
   }, (error, stackTrace) {
-    print('runZonedGuarded: Caught error in my root zone.');
     FirebaseCrashlytics.instance.recordError(error, stackTrace);
   });
 }
