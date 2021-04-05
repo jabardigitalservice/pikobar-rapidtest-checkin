@@ -9,6 +9,7 @@ import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/list_participants_offline/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
@@ -18,6 +19,7 @@ import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/login_screen.dart';
 import 'package:rapid_test/screen/offline/checkin_list.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 
 class ParticipantListOfflinePage extends StatefulWidget {
@@ -47,6 +49,7 @@ class _ParticipantListOfflinePageState
 
   @override
   void initState() {
+    AnalyticsHelper.setLogEvent(Analytics.listParticipantOfflineScreen);
     super.initState();
   }
 
@@ -162,6 +165,7 @@ class _ParticipantListOfflinePageState
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
+                AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
               }
             })
           ],
@@ -598,6 +602,7 @@ class _ParticipantListOfflinePageState
     _debounce = Timer(const Duration(milliseconds: 500), () {
       _listParticipantBloc
           .add(ListParticipantSearchOffline(keyword: _searchController.text));
+      AnalyticsHelper.setLogEvent(Analytics.tappedSearchParticipant);
     });
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:connectivity_wrapper/connectivity_wrapper.dart';
 import 'package:meta/meta.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/SharedPreferenceKey.dart';
 import 'package:rapid_test/model/CheckinModel.dart';
@@ -9,6 +10,7 @@ import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/model/ListParticipantOfflineModel.dart';
 import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 import 'package:rapid_test/utilities/SharedPreferences.dart';
 import './Bloc.dart';
@@ -119,6 +121,7 @@ class CheckinBloc extends Bloc<CheckinEvent, CheckinState> {
                     labCode: event.labCodeSample,
                     name: getData[0].name,
                     registrationCode: getData[0].registrationCode));
+            AnalyticsHelper.setLogEvent(Analytics.savedCheckinToOffline);
             yield CheckinLoaded(name: getData[0].name);
           } else {
             yield CheckinFailure(

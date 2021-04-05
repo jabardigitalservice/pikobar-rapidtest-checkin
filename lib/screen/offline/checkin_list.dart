@@ -5,12 +5,14 @@ import 'package:rapid_test/blocs/offline/list_checkin_offline/Bloc.dart';
 import 'package:rapid_test/blocs/offline/send_checkin_data/Bloc.dart';
 import 'package:rapid_test/components/CustomAppBar.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
 import 'package:rapid_test/model/CheckinOfflineModel.dart';
 import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/FormatDate.dart';
 
 class CheckinList extends StatefulWidget {
@@ -32,6 +34,12 @@ class _CheckinListState extends State<CheckinList> {
   int sortType = sortEvent;
   ListCheckinOfflineLoaded listCheckinOfflineLoaded;
   int lengthDataOffline = 0;
+  @override
+  void initState() {
+    AnalyticsHelper.setLogEvent(Analytics.listCheckinOfflineScreen);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +94,8 @@ class _CheckinListState extends State<CheckinList> {
                               Navigator.of(context).pop();
                               Navigator.of(context).pop();
                               _listCheckin.add(ListCheckinOfflineLoad());
+                              AnalyticsHelper.setLogEvent(
+                                  Analytics.checkinOfflinefailed);
                             },
                           ));
 
@@ -122,6 +132,8 @@ class _CheckinListState extends State<CheckinList> {
                             onOkPressed: () {
                               _listCheckin.add(ListCheckinOfflineLoad());
                               Navigator.of(context).pop();
+                              AnalyticsHelper.setLogEvent(
+                                  Analytics.checkinOfflineSuccess);
                             },
                           ));
 
@@ -453,6 +465,8 @@ class _CheckinListState extends State<CheckinList> {
                               ),
                               onPressed: () {
                                 _sendCheckinDataBloc.add(SendCheckinData());
+                                AnalyticsHelper.setLogEvent(
+                                    Analytics.tappedSendCheckinOffline);
                               },
                             ),
                           ),
@@ -531,6 +545,8 @@ class _CheckinListState extends State<CheckinList> {
                               onPressed: () {
                                 _listCheckin.add(ListCheckinOfflineDelete(
                                     checkinOfflineModel));
+                                AnalyticsHelper.setLogEvent(
+                                    Analytics.tappedDeleteCheckinOffline);
                               },
                             ),
                           ),

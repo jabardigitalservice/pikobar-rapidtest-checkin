@@ -4,6 +4,7 @@ import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/login/login_bloc.dart';
 import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/FontsFamily.dart';
@@ -12,6 +13,7 @@ import 'package:rapid_test/repositories/KegiatanDetailRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/event_list.dart';
 import 'package:rapid_test/screen/input_event_code.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -50,15 +52,16 @@ class _State extends State<LoginForm> {
   @override
   void initState() {
     _loginBloc = BlocProvider.of<LoginBloc>(context);
+    AnalyticsHelper.setLogEvent(Analytics.loginScreen);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
-        listener: (context, state) {
+        listener: (BuildContext context, LoginState state) {
           if (state is LoginFailure) {
-            var split = state.error.split(Dictionary.exeption);
+            final List<String> split = state.error.split(Dictionary.exeption);
             showDialog(
                 context: context,
                 builder: (context) => DialogTextOnly(

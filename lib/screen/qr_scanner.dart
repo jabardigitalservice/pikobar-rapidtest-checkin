@@ -4,6 +4,7 @@ import 'package:rapid_test/blocs/authentication/authentication_bloc.dart';
 import 'package:rapid_test/blocs/checkin/Bloc.dart';
 import 'package:rapid_test/components/BuildTextField.dart';
 import 'package:rapid_test/components/DialogTextOnly.dart';
+import 'package:rapid_test/constants/Analytics.dart';
 import 'package:rapid_test/constants/Colors.dart';
 import 'package:rapid_test/constants/Dictionary.dart';
 import 'package:rapid_test/constants/Dimens.dart';
@@ -15,6 +16,7 @@ import 'package:rapid_test/repositories/OfflineRepository.dart';
 import 'package:rapid_test/repositories/authentication_repository.dart';
 import 'package:rapid_test/screen/input_lab_code_screen.dart';
 import 'package:rapid_test/screen/login_screen.dart';
+import 'package:rapid_test/utilities/AnalyticsHelper.dart';
 import 'package:rapid_test/utilities/Validations.dart';
 import 'package:scan_preview/scan_preview_widget.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -39,6 +41,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
 
   @override
   void initState() {
+    AnalyticsHelper.setLogEvent(Analytics.scanQRScreen);
+
     super.initState();
   }
 
@@ -64,6 +68,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                       registrationCode: _codeActivity.text,
                       eventCode: widget.kodeKegiatanModel.data.eventCode,
                       labCode: ''));
+                  AnalyticsHelper.setLogEvent(
+                      Analytics.tappedInputRegistrationCode);
                 }
               },
               child: Padding(
@@ -182,6 +188,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 Navigator.of(context).pop();
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => LoginScreen()));
+                AnalyticsHelper.setLogEvent(Analytics.userTimeOut);
               }
             })
           ],
@@ -290,6 +297,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   registrationCode: result,
                   eventCode: widget.kodeKegiatanModel.data.eventCode,
                   labCode: ''));
+              AnalyticsHelper.setLogEvent(Analytics.scanQR);
             },
           ),
         ),
