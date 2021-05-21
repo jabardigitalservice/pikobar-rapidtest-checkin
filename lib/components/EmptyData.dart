@@ -29,8 +29,8 @@ class EmptyData extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: 200.0,
-              height: 200.0,
+              width: 200,
+              height: 200,
               child: Image.asset(image),
             ),
             const SizedBox(
@@ -64,8 +64,8 @@ class EmptyData extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Container(
-              width: 200.0,
-              height: 200.0,
+              width: 200,
+              height: 200,
               child: Image.asset(image),
             ),
             Text(message,

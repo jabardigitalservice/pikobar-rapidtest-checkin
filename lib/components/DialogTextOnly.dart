@@ -26,7 +26,7 @@ class DialogTextOnly extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Dimens.padding),
       ),
-      elevation: 0.0,
+      elevation: 0,
       backgroundColor: Colors.transparent,
       child: _dialogContent(context),
     );
@@ -34,7 +34,7 @@ class DialogTextOnly extends StatelessWidget {
 
   _dialogContent(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(Dimens.padding),
+      padding: const EdgeInsets.all(Dimens.padding),
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.rectangle,
@@ -42,8 +42,8 @@ class DialogTextOnly extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
+            blurRadius: 10,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -57,18 +57,18 @@ class DialogTextOnly extends StatelessWidget {
               ? Text(
                   title,
                   style: TextStyle(
-                      fontSize: 20.0,
+                      fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: titleColor),
                 )
               : Text(""),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16),
           Text(
             description != null ? description : "",
             textAlign: TextAlign.left,
-            style: TextStyle(fontSize: 16.0, color: descriptionColor),
+            style: TextStyle(fontSize: 16, color: descriptionColor),
           ),
-          SizedBox(height: 24.0),
+          const SizedBox(height: 24),
           Container(
             alignment: buttonAlignment,
             child: FlatButton(

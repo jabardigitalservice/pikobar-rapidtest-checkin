@@ -27,7 +27,7 @@ class DialogRequestPermission extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(Dimens.padding),
       ),
-      elevation: 0.0,
+      elevation: 0,
       backgroundColor: Colors.transparent,
       child: _dialogContent(context),
     );
@@ -61,8 +61,8 @@ class DialogRequestPermission extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: Colors.black26,
-            blurRadius: 10.0,
-            offset: const Offset(0.0, 10.0),
+            blurRadius: 10,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -73,10 +73,10 @@ class DialogRequestPermission extends StatelessWidget {
             description,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: 16.0,
+              fontSize: 16,
             ),
           ),
-          const SizedBox(height: 24.0),
+          const SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: <Widget>[
@@ -115,7 +115,7 @@ class DialogRequestPermission extends StatelessWidget {
           backgroundColor: ColorBase.green,
           radius: Dimens.avatarRadius,
           child: Container(
-              width: 50.0, height: 50.0, child: image != null ? image : icon)),
+              width: 50, height: 50, child: image != null ? image : icon)),
     );
   }
 }

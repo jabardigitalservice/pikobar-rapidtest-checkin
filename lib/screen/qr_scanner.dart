@@ -53,7 +53,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       floatingActionButton: Container(
         width: MediaQuery.of(context).size.width,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: RaisedButton(
               color: _codeActivity.text.isEmpty
                   ? ColorBase.disableText
@@ -73,7 +73,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                 }
               },
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 child: Text(Dictionary.checkin,
                     style: TextStyle(
                         color: Colors.white,
@@ -140,7 +140,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                         children: <Widget>[
                           CircularProgressIndicator(),
                           Container(
-                            margin: const EdgeInsets.only(left: 15.0),
+                            margin: const EdgeInsets.only(left: 15),
                             child: Text(Dictionary.pleaseWait),
                           )
                         ],
@@ -244,10 +244,10 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               margin: const EdgeInsets.only(
                   bottom: Dimens.padding, top: Dimens.padding),
               height: 6,
-              width: 60.0,
+              width: 60,
               decoration: BoxDecoration(
                   color: ColorBase.menuBorderColor,
-                  borderRadius: BorderRadius.circular(30.0)),
+                  borderRadius: BorderRadius.circular(30)),
             ),
           ),
           const SizedBox(
@@ -258,7 +258,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             style: TextStyle(
                 fontFamily: FontsFamily.roboto,
                 color: Colors.black,
-                fontSize: 20.0,
+                fontSize: 20,
                 fontWeight: FontWeight.w800),
           ),
           const SizedBox(
@@ -310,7 +310,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       width: (MediaQuery.of(context).size.width),
       decoration: BoxDecoration(
           color: ColorBase.announcementBackgroundColor,
-          borderRadius: BorderRadius.circular(6.0)),
+          borderRadius: BorderRadius.circular(6)),
       child: Stack(
         children: <Widget>[
           Image.asset('${Environment.imageAssets}intersect.png', width: 60),
@@ -322,7 +322,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                   Text(
                     Dictionary.scanQrInfo,
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 12,
                         color: Colors.grey[600],
                         height: 1.6,
                         fontWeight: FontWeight.w500,

@@ -64,7 +64,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
                   : Text(
                       widget.title,
                       style: TextStyle(
-                        fontSize: 16.0,
+                        fontSize: 16,
                         color: Colors.grey[800],
                         fontWeight: FontWeight.w700,
                         fontFamily: FontsFamily.roboto,
@@ -72,7 +72,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
                     ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
           Row(
@@ -135,7 +135,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
                       : TextInputType.text,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 5,
               ),
               widget.qrIcon
@@ -151,7 +151,8 @@ class _BuildTextFieldState extends State<BuildTextField> {
                             borderSide: BorderSide(
                                 color: Color(0xffE0E0E0), width: 1.5)),
                         onPressed: () async {
-                          var barcode = await BarcodeScanner.scan();
+                          final ScanResult barcode =
+                              await BarcodeScanner.scan();
                           if (barcode.rawContent != '') {
                             setState(() {
                               widget.controller.text = barcode.rawContent;
@@ -168,7 +169,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
             ],
           ),
           widget.descriptionText != null
-              ? SizedBox(
+              ? const SizedBox(
                   height: 10,
                 )
               : Container(),
@@ -176,7 +177,7 @@ class _BuildTextFieldState extends State<BuildTextField> {
               ? Text(
                   widget.descriptionText,
                   style: TextStyle(
-                    fontSize: 13.0,
+                    fontSize: 13,
                     color: Colors.grey[600],
                     fontWeight: FontWeight.w400,
                     fontFamily: FontsFamily.roboto,
