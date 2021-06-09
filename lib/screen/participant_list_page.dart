@@ -45,7 +45,7 @@ class _ParticipantListPageState extends State<ParticipantListPage> {
   int maxDataLength;
   int _page = 1;
   Timer _debounce;
-  var containerWidth = 40.0;
+  var containerWidth = 40;
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
   AuthenticationBloc _authenticationBloc;
@@ -244,12 +244,12 @@ class _ParticipantListPageState extends State<ParticipantListPage> {
                                       state.listParticipantModel.length) {
                                 return Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 20.0, bottom: 20.0),
+                                      top: 20, bottom: 20),
                                   child: Column(
                                     children: <Widget>[
                                       CupertinoActivityIndicator(),
                                       const SizedBox(
-                                        height: 5.0,
+                                        height: 5,
                                       ),
                                       Text(Dictionary.dataParticipantLoading),
                                     ],
@@ -359,7 +359,7 @@ class _ParticipantListPageState extends State<ParticipantListPage> {
                                         width: 1,
                                       )),
                                   child: Padding(
-                                    padding: const EdgeInsets.all(20.0),
+                                    padding: const EdgeInsets.all(20),
                                     child: Column(
                                       children: <Widget>[
                                         Row(

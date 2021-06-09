@@ -71,10 +71,10 @@ class CustomAppBar {
       bool customBackButton = false}) {
     return AppBar(
         elevation: 0,
-        titleSpacing: customBackButton ? 0 : 15.0,
+        titleSpacing: customBackButton ? 0 : 15,
         leading: customBackButton
             ? Padding(
-                padding: const EdgeInsets.only(left: 5.0),
+                padding: const EdgeInsets.only(left: 5),
                 child: GestureDetector(
                   onTap: () => Navigator.of(context).pop(),
                   child: Icon(
@@ -87,12 +87,12 @@ class CustomAppBar {
             : null,
         backgroundColor: Colors.white,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60.0),
+          preferredSize: const Size.fromHeight(60),
           child: buildSearchField(
               searchController, hintText, onChanged, onSubmitted),
         ),
         title: Padding(
-          padding: const EdgeInsets.only(left: 5.0),
+          padding: const EdgeInsets.only(left: 5),
           child: CustomAppBar.setTitleAppBar(title),
         ));
   }
@@ -114,13 +114,13 @@ class CustomAppBar {
       ValueChanged<String> onChanged,
       ValueChanged<String> onSubmitted) {
     return Container(
-      margin: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 20),
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
       height: 40.0,
       decoration: BoxDecoration(
           color: ColorBase.grey,
           shape: BoxShape.rectangle,
           border: Border.all(color: Colors.grey[400]),
-          borderRadius: BorderRadius.circular(6.0)),
+          borderRadius: BorderRadius.circular(6)),
       child: TextField(
           controller: searchController,
           autofocus: false,
@@ -135,10 +135,10 @@ class CustomAppBar {
               hintStyle: TextStyle(
                   color: Color(0xff828282), fontSize: 12, height: 2.2),
               contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 12.0)),
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 12)),
           style: TextStyle(
               color: Colors.black,
-              fontSize: 16.0,
+              fontSize: 16,
               fontFamily: FontsFamily.roboto),
           onChanged: onChanged,
           onSubmitted: onSubmitted),
