@@ -8,7 +8,7 @@ abstract class EventListState extends Equatable {
 
 class InitialEventListState extends EventListState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class EventListLoading extends EventListState {
@@ -18,19 +18,17 @@ class EventListLoading extends EventListState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class EventListLoaded extends EventListState {
- final List<ListEvent> eventListModel;
- final int maxData;
+  final List<ListEvent> eventListModel;
+  final int maxData;
 
   EventListLoaded({
     this.eventListModel,
     this.maxData,
   }) : super([eventListModel]);
-
-
 
   @override
   String toString() {
@@ -38,7 +36,7 @@ class EventListLoaded extends EventListState {
   }
 
   @override
-  List<Object> get props => [eventListModel];
+  List<Object> get props => <Object>[eventListModel];
 }
 
 class EventListFailure extends EventListState {
@@ -50,5 +48,5 @@ class EventListFailure extends EventListState {
   String toString() => ' EventList { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

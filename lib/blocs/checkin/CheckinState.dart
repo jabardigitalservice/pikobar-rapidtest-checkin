@@ -8,7 +8,7 @@ abstract class CheckinState extends Equatable {
 
 class InitialCheckinState extends CheckinState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class CheckinLoading extends CheckinState {
@@ -18,7 +18,7 @@ class CheckinLoading extends CheckinState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class CheckinLoaded extends CheckinState {
@@ -32,13 +32,15 @@ class CheckinLoaded extends CheckinState {
   }
 
   @override
-  List<Object> get props => [name];
+  List<Object> get props => <Object>[name];
 }
 
 class GetNameLoaded extends CheckinState {
-  final String name,registrationCode, labCode, eventCode;
+  final String name, registrationCode, labCode, eventCode;
 
-  GetNameLoaded({this.name,this.registrationCode,this.labCode,this.eventCode}) : super([name]);
+  GetNameLoaded(
+      {this.name, this.registrationCode, this.labCode, this.eventCode})
+      : super([name]);
 
   @override
   String toString() {
@@ -46,20 +48,18 @@ class GetNameLoaded extends CheckinState {
   }
 
   @override
-  List<Object> get props => [name,registrationCode,labCode,eventCode];
+  List<Object> get props =>
+      <Object>[name, registrationCode, labCode, eventCode];
 }
 
-
-class  CheckinFailure extends  CheckinState {
+class CheckinFailure extends CheckinState {
   final String error;
 
-   CheckinFailure({@required this.error}) : super([error]);
+  CheckinFailure({@required this.error}) : super([error]);
 
   @override
   String toString() => ' Checkin { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }
-
-

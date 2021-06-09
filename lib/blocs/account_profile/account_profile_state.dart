@@ -4,7 +4,7 @@ abstract class AccountProfileState extends Equatable {
   const AccountProfileState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class AccountProfileInitial extends AccountProfileState {}
@@ -17,7 +17,7 @@ class AccountProfileLoaded extends AccountProfileState {
   AccountProfileLoaded({@required this.user});
 
   @override
-  List<Object> get props => [user];
+  List<Object> get props => <Object>[user];
 }
 
 class AccountProfileFailure extends AccountProfileState {
@@ -26,5 +26,5 @@ class AccountProfileFailure extends AccountProfileState {
   AccountProfileFailure({@required this.message});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }

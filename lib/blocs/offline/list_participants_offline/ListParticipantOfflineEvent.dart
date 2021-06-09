@@ -11,7 +11,7 @@ class ListParticipantOfflineLoad extends ListParticipantOfflineEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListParticipantSearchOffline extends ListParticipantOfflineEvent {
@@ -25,5 +25,5 @@ class ListParticipantSearchOffline extends ListParticipantOfflineEvent {
   }
 
   @override
-  List<Object> get props => [keyword];
+  List<Object> get props => <Object>[keyword];
 }

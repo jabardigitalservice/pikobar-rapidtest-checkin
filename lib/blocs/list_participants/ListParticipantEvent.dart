@@ -9,7 +9,8 @@ class ListParticipantLoad extends ListParticipantEvent {
   final int page;
   final bool isFirstLoad;
 
-  ListParticipantLoad({this.eventCode, this.keyword, this.page,this.isFirstLoad=false});
+  ListParticipantLoad(
+      {this.eventCode, this.keyword, this.page, this.isFirstLoad = false});
 
   @override
   String toString() {
@@ -17,7 +18,7 @@ class ListParticipantLoad extends ListParticipantEvent {
   }
 
   @override
-  List<Object> get props => [eventCode, keyword, page,isFirstLoad];
+  List<Object> get props => <Object>[eventCode, keyword, page, isFirstLoad];
 }
 
 class ListParticipantLoadMore extends ListParticipantEvent {
@@ -25,7 +26,8 @@ class ListParticipantLoadMore extends ListParticipantEvent {
   final int page;
   final bool isFirstLoad;
 
-  ListParticipantLoadMore({this.eventCode, this.keyword, this.page,this.isFirstLoad=false});
+  ListParticipantLoadMore(
+      {this.eventCode, this.keyword, this.page, this.isFirstLoad = false});
 
   @override
   String toString() {
@@ -33,7 +35,7 @@ class ListParticipantLoadMore extends ListParticipantEvent {
   }
 
   @override
-  List<Object> get props => [eventCode, keyword, page,isFirstLoad];
+  List<Object> get props => <Object>[eventCode, keyword, page, isFirstLoad];
 }
 
 class ListParticipantSearch extends ListParticipantEvent {
@@ -48,5 +50,5 @@ class ListParticipantSearch extends ListParticipantEvent {
   }
 
   @override
-  List<Object> get props => [eventCode, keyword, page];
+  List<Object> get props => <Object>[eventCode, keyword, page];
 }
