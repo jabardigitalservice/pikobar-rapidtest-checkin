@@ -51,7 +51,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
         appBar: CustomAppBar.defaultAppBar(
             title: Dictionary.inputlabCode,
             leading: Padding(
-              padding: EdgeInsets.only(left: 5.0),
+              padding: EdgeInsets.only(left: 5),
               child: GestureDetector(
                 onTap: () => Navigator.of(context).pop(),
                 child: Icon(
@@ -113,7 +113,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                           children: <Widget>[
                             CircularProgressIndicator(),
                             Container(
-                              margin: EdgeInsets.only(left: 15.0),
+                              margin: EdgeInsets.only(left: 15),
                               child: Text(Dictionary.pleaseWait),
                             )
                           ],
@@ -200,7 +200,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                               children: [
                                 Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 15.0, horizontal: 15),
+                                        vertical: 15, horizontal: 15),
                                     child: Column(
                                       children: [
                                         Row(
@@ -231,7 +231,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                                 ),
                                 Padding(
                                     padding: const EdgeInsets.symmetric(
-                                        vertical: 15.0, horizontal: 15),
+                                        vertical: 15, horizontal: 15),
                                     child: Row(
                                       children: [
                                         const SizedBox(
@@ -298,7 +298,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 50.0,
+                          height: 50,
                           child: RaisedButton(
                               color: _codeSampleController.text.isEmpty
                                   ? ColorBase.disableText
@@ -318,7 +318,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                               },
                               child: Padding(
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 15.0),
+                                    const EdgeInsets.symmetric(vertical: 15),
                                 child: Text(Dictionary.submit,
                                     style: TextStyle(
                                         color: Colors.white,
@@ -347,7 +347,7 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.30,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
@@ -400,20 +400,20 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: Colors.red,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -423,20 +423,20 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: ColorBase.green,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -461,19 +461,19 @@ class _InputLabCodePageState extends State<InputLabCodePage> {
       width: (MediaQuery.of(context).size.width),
       decoration: BoxDecoration(
           color: ColorBase.announcementBackgroundColor,
-          borderRadius: BorderRadius.circular(6.0)),
+          borderRadius: BorderRadius.circular(6)),
       child: Stack(
         children: <Widget>[
           Image.asset('${Environment.imageAssets}intersect.png', width: 60),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     Dictionary.sampleNumberInfo,
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 12,
                         color: Colors.grey[600],
                         height: 1.6,
                         fontWeight: FontWeight.w500,
