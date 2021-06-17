@@ -15,7 +15,7 @@ class KodeKegiatanLoad extends KodeKegiatanEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanMovePage extends KodeKegiatanEvent {
@@ -29,7 +29,7 @@ class KodeKegiatanMovePage extends KodeKegiatanEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class AppStart extends KodeKegiatanEvent {
@@ -39,7 +39,7 @@ class AppStart extends KodeKegiatanEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class Logout extends KodeKegiatanEvent {
@@ -49,5 +49,5 @@ class Logout extends KodeKegiatanEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }

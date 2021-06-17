@@ -8,7 +8,7 @@ abstract class ListCheckinOfflineState extends Equatable {
 
 class InitialListCheckinOfflineState extends ListCheckinOfflineState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListCheckinOfflineLoading extends ListCheckinOfflineState {
@@ -18,7 +18,7 @@ class ListCheckinOfflineLoading extends ListCheckinOfflineState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListCheckinOfflineLoaded extends ListCheckinOfflineState {
@@ -31,7 +31,7 @@ class ListCheckinOfflineLoaded extends ListCheckinOfflineState {
   }
 
   @override
-  List<Object> get props => [checkinOfflineModel];
+  List<Object> get props => <Object>[checkinOfflineModel];
 }
 
 class ListCheckinOfflineDeleted extends ListCheckinOfflineState {
@@ -41,7 +41,7 @@ class ListCheckinOfflineDeleted extends ListCheckinOfflineState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListCheckinOfflineFailure extends ListCheckinOfflineState {
@@ -53,5 +53,5 @@ class ListCheckinOfflineFailure extends ListCheckinOfflineState {
   String toString() => ' ListCheckinOffline { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

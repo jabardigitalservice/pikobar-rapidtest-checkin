@@ -8,7 +8,7 @@ abstract class KodeKegiatanState extends Equatable {
 
 class InitialKodeKegiatanState extends KodeKegiatanState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanLoading extends KodeKegiatanState {
@@ -18,7 +18,7 @@ class KodeKegiatanLoading extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanAuthenticated extends KodeKegiatanState {
@@ -28,7 +28,7 @@ class KodeKegiatanAuthenticated extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanUnauthenticated extends KodeKegiatanState {
@@ -38,7 +38,7 @@ class KodeKegiatanUnauthenticated extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanLoaded extends KodeKegiatanState {
@@ -55,14 +55,14 @@ class KodeKegiatanLoaded extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [kodeKegiatan, kodeKegiatanPref, location];
+  List<Object> get props => <Object>[kodeKegiatan, kodeKegiatanPref, location];
 }
 
 class KodeKegiatanSuccessMovePage extends KodeKegiatanState {
- final String kodeKegiatanPref;
+  final String kodeKegiatanPref;
   final String location;
- KodeKegiatanSuccessMovePage({ this.kodeKegiatanPref, this.location})
-      : super([ kodeKegiatanPref, location]);
+  KodeKegiatanSuccessMovePage({this.kodeKegiatanPref, this.location})
+      : super([kodeKegiatanPref, location]);
 
   @override
   String toString() {
@@ -70,7 +70,7 @@ class KodeKegiatanSuccessMovePage extends KodeKegiatanState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class KodeKegiatanFailure extends KodeKegiatanState {
@@ -82,5 +82,5 @@ class KodeKegiatanFailure extends KodeKegiatanState {
   String toString() => ' KodeKegiatan { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

@@ -87,7 +87,7 @@ class _State extends State<LoginForm> {
                   children: <Widget>[
                     CircularProgressIndicator(),
                     Container(
-                      margin: EdgeInsets.only(left: 15.0),
+                      margin: EdgeInsets.only(left: 15),
                       child: Text(Dictionary.pleaseWait),
                     )
                   ],
@@ -208,21 +208,21 @@ class _State extends State<LoginForm> {
       children: [
         Container(
           width: MediaQuery.of(context).size.width,
-          height: 50.0,
+          height: 50,
           child: RaisedButton(
             splashColor: Colors.lightGreenAccent,
             elevation: 0,
-            padding: EdgeInsets.all(0.0),
+            padding: EdgeInsets.all(0),
             color: ColorBase.green800,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               Dictionary.loginButton,
               style: TextStyle(
                   fontFamily: FontsFamily.lato,
                   fontWeight: FontWeight.w500,
-                  fontSize: 16.0,
+                  fontSize: 16,
                   color: Colors.white),
             ),
             onPressed: () {
@@ -254,7 +254,7 @@ class _State extends State<LoginForm> {
                 Dictionary.or,
                 style: TextStyle(
                     fontFamily: FontsFamily.lato,
-                    fontSize: 11.0,
+                    fontSize: 11,
                     color: Colors.black),
               ),
             ),
@@ -270,22 +270,22 @@ class _State extends State<LoginForm> {
         ),
         Container(
           width: MediaQuery.of(context).size.width,
-          height: 50.0,
+          height: 50,
           child: RaisedButton(
             splashColor: Colors.lightGreenAccent,
             elevation: 0,
-            padding: EdgeInsets.all(0.0),
+            padding: EdgeInsets.all(0),
             color: Colors.white,
             shape: RoundedRectangleBorder(
               side: BorderSide(color: Colors.black),
-              borderRadius: BorderRadius.circular(6.0),
+              borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               Dictionary.activityCode,
               style: TextStyle(
                   fontFamily: FontsFamily.lato,
                   fontWeight: FontWeight.w700,
-                  fontSize: 16.0,
+                  fontSize: 16,
                   color: Colors.black),
             ),
             onPressed: () {

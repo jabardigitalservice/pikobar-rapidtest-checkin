@@ -70,7 +70,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         floatingActionButton: Container(
           width: MediaQuery.of(context).size.width,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: RaisedButton(
                 color: Colors.red[900],
                 shape: RoundedRectangleBorder(
@@ -81,7 +81,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   AnalyticsHelper.setLogEvent(Analytics.tappedLogOut);
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 15.0),
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                   child: Text(Dictionary.logout,
                       style: TextStyle(
                           color: Colors.white,
@@ -95,7 +95,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
         appBar: CustomAppBar.defaultAppBar(
             title: Dictionary.testMasifCheckin,
             leading: Padding(
-              padding: const EdgeInsets.only(left: 5.0),
+              padding: const EdgeInsets.only(left: 5),
               child: GestureDetector(
                 onTap: () {
                   _kodeKegiatanBloc.add(Logout());
@@ -164,7 +164,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         children: <Widget>[
                           CircularProgressIndicator(),
                           Container(
-                            margin: const EdgeInsets.only(left: 15.0),
+                            margin: const EdgeInsets.only(left: 15),
                             child: Text(Dictionary.pleaseWait),
                           )
                         ],
@@ -315,7 +315,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12)),
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10),
                   child: Form(
                     key: _formKey,
                     child: Column(
@@ -352,20 +352,20 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         ),
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          height: 40.0,
+                          height: 40,
                           child: RaisedButton(
                             splashColor: Colors.lightGreenAccent,
-                            padding: const EdgeInsets.all(0.0),
+                            padding: const EdgeInsets.all(0),
                             color: ColorBase.green,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               Dictionary.checkin,
                               style: TextStyle(
                                   fontFamily: FontsFamily.productSans,
                                   fontWeight: FontWeight.bold,
-                                  fontSize: 12.0,
+                                  fontSize: 12,
                                   color: Colors.white),
                             ),
                             onPressed: () {
@@ -397,7 +397,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.30,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
@@ -450,20 +450,20 @@ class _EventDetailPageState extends State<EventDetailPage> {
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: Colors.red,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -473,20 +473,20 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: ColorBase.green,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.submit,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -511,19 +511,19 @@ class _EventDetailPageState extends State<EventDetailPage> {
       width: (MediaQuery.of(context).size.width),
       decoration: BoxDecoration(
           color: ColorBase.announcementBackgroundColor,
-          borderRadius: BorderRadius.circular(6.0)),
+          borderRadius: BorderRadius.circular(6)),
       child: Stack(
         children: <Widget>[
           Image.asset('${Environment.imageAssets}intersect.png', width: 60),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     Dictionary.infoParticipantList,
                     style: TextStyle(
-                        fontSize: 12.0,
+                        fontSize: 12,
                         color: Colors.grey[600],
                         height: 1.6,
                         fontWeight: FontWeight.w500,
@@ -541,7 +541,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                 });
               },
               child: Padding(
-                padding: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(5),
                 child: Icon(
                   Icons.close,
                   color: Colors.black.withOpacity(0.5),

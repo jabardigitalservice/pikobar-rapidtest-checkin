@@ -9,7 +9,7 @@ abstract class ListParticipantState extends Equatable {
 
 class InitialListParticipantState extends ListParticipantState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListParticipantLoading extends ListParticipantState {
@@ -19,19 +19,17 @@ class ListParticipantLoading extends ListParticipantState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListParticipantLoaded extends ListParticipantState {
- final List<DataParticipant> listParticipantModel;
- final int maxData;
+  final List<DataParticipant> listParticipantModel;
+  final int maxData;
 
   ListParticipantLoaded({
     this.listParticipantModel,
     this.maxData,
   }) : super([listParticipantModel]);
-
-
 
   @override
   String toString() {
@@ -39,7 +37,7 @@ class ListParticipantLoaded extends ListParticipantState {
   }
 
   @override
-  List<Object> get props => [listParticipantModel];
+  List<Object> get props => <Object>[listParticipantModel];
 }
 
 class ListParticipantFailure extends ListParticipantState {
@@ -51,5 +49,5 @@ class ListParticipantFailure extends ListParticipantState {
   String toString() => ' ListParticipant { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

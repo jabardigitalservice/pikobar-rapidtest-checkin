@@ -7,7 +7,7 @@ abstract class SendCheckinDataState extends Equatable {
 
 class InitialSendCheckinDataState extends SendCheckinDataState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class SendCheckinDataLoading extends SendCheckinDataState {
@@ -17,7 +17,7 @@ class SendCheckinDataLoading extends SendCheckinDataState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class SendCheckinDataSuccess extends SendCheckinDataState {
@@ -30,7 +30,7 @@ class SendCheckinDataSuccess extends SendCheckinDataState {
   }
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
 
 class SendCheckinDataFailure extends SendCheckinDataState {
@@ -42,5 +42,5 @@ class SendCheckinDataFailure extends SendCheckinDataState {
   String toString() => ' SendCheckinData { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

@@ -58,7 +58,7 @@ class _CheckinListState extends State<CheckinList> {
                 })
           ],
           leading: Padding(
-            padding: const EdgeInsets.only(left: 5.0),
+            padding: const EdgeInsets.only(left: 5),
             child: GestureDetector(
               onTap: () => Navigator.pop(context, lengthDataOffline),
               child: Icon(
@@ -107,7 +107,7 @@ class _CheckinListState extends State<CheckinList> {
                       barrierDismissible: false,
                       builder: (context) => Dialog(
                             child: Padding(
-                              padding: const EdgeInsets.all(20.0),
+                              padding: const EdgeInsets.all(20),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -202,8 +202,8 @@ class _CheckinListState extends State<CheckinList> {
         itemCount: listCheckinOfflineLoaded.checkinOfflineModel.length,
         rowSeparatorWidget: const Divider(
           color: Colors.black54,
-          height: 1.0,
-          thickness: 0.0,
+          height: 1,
+          thickness: 0,
         ),
         rightHandSideColBackgroundColor: Color(0xFFFFFFFF),
       ),
@@ -409,7 +409,7 @@ class _CheckinListState extends State<CheckinList> {
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.20,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
@@ -424,20 +424,20 @@ class _CheckinListState extends State<CheckinList> {
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: Colors.red,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -447,20 +447,20 @@ class _CheckinListState extends State<CheckinList> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: ColorBase.green,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.send,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -488,7 +488,7 @@ class _CheckinListState extends State<CheckinList> {
               child: Container(
                 height: MediaQuery.of(context).size.height * 0.20,
                 child: Padding(
-                  padding: const EdgeInsets.all(10.0),
+                  padding: const EdgeInsets.all(10),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.min,
@@ -503,20 +503,20 @@ class _CheckinListState extends State<CheckinList> {
                         children: <Widget>[
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: Colors.red,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.cancel,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {
@@ -526,20 +526,20 @@ class _CheckinListState extends State<CheckinList> {
                           ),
                           Container(
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: MediaQuery.of(context).size.height * 0.04,
+                            height: MediaQuery.of(context).size.height * 04,
                             child: RaisedButton(
                               splashColor: Colors.lightGreenAccent,
-                              padding: const EdgeInsets.all(0.0),
+                              padding: const EdgeInsets.all(0),
                               color: ColorBase.green,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
+                                borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 Dictionary.send,
                                 style: TextStyle(
                                     fontFamily: FontsFamily.productSans,
                                     fontWeight: FontWeight.bold,
-                                    fontSize: 12.0,
+                                    fontSize: 12,
                                     color: Colors.white),
                               ),
                               onPressed: () {

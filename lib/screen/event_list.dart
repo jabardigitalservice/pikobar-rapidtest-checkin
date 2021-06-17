@@ -168,7 +168,7 @@ class _EventListPageState extends State<EventListPage>
                       children: <Widget>[
                         CircularProgressIndicator(),
                         Container(
-                          margin: const EdgeInsets.only(left: 15.0),
+                          margin: const EdgeInsets.only(left: 15),
                           child: Text(Dictionary.pleaseWait),
                         )
                       ],
@@ -256,12 +256,12 @@ class _EventListPageState extends State<EventListPage>
 
   Widget buildLoading() {
     return Padding(
-      padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
+      padding: const EdgeInsets.only(top: 20, bottom: 20),
       child: Column(
         children: <Widget>[
           CupertinoActivityIndicator(),
           const SizedBox(
-            height: 5.0,
+            height: 5,
           ),
           Text(
             Dictionary.dataParticipantLoading,
@@ -280,7 +280,7 @@ class _EventListPageState extends State<EventListPage>
           borderRadius: BorderRadius.circular(6),
           border: Border.all(color: ColorBase.lightGrey, width: 1)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
         child: Row(
           children: [
             Expanded(
@@ -369,7 +369,7 @@ class _EventListPageState extends State<EventListPage>
               children: [
                 Padding(
                   padding: const EdgeInsets.only(
-                      left: 15.0, right: 15, top: 15, bottom: 10),
+                      left: 15, right: 15, top: 15, bottom: 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -578,7 +578,7 @@ class _EventListPageState extends State<EventListPage>
   void _searchPressed() {
     return setState(() {
       _isSearch = !_isSearch;
-      _animationController.forward(from: 0.0);
+      _animationController.forward(from: 0);
       _showSearch();
     });
   }
@@ -589,7 +589,7 @@ class _EventListPageState extends State<EventListPage>
         _hasChange = false;
         _refresh();
       }
-      containerWidth = 50.0;
+      containerWidth = 50;
       FocusScope.of(context).unfocus();
     } else {
       containerWidth = MediaQuery.of(context).size.width;

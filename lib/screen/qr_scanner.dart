@@ -223,7 +223,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
                     ),
                   ),
                   left: 30,
-                  top: MediaQuery.of(context).size.height * 0.05,
+                  top: MediaQuery.of(context).size.height * 05,
                 )
               ],
             ),
@@ -315,7 +315,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         children: <Widget>[
           Image.asset('${Environment.imageAssets}intersect.png', width: 60),
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[

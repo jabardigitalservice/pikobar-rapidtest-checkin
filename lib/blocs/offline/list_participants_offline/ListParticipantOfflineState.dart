@@ -8,7 +8,7 @@ abstract class ListParticipantOfflineState extends Equatable {
 
 class InitialListParticipantOfflineState extends ListParticipantOfflineState {
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListParticipantOfflineLoading extends ListParticipantOfflineState {
@@ -18,17 +18,15 @@ class ListParticipantOfflineLoading extends ListParticipantOfflineState {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListParticipantOfflineLoaded extends ListParticipantOfflineState {
- final List<ListParticipantOfflineModel> listParticipantOfflineModel;
+  final List<ListParticipantOfflineModel> listParticipantOfflineModel;
 
   ListParticipantOfflineLoaded({
     this.listParticipantOfflineModel,
   }) : super([listParticipantOfflineModel]);
-
-
 
   @override
   String toString() {
@@ -36,7 +34,7 @@ class ListParticipantOfflineLoaded extends ListParticipantOfflineState {
   }
 
   @override
-  List<Object> get props => [listParticipantOfflineModel];
+  List<Object> get props => <Object>[listParticipantOfflineModel];
 }
 
 class ListParticipantOfflineFailure extends ListParticipantOfflineState {
@@ -48,5 +46,5 @@ class ListParticipantOfflineFailure extends ListParticipantOfflineState {
   String toString() => ' ListParticipantOffline { error: $error }';
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => <Object>[error];
 }

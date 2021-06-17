@@ -40,7 +40,7 @@ class _ParticipantListOfflinePageState
   ScrollController _scrollController = ScrollController();
   int maxDataLength;
   Timer _debounce;
-  double containerWidth = 40.0;
+  double containerWidth = 40;
 
   final AuthenticationRepository _authenticationRepository =
       AuthenticationRepository();
@@ -353,8 +353,7 @@ class _ParticipantListOfflinePageState
                                                   width: 1,
                                                 )),
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.all(20.0),
+                                              padding: const EdgeInsets.all(20),
                                               child: Column(
                                                 children: <Widget>[
                                                   Row(

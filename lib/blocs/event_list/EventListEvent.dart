@@ -16,7 +16,7 @@ class EventListLoad extends EventListEvent {
   }
 
   @override
-  List<Object> get props => [page, isFirstLoad, keyword];
+  List<Object> get props => <Object>[page, isFirstLoad, keyword];
 }
 
 class EventListLoadMore extends EventListEvent {
@@ -32,7 +32,7 @@ class EventListLoadMore extends EventListEvent {
   }
 
   @override
-  List<Object> get props => [page, isFirstLoad, keyword];
+  List<Object> get props => <Object>[page, isFirstLoad, keyword];
 }
 
 class EventListSearch extends EventListEvent {
@@ -47,5 +47,5 @@ class EventListSearch extends EventListEvent {
   }
 
   @override
-  List<Object> get props => [eventCode, keyword, page];
+  List<Object> get props => <Object>[eventCode, keyword, page];
 }

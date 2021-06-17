@@ -5,8 +5,8 @@ abstract class CheckinEvent extends Equatable {
 }
 
 class CheckinLoad extends CheckinEvent {
-  final String nomorPendaftaran,eventCode,labCodeSample;
-  CheckinLoad({this.nomorPendaftaran,this.eventCode,this.labCodeSample});
+  final String nomorPendaftaran, eventCode, labCodeSample;
+  CheckinLoad({this.nomorPendaftaran, this.eventCode, this.labCodeSample});
 
   @override
   String toString() {
@@ -14,7 +14,7 @@ class CheckinLoad extends CheckinEvent {
   }
 
   @override
-  List<Object> get props => [nomorPendaftaran,eventCode];
+  List<Object> get props => <Object>[nomorPendaftaran, eventCode];
 }
 
 class GetNameLoad extends CheckinEvent {
@@ -27,5 +27,5 @@ class GetNameLoad extends CheckinEvent {
   }
 
   @override
-  List<Object> get props => [registrationCode, labCode, eventCode];
+  List<Object> get props => <Object>[registrationCode, labCode, eventCode];
 }

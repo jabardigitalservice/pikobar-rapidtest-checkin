@@ -12,7 +12,7 @@ class ListCheckinOfflineLoad extends ListCheckinOfflineEvent {
   }
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class ListCheckinOfflineDelete extends ListCheckinOfflineEvent {
@@ -24,5 +24,5 @@ class ListCheckinOfflineDelete extends ListCheckinOfflineEvent {
   }
 
   @override
-  List<Object> get props => [checkinOfflineModel];
+  List<Object> get props => <Object>[checkinOfflineModel];
 }

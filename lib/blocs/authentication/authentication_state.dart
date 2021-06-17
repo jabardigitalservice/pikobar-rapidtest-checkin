@@ -4,7 +4,7 @@ abstract class AuthenticationState extends Equatable {
   const AuthenticationState();
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => <Object>[];
 }
 
 class AuthenticationInitial extends AuthenticationState {}
@@ -19,7 +19,7 @@ class AuthenticationAuthenticated extends AuthenticationState {
   AuthenticationAuthenticated({@required this.accessToken});
 
   @override
-  List<Object> get props => [accessToken];
+  List<Object> get props => <Object>[accessToken];
 }
 
 class AuthenticationFailure extends AuthenticationState {
@@ -28,5 +28,5 @@ class AuthenticationFailure extends AuthenticationState {
   AuthenticationFailure({@required this.message});
 
   @override
-  List<Object> get props => [message];
+  List<Object> get props => <Object>[message];
 }
